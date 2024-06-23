@@ -1,0 +1,96 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import AI_HEAD_IMG_URL from '@/assets/chatgpt.jpg'
+import ChatWindow from '@/components/chatHome/chat-window.vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const showTalk = ref(true)
+onMounted(() => {
+  chatWindowInfo.value = {
+    img: '',
+    name: 'Robot',
+    detail: '模型对话',
+    lastMsg: 'chatgpt v3.5 所基于的模型',
+    id: 'gpt-3.5-turbo',
+    headImg: AI_HEAD_IMG_URL,
+    showHeadImg: true
+  }
+})
+
+const chatWindowInfo = ref({})
+// 全部的设置参数
+const SettingInfo = ref({
+  cutSetting: 1,
+  readefile: false,
+  inputStatus: true,
+  translateEnglish: false,
+  openProductionPicture: false,
+  openChangePicture: false,
+  TemperatureAudio: 0,
+
+  n: 1,
+  size: '256x256',
+  language: 'zh',
+  chat: {
+    suffix: '',
+    MaxTokens: 1000,
+    Temperature: 1,
+    TopP: 1,
+    n: 1,
+    stream: true,
+    echo: false,
+    stop: '',
+    FrequencyPenalty: 0,
+    PresencePenalty: 0
+  },
+  openNet: false,
+  max_results: 3,
+  fineTunes: {
+    training_file: '',
+    model: 'curie',
+    n_epochs: 4,
+    prompt_loss_weight: 0.01,
+    suffix: ''
+    // compute_classification_metrics: false,
+    // classification_betas:"",
+    // classification_positive_class:"",
+  }
+})
+const storeStatus = ref(0)
+
+const endTalk = function() {
+  showTalk.value = false
+  setTimeout(() => {
+    router.push('/step1')
+  }, 1000)
+}
+</script>
+
+<template>
+  <transition
+    name="custom-classes-transition"
+    enter-active-class="animate__animated animate__fadeInDown"
+    leave-active-class="animate__animated animate__fadeOutUp"
+  >
+    <div v-show="showTalk" class="chat-container">
+      <chat-window
+        ref="chatWindow"
+        :frined-info="chatWindowInfo"
+        :setting-info="SettingInfo"
+        :store-statu="storeStatus"
+        @endTalk="endTalk"
+      />
+    </div>
+  </transition>
+</template>
+<style>
+:root{
+  --animate-duration: 500ms;
+  //--animate-delay: 0.9s;
+}
+</style>
+<style lang="scss" scoped>
+.chat-container{
+  padding: 0 20px;
+}
+</style>

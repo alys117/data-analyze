@@ -16,6 +16,27 @@ module.exports = {
     "vue/multiline-html-element-content-newline":"off",
     // "vue/name-property-casing": ["error", "PascalCase"],
     "vue/no-v-html": "off",
+    "vue/require-default-prop": 0,                     // 关闭属性参数必须默认值
+    // 要求每一行标签的最大属性不超五个
+    'vue/max-attributes-per-line': ['warn', { singleline: 5 }],
+    // 要求html标签的缩进为需要4个空格
+    "vue/html-indent": ["warn", 2, {
+      "attribute": 1,
+      "baseIndent": 1,
+      "closeBracket": 0,
+      "alignAttributesVertically": true,
+      "ignores": []
+    }],
+    // 取消关闭标签不能自闭合的限制设置
+    "vue/html-self-closing": ["error", {
+      "html": {
+        "void": "always",
+        "normal": "never",
+        "component": "always"
+      },
+      "svg": "always",
+      "math": "always"
+    }],
     'accessor-pairs': 2,
     'arrow-spacing': [2, {
       'before': true,

@@ -9,8 +9,8 @@ const router = useRouter()
     <my-step :step="3" />
   </div>
   <div class="step-forward">
-    <vxe-button size="mini" status="primary" content="上一步" @click="router.push('/step2')"></vxe-button>
-    <vxe-button size="mini" status="primary" content="下一步" @click="router.push('/step4')"></vxe-button>
+    <el-button size="small" type="primary" @click="router.push('/step2')">上一步</el-button>
+    <el-button size="small" type="type" @click="router.push('/step4')">下一步</el-button>
   </div>
 </template>
 

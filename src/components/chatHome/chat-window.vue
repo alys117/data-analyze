@@ -623,7 +623,7 @@ export default {
         'query': '',
         'conversation_id': this.conversation_id,
         'history_len': 10,
-        'stream': false,
+        'stream': true,
         'model_name': 'deepseek-chat',
         'temperature': 0.7,
         'max_tokens': 0,
@@ -1061,7 +1061,7 @@ textarea::-webkit-scrollbar-thumb {
 
   .botoom {
     width: 100%;
-    height: 60vh;
+    height: calc(100vh - 70px);
     background-size: 100% 100%;
     background-color: rgb(50, 54, 68);
     background-color: #fafafa;

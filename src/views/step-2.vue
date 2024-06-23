@@ -64,8 +64,8 @@ const handle = ({ height, width }) => {
   </div>
 
   <div class="step-forward">
-    <vxe-button size="mini" status="primary" content="上一步" @click="router.push('/step1')"></vxe-button>
-    <vxe-button size="mini" status="primary" content="下一步" @click="router.push('/step3')"></vxe-button>
+    <el-button size="small" type="primary" @click="router.push('/step1')">上一步</el-button>
+    <el-button size="small" type="primary" @click="router.push('/step3')">下一步</el-button>
   </div>
 </template>
 

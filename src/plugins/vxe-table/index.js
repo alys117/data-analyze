@@ -1,5 +1,8 @@
 // https://vxetable.cn/#/table/start/install
+import 'vxe-pc-ui/lib/style.css'
+import 'vxe-table/lib/style.css'
 import VXETable from 'vxe-table'
+import VxeUI from 'vxe-pc-ui'
 // https://github.com/x-extends/vxe-table-plugin-element
 import VXETablePluginElement from 'vxe-table-plugin-element'
 
@@ -62,4 +65,5 @@ VXETable.setConfig({
 export function loadVxeTable(app) {
   /** Vxe Table 组件完整引入 */
   app.use(VXETable)
+  app.use(VxeUI)
 }
