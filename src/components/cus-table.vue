@@ -1,30 +1,27 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { VXETable } from 'vxe-table'
-const { allData } = defineProps({
+const props = defineProps({
   allData: {
     type: Object,
     default: () => {}
   }
 })
 const options = ref([
-  { label: 'prop传入', value: 'prop实际值' },
-  { label: '选项1', value: '黄金糕' },
-  { label: '选项2', value: '双皮奶' },
-  { label: '选项5', value: '北京烤鸭' }
+  { label: 'prop传入', value: 'prop实际值' }
 ])
-watch(
-  () => allData,
-  (newData, oldData) => {
-    console.log(newData, oldData)
-  })
-
-onMounted(() => {
-  console.log(allData, 111)
-  for (const tableName in allData) {
+watch(() => props.allData.tip, (newData, oldData) => {
+  console.log('监控到了')
+  options.value = []
+  console.log(newData, oldData, props.allData)
+  for (const tableName in props.allData) {
     console.log(tableName)
     options.value.push({ label: tableName, value: tableName })
   }
+})
+
+onMounted(() => {
+  console.log(props.allData, 'allData 初始值')
 })
 
 const tableValue = ref('')
@@ -116,7 +113,13 @@ const copy = (value, mes) => {
 <template>
   <div class="cus-table-head">
     <div class="left-label">请选择</div>
-    <el-select v-model="tableValue" placeholder="请选择" style="width: 500px">
+    <el-select v-model="tableValue"
+               placeholder="请选择"
+               style="width: 500px"
+               multiple
+               collapse-tags
+               collapse-tags-tooltip
+               :max-collapse-tags="2">
       <el-option
         v-for="item in options"
         :key="item.value"

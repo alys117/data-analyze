@@ -1,11 +1,11 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
 import CusTable from '@/components/cus-table.vue'
-import { ref, onMounted, onBeforeMount } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { fakeData } from '@/views/fakeData.js'
 const router = useRouter()
-const allData = ref(undefined)
+const allData = ref({ tip: 'initValue' })
 const body = {
   'question': '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理',
   'other': []
@@ -34,11 +34,10 @@ const fake = async() => {
     }, 1000)
   })
 }
-onBeforeMount(async() => {
+onMounted(async() => {
   // const data = await fetchTables()
   const data = await fake()
-  console.log(data)
-  allData.value = data
+  allData.value = { ...data }
 })
 
 </script>
