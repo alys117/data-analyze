@@ -99,7 +99,7 @@ const vDrag = {
   position: fixed;
   cursor: pointer;
   bottom: 90px;
-  right: 90px;
+  left: 90px;
   width: 40px;
   height: 40px;
   background: #409eff;

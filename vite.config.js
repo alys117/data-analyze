@@ -38,6 +38,11 @@ export default defineConfig({
     })
   ],
   server: {
+    port: 5173,
+    open: true,
+    headers: {
+      'Pray': 'xiaohuozi'
+    },
     proxy: {
       // 字符串简写写法：http://localhost:5173/foo -> http://localhost:4567/foo
       '/foo': 'http://localhost:4567',

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onActivated } from 'vue'
 import AI_HEAD_IMG_URL from '@/assets/chatgpt.jpg'
 import ChatWindow from '@/components/chatHome/chat-window.vue'
 import { useRouter } from 'vue-router'
@@ -57,7 +57,9 @@ const SettingInfo = ref({
   }
 })
 const storeStatus = ref(0)
-
+onActivated(() => {
+  showTalk.value = true
+})
 const endTalk = function() {
   showTalk.value = false
   setTimeout(() => {
@@ -92,5 +94,6 @@ const endTalk = function() {
 <style lang="scss" scoped>
 .chat-container{
   padding: 0 20px;
+  height: 100vh;
 }
 </style>

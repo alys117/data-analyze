@@ -67,7 +67,7 @@
                     p-id="6241"
                     width="22"
                     height="22"
-                    @click="$copy(item.msg, '已复制')"
+                    @click="copy(item.msg, '已复制')"
                   >
                     <path
                       d="M661.333333 234.666667A64 64 0 0 1 725.333333 298.666667v597.333333a64 64 0 0 1-64 64h-469.333333A64 64 0 0 1 128 896V298.666667a64 64 0 0 1 64-64z m-21.333333 85.333333H213.333333v554.666667h426.666667v-554.666667z m191.829333-256a64 64 0 0 1 63.744 57.856l0.256 6.144v575.701333a42.666667 42.666667 0 0 1-85.034666 4.992l-0.298667-4.992V149.333333H384a42.666667 42.666667 0 0 1-42.368-37.674666L341.333333 106.666667a42.666667 42.666667 0 0 1 37.674667-42.368L384 64h447.829333z"
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { animation, getNowTime, JCMFormatDate } from '@/utils/util'
+import { animation, getNowTime, JCMFormatDate, copyToClipboard } from '@/utils/util'
 import HeadPortrait from '@/components/HeadPortrait.vue'
 // import Emoji from '@/components/Emoji.vue'
 // import FileCard from '@/components/FileCard.vue'
@@ -270,6 +270,14 @@ export default {
     window.removeEventListener('resize', this.handleResize)
   },
   methods: {
+    copy(value, mes) {
+      if (copyToClipboard(value)) {
+        ElMessage({
+          type: 'success',
+          message: mes
+        })
+      }
+    },
     handleKeyDown(event) {
       if (event.keyCode === 13 && (!event.shiftKey)) { // 按下回车键，没按shift
         this.sendText()
@@ -1061,7 +1069,7 @@ textarea::-webkit-scrollbar-thumb {
 
   .botoom {
     width: 100%;
-    height: calc(100vh - 70px);
+    height: calc(100% - 85px);
     background-size: 100% 100%;
     background-color: rgb(50, 54, 68);
     background-color: #fafafa;

@@ -1,16 +1,32 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { VXETable } from 'vxe-table'
-const { options } = defineProps({
-  options: {
-    type: Array,
-    default: () => [
-      { value: '选项1', label: '黄金糕' },
-      { value: '选项2', label: '双皮奶' },
-      { value: '选项5', label: '北京烤鸭' }
-    ]
-  }}
-)
+const { allData } = defineProps({
+  allData: {
+    type: Object,
+    default: () => {}
+  }
+})
+const options = ref([
+  { label: 'prop传入', value: 'prop实际值' },
+  { label: '选项1', value: '黄金糕' },
+  { label: '选项2', value: '双皮奶' },
+  { label: '选项5', value: '北京烤鸭' }
+])
+watch(
+  () => allData,
+  (newData, oldData) => {
+    console.log(newData, oldData)
+  })
+
+onMounted(() => {
+  console.log(allData, 111)
+  for (const tableName in allData) {
+    console.log(tableName)
+    options.value.push({ label: tableName, value: tableName })
+  }
+})
+
 const tableValue = ref('')
 const xGrid = ref()
 const gridOptions = reactive({
@@ -88,12 +104,19 @@ const gridEvents = {
     }
   }
 }
+
+const copy = (value, mes) => {
+  ElMessage({
+    type: 'success',
+    message: mes
+  })
+}
 </script>
 
 <template>
   <div class="cus-table-head">
     <div class="left-label">请选择</div>
-    <el-select v-model="tableValue" placeholder="请选择" style="width: 200px">
+    <el-select v-model="tableValue" placeholder="请选择" style="width: 500px">
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -108,8 +131,8 @@ const gridEvents = {
       <template #toolbar-btns>
         <div class="toolbar">
           <vxe-button size="mini" status="success" icon="vxe-icon-square-checked-fill" @click="crudStore.onSubmit()">使用</vxe-button>
-          <vxe-button size="mini" status="primary" icon="vxe-icon-lightning">待定</vxe-button>
-          <vxe-input size="mini" v-model="tableValue" placeholder="只读的" suffix-icon="vxe-icon-warning-triangle-fill" readonly></vxe-input>
+          <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="copy('收拾收拾', '已复制')">待定</vxe-button>
+          <vxe-input  size="mini" v-model="tableValue" placeholder="只读的" suffix-icon="vxe-icon-warning-triangle-fill" readonly/>
         </div>
       </template>
     </vxe-grid>
