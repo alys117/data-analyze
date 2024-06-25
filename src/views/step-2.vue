@@ -1,10 +1,11 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
 const router = useRouter()
+const route = useRoute()
 
 const input3 = ref('')
 const select = ref('')
@@ -15,6 +16,9 @@ const handle = ({ height, width }) => {
   width1.value = width
   height1.value = height
 }
+onMounted(() => {
+  console.log(route.params, 'route.params')
+})
 </script>
 
 <template>
@@ -51,14 +55,14 @@ const handle = ({ height, width }) => {
       </div>
       <div class="content">
         <div class="tree-container">
-          <sample-tree></sample-tree>
+          <sample-tree/>
         </div>
       </div>
     </div>
     <div class="right">
       <span class="mind-title">大纲思维导图</span>
       <div class="mind-container" :style="{'--width': width1, '--height': height1}">
-        <js-mind @resize="handle"></js-mind>
+        <js-mind @resize="handle"/>
       </div>
     </div>
   </div>

@@ -1,19 +1,30 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { VXETable } from 'vxe-table'
-const { tableInfo } = defineProps({
-  tableInfo: {
+const props = defineProps({
+  allData: {
     type: Object,
     default: () => {}
   }
 })
-
-onMounted(() => {
-  setTimeout(() => {
-    dealGrid(tableInfo)
-  }, 600)
+const options = ref([
+  { label: 'prop传入', value: 'prop实际值' }
+])
+watch(() => props.allData.tip, (newData, oldData) => {
+  console.log('监控到了')
+  options.value = []
+  console.log(newData, oldData, props.allData)
+  for (const tableName in props.allData) {
+    console.log(tableName)
+    options.value.push({ label: tableName, value: tableName })
+  }
 })
 
+onMounted(() => {
+  // console.log(props.allData, 'allData 初始值')
+})
+
+const tableValue = ref('')
 // 下面是对表格的操作 ！！！
 
 const xGrid = ref()
@@ -37,17 +48,6 @@ const gridOptions = reactive({
     slots: { buttons: 'toolbar-btns' }
   }
 })
-const dealGrid = (info) => {
-  gridOptions.columns = []
-  for (const key in info['所需字段']) {
-    gridOptions.columns.push({ field: key, title: info['所需字段'][key] })
-  }
-  // console.log(gridOptions.columns, 'gridOptions.columns')
-  gridOptions.data = []
-  info['样例数据'].forEach((item, index) => {
-    gridOptions.data.push(item)
-  })
-}
 setTimeout(() => {
   gridOptions.loading = false
   // 列配置
@@ -80,24 +80,15 @@ const crudStore = reactive({
     const $grid = xGrid.value
     const useField = []
     $grid.getColumns().forEach((column) => {
-      // console.log(column.field)
+      console.log(column.field)
       column.field && useField.push(column.field)
     })
     VXETable.modal.message('使用的字段：' + useField.join(', '))
-    return useField
-  },
-  onLoadData: (type) => {
-    gridOptions.columns = []
-    for (const key in tableInfo[type]) {
-      gridOptions.columns.push({ field: key, title: tableInfo[type][key] })
-    }
   },
   /** 更多自定义方法 */
-  moreFn: () => {
-    console.log('moreFn')
-  }
+  moreFn: () => {}
 })
-defineExpose({ getUseFields: crudStore.onSubmit })
+
 const gridEvents = {
   toolbarToolClick({ code }) {
     const $grid = xGrid.value
@@ -111,17 +102,41 @@ const gridEvents = {
     }
   }
 }
+
+const copy = (value, mes) => {
+  ElMessage({
+    type: 'success',
+    message: mes
+  })
+}
 </script>
 
 <template>
+  <div class="cus-table-head">
+    <div class="left-label">请选择</div>
+    <el-select v-model="tableValue"
+               placeholder="请选择"
+               style="width: 500px"
+               multiple
+               collapse-tags
+               collapse-tags-tooltip
+               :max-collapse-tags="2">
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+  </div>
   <div class="cus-table-content">
     <vxe-grid ref="xGrid" v-bind="gridOptions" v-on="gridEvents">
       <!-- 左侧按钮列表 -->
       <template #toolbar-btns>
         <div class="toolbar">
           <vxe-button size="mini" status="success" icon="vxe-icon-square-checked-fill" @click="crudStore.onSubmit()">使用</vxe-button>
-          <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('表的所有字段')">全部字段</vxe-button>
-          <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('所需字段')">推荐字段</vxe-button>
+          <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="copy('收拾收拾', '已复制')">待定</vxe-button>
+          <vxe-input  size="mini" v-model="tableValue" placeholder="尚未选择表" suffix-icon="vxe-icon-warning-triangle-fill" readonly/>
         </div>
       </template>
     </vxe-grid>
@@ -129,6 +144,14 @@ const gridEvents = {
 </template>
 
 <style scoped lang="scss">
+.cus-table-head{
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  .left-label{
+    margin-right: 20px;
+  }
+}
 .cus-table-content{
   //width: 50%;
 }
