@@ -10,9 +10,11 @@ const toggleDrawer = () => {
 <template>
   <main class="app-container">
     <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component" />
-      </keep-alive>
+      <transition :name="'el-fade-in'" :mode="'out-in'">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
     </router-view>
   </main>
   <div>

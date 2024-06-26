@@ -1,16 +1,24 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 const router = useRouter()
+const loading = ref(true)
+onMounted(() => {
+  loading.value = false
+})
 </script>
 
 <template>
-  <div class="step-container">
-    <my-step :step="3" />
-  </div>
-  <div class="step-forward">
-    <el-button size="small" type="primary" @click="router.push('/step2')">上一步</el-button>
-    <el-button size="small" type="type" @click="router.push('/step4')">下一步</el-button>
+  <div v-loading="loading">
+    <div class="step-container">
+      <my-step :step="3" />
+    </div>
+
+    <div class="step-forward">
+      <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
+      <el-button size="default" type="type" @click="router.push('/step4')">下一步</el-button>
+    </div>
   </div>
 </template>
 

@@ -16,60 +16,66 @@ const handle = ({ height, width }) => {
   width1.value = width
   height1.value = height
 }
+const loading = ref(true)
 onMounted(() => {
-  console.log(route.params, 'route.params')
+  setTimeout(() => {
+    loading.value = false
+  }, 0)
+  console.log(history.state, 'history.state')
 })
 </script>
 
 <template>
-  <div class="step-container">
-    <my-step :step="2" />
-  </div>
-  <div class="main-container">
-    <div class="left">
-      <div class="head">
-        <div>
-          <div>大纲栏</div>
+  <div v-loading="loading">
+    <div class="step-container">
+      <my-step :step="2" />
+    </div>
+    <div class="main-container">
+      <div class="left">
+        <div class="head">
+          <div>
+            <div>大纲栏</div>
+          </div>
+          <div class="history-head">
+            <span>历史大纲栏</span>
+            <div class="history-head-child">
+              <el-input
+                v-model="input3"
+                style="max-width: 400px;"
+                placeholder="请输入搜索内容"
+              >
+                <template #prepend>
+                  <el-select v-model="select" placeholder="选择" style="width: 100px">
+                    <el-option label="Restaurant" value="1" />
+                    <el-option label="Order No." value="2" />
+                    <el-option label="Tel" value="3" />
+                  </el-select>
+                </template>
+                <template #append>
+                  <el-button>导入</el-button>
+                </template>
+              </el-input>
+            </div>
+          </div>
         </div>
-        <div class="history-head">
-          <span>历史大纲栏</span>
-          <div class="history-head-child">
-            <el-input
-              v-model="input3"
-              style="max-width: 400px;"
-              placeholder="请输入搜索内容"
-            >
-              <template #prepend>
-                <el-select v-model="select" placeholder="选择" style="width: 100px">
-                  <el-option label="Restaurant" value="1" />
-                  <el-option label="Order No." value="2" />
-                  <el-option label="Tel" value="3" />
-                </el-select>
-              </template>
-              <template #append>
-                <el-button>导入</el-button>
-              </template>
-            </el-input>
+        <div class="content">
+          <div class="tree-container">
+            <sample-tree/>
           </div>
         </div>
       </div>
-      <div class="content">
-        <div class="tree-container">
-          <sample-tree/>
+      <div class="right">
+        <span class="mind-title">大纲思维导图</span>
+        <div class="mind-container" :style="{'--width': width1, '--height': height1}">
+<!--          <js-mind @resize="handle"/>-->
         </div>
       </div>
     </div>
-    <div class="right">
-      <span class="mind-title">大纲思维导图</span>
-      <div class="mind-container" :style="{'--width': width1, '--height': height1}">
-        <js-mind @resize="handle"/>
-      </div>
-    </div>
-  </div>
 
-  <div class="step-forward">
-    <el-button size="small" type="primary" @click="router.push('/step1')">上一步</el-button>
-    <el-button size="small" type="primary" @click="router.push('/step3')">下一步</el-button>
+    <div class="step-forward">
+      <el-button size="default" type="primary" @click="router.push('/step1')">上一步</el-button>
+      <el-button size="default" type="primary" @click="router.push('/step3')">下一步</el-button>
+    </div>
   </div>
 </template>
 

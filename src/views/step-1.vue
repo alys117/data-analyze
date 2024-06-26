@@ -39,10 +39,6 @@ const fake = async() => {
 
 const changeTable = () => {
   console.log(selectTables.value, childRefs.value.length, 'changeTable')
-  // childRefs.value = childRefs.value.filter((item) => {
-  //   console.log(item.tableName, selectTables.value.includes(item.tableName))
-  //   return selectTables.value.includes(item.tableName)
-  // })
 }
 onMounted(async() => {
   // const data = await fetchTables()
@@ -76,10 +72,9 @@ const next = () => {
     result.tables_name.push(item.tableName)
     result.columns_name[item.tableName] = fields
   })
-  console.log(result, 'result')
   router.push({
     name: 'Step2',
-    params: { a: 123 }
+    state: { params: result }
   })
 }
 </script>
@@ -119,18 +114,15 @@ const next = () => {
       </transition-group>
     </div>
     <div class="step-forward">
-      <el-button size="small" type="success" @click="router.push('/talk')">返回会话</el-button>
-      <el-button size="small" type="primary" @click="next">下一步</el-button>
-      <el-button size="small" type="primary" @click="console.log(childRefs)">tet</el-button>
+      <el-button size="default" type="success" @click="router.push('/talk')">返回会话</el-button>
+      <el-button size="default" type="primary" @click="next">下一步</el-button>
+<!--      <el-button size="small" type="primary" @click="console.log(childRefs)">childRefs</el-button>-->
     </div>
   </div>
 </template>
 <style lang="scss" scoped>
 .step-container{
   padding: 20px;
-}
-.chat-container{
-  padding: 0 20px;
 }
 .cus-table-container{
   padding: 20px 20px 0 20px;

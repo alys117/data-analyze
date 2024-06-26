@@ -64,31 +64,33 @@ const endTalk = function() {
   showTalk.value = false
   setTimeout(() => {
     router.push('/step1')
-  }, 1000)
+  }, 500)
 }
 </script>
 
 <template>
-  <transition
-    name="custom-classes-transition"
-    enter-active-class="animate__animated animate__fadeInDown"
-    leave-active-class="animate__animated animate__fadeOutUp"
-  >
-    <div v-show="showTalk" class="chat-container">
-      <chat-window
-        ref="chatWindow"
-        :frined-info="chatWindowInfo"
-        :setting-info="SettingInfo"
-        :store-statu="storeStatus"
-        @endTalk="endTalk"
-      />
-    </div>
-  </transition>
+  <div>
+    <transition
+      name="custom-classes-transition"
+      enter-active-class="animate__animated animate__fadeInDown"
+      leave-active-class="animate__animated animate__fadeOutUp"
+    >
+      <div v-show="showTalk" class="chat-container">
+        <chat-window
+          ref="chatWindow"
+          :frined-info="chatWindowInfo"
+          :setting-info="SettingInfo"
+          :store-statu="storeStatus"
+          @endTalk="endTalk"
+        />
+      </div>
+    </transition>
+  </div>
 </template>
 <style>
 :root{
   --animate-duration: 500ms;
-  //--animate-delay: 0.9s;
+  --animate-delay: 0s;
 }
 </style>
 <style lang="scss" scoped>
