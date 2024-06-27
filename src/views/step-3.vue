@@ -19,7 +19,7 @@ onMounted(() => {
     <drag-demo/>
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
-      <el-button size="default" type="type" @click="router.push('/step4')">下一步</el-button>
+      <el-button size="default" type="primary" @click="router.push('/step4')">下一步</el-button>
     </div>
   </div>
 </template>

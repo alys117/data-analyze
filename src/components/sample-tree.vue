@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, toRaw, onMounted } from 'vue'
 import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
-const dataSource = ref([
+const dataSourceIn = ref([
   {
     id: 'fdsfds',
     label: '一级 1',
@@ -9,6 +9,7 @@ const dataSource = ref([
       {
         id: 4,
         label: '二级 1-1',
+        css: 'border',
         children: [
           {
             id: 9,
@@ -51,7 +52,7 @@ const dataSource = ref([
     ]
   }
 ])
-const dataSource2 = ref([
+const dataSourceOut = ref([
   {
     id: 100,
     label: '一级 食物',
@@ -107,20 +108,19 @@ const dataSource2 = ref([
     ]
   }
 ])
-let id = 10000
 
 const edit = (data) => {
-  console.log(data, id++)
+  console.log(data)
 }
 const append = (data) => {
-  console.log(data, id++)
+  console.log(data)
 }
 const remove = (node, data) => {
   const parent = node.parent
   const children = parent.data.children || parent.data
   const index = children.findIndex((d) => d.id === data.id)
   children.splice(index, 1)
-  dataSource.value = [...dataSource.value]
+  // dataSourceIn.value = [...dataSourceIn.value] // 这个地方不太明白
 }
 
 const handleMouseenter = (data) => {
@@ -129,7 +129,20 @@ const handleMouseenter = (data) => {
 const handleMouseleave = (data) => {
   data.show = false
 }
+
+onMounted(() => {
+
+})
 // 拖拽相关api
+const changeNodeId = (tree) => {
+  tree.id = Math.random().toString(16).substring(2)
+  if (tree.children) {
+    tree.children.forEach((item) => {
+      changeNodeId(item)
+    })
+  }
+}
+
 const treeIn = ref()
 const treeOut = ref()
 const handleNodeDragStart = (ev) => {
@@ -137,21 +150,29 @@ const handleNodeDragStart = (ev) => {
   ev.dataTransfer.setData('srcId', ev.target.id)
 }
 
-function dragover_handler(ev) {
+function dragover_handler(ev, data) {
   ev.preventDefault()
   ev.dataTransfer.dropEffect = 'link'
+  const inId = ev.target.id
+  console.log(inId, 'inId', data)
+  data.css = 1
+}
+function dragleave_handler(ev, data) {
+  data.css = 0
 }
 
-function drop_handler(ev) {
+function drop_handler(ev, data) {
   ev.preventDefault()
-
+  data.css = 0
   const outId = ev.dataTransfer.getData('srcId')
   const inId = ev.target.id
 
   // 获取拖拽节点
-  const outNode = treeOut.value.getNode(Number(outId))
-  console.log(outNode, 'outNode')
-  treeIn.value.append(outNode.data, Number(inId))
+  const outNode = treeOut.value.getNode(outId)
+  const tmp = toRaw(outNode.data)
+  const copy = structuredClone(tmp)
+  changeNodeId(copy)
+  treeIn.value.append(copy, inId)
 }
 </script>
 
@@ -161,7 +182,7 @@ function drop_handler(ev) {
       <el-tree
         ref='treeIn'
         class="flow-tree"
-        :data="dataSource"
+        :data="dataSourceIn"
         node-key="id"
         draggable
         default-expand-all
@@ -169,8 +190,8 @@ function drop_handler(ev) {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node" @mouseenter="handleMouseenter(data)" @mouseleave="handleMouseleave(data)">
-            <span :id="data.id" @drop="drop_handler" @dragover="dragover_handler">
-              <span v-if="data.children"></span>
+            <span :id="data.id" @drop="drop_handler($event, data)" @dragleave="dragleave_handler($event, data)" @dragover="dragover_handler($event,data)" :style="{border: data.css?'1px solid red':'none'}">
+              <span v-if="data.children && data.children.length"></span>
               <span v-else style="margin-right: 3px"><el-icon><Platform /></el-icon></span>
               {{ node.label }}
             </span>
@@ -187,13 +208,13 @@ function drop_handler(ev) {
       <div><el-button type="primary" size="small" class="button-a" :icon="DArrowRight"/></div>
       <div><el-button type="primary" size="small" class="button-a" :icon="DArrowLeft"/></div>
       <div><el-button type="primary" size="small" class="button-a" :icon="RefreshLeft"/></div>
-      <div><el-button type="primary" size="small" class="button-a" :icon="Check"/></div>
+      <div><el-button type="primary" size="small" class="button-a" :icon="Check" @click="console.log(toRaw(dataSourceIn))" /></div>
     </div>
     <div class="tree">
       <el-tree
         ref='treeOut'
         class="tree"
-        :data="dataSource2"
+        :data="dataSourceOut"
         node-key="id"
         default-expand-all
         :expand-on-click-node="false"
