@@ -67,7 +67,7 @@ onMounted(() => {
       <div class="right">
         <span class="mind-title">大纲思维导图</span>
         <div class="mind-container" :style="{'--width': width1, '--height': height1}">
-<!--          <js-mind @resize="handle"/>-->
+          <js-mind @resize="handle"/>
         </div>
       </div>
     </div>
