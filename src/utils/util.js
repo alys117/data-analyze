@@ -187,3 +187,42 @@ export function generateUUID() {
   })
   return uuid
 }
+
+export function generateID(len) {
+  if (len < 11) {
+    return Math.random().toString(36).substring(2, len + 2)
+  } else {
+    return Math.random().toString(36).substring(2, 13) + generateID(len - 11)
+  }
+}
+// 递归遍历改名
+export const renameObjectProperties = (obj, oldName, newName) => {
+  // 如果是数组，则使用forEach进行遍历，为了保持索引不变
+  if (Array.isArray(obj)) {
+    obj.forEach((item, index) => {
+      // 如果item是对象或数组，则递归调用自身
+      if (typeof item === 'object' && item !== null) {
+        renameObjectProperties(item, oldName, newName)
+      } else if (item === oldName) {
+        // 如果item与旧属性名相同，则替换为新的属性名
+        obj[index] = newName
+      }
+    })
+  } else if (typeof obj === 'object' && obj !== null) {
+    // 如果是对象，则使用for...in遍历
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (key === oldName) {
+          // 如果当前属性名与旧属性名相同，则替换为新的属性名
+          obj[newName] = obj[oldName]
+          delete obj[oldName]
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+          // 如果当前属性是对象，则递归调用自身
+          renameObjectProperties(obj[key], oldName, newName)
+        }
+      }
+    }
+  }
+  // 返回修改后的对象或数组
+  return obj
+}

@@ -1,6 +1,8 @@
 <script setup>
-import { ref, toRaw, onMounted } from 'vue'
+import { ref, toRaw, onMounted, watch } from 'vue'
+import emitter from '@/utils/mitt.js'
 import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
+import { generateID } from '@/utils/util.js'
 const dataSourceIn = ref([
   {
     id: 'fdsfds',
@@ -9,11 +11,10 @@ const dataSourceIn = ref([
       {
         id: 4,
         label: '二级 1-1',
-        css: 'border',
         children: [
           {
             id: 9,
-            label: '三级 1-1-1-------55555-------2222222'
+            label: '三级 1-1-1-------55555-------'
           },
           {
             id: 10,
@@ -108,12 +109,24 @@ const dataSourceOut = ref([
     ]
   }
 ])
-
+const currentInput = ref('')
 const edit = (data) => {
-  console.log(data)
+  data.isInput = true
+  currentInput.value = data.label
+}
+const saveCurrentInp = (data) => {
+  console.log('保存')
+  data.label = currentInput.value
+  data.isInput = false
+  emitter.emit('data-js-mind', dataSourceIn.value)
 }
 const append = (data) => {
-  console.log(data)
+  const newChild = { id: generateID(8), label: '新节点', children: [] }
+  if (!data.children) {
+    data.children = []
+  }
+  data.children.push(newChild)
+  emitter.emit('data-js-mind', dataSourceIn.value)
 }
 const remove = (node, data) => {
   const parent = node.parent
@@ -121,6 +134,7 @@ const remove = (node, data) => {
   const index = children.findIndex((d) => d.id === data.id)
   children.splice(index, 1)
   // dataSourceIn.value = [...dataSourceIn.value] // 这个地方不太明白
+  emitter.emit('data-js-mind', dataSourceIn.value)
 }
 
 const handleMouseenter = (data) => {
@@ -133,9 +147,10 @@ const handleMouseleave = (data) => {
 onMounted(() => {
 
 })
+
 // 拖拽相关api
 const changeNodeId = (tree) => {
-  tree.id = Math.random().toString(16).substring(2)
+  tree.id = generateID(8)
   if (tree.children) {
     tree.children.forEach((item) => {
       changeNodeId(item)
@@ -147,32 +162,41 @@ const treeIn = ref()
 const treeOut = ref()
 const handleNodeDragStart = (ev) => {
   ev.dataTransfer.dropEffect = 'copy'
-  ev.dataTransfer.setData('srcId', ev.target.id)
+  ev.dataTransfer.setData('srcId', ev.currentTarget.dataset.treeId)
 }
 
 function dragover_handler(ev, data) {
   ev.preventDefault()
   ev.dataTransfer.dropEffect = 'link'
-  const inId = ev.target.id
-  console.log(inId, 'inId', data)
-  data.css = 1
+  data.css = true
 }
 function dragleave_handler(ev, data) {
-  data.css = 0
+  data.css = false
 }
 
 function drop_handler(ev, data) {
   ev.preventDefault()
   data.css = 0
   const outId = ev.dataTransfer.getData('srcId')
-  const inId = ev.target.id
+  const inId = ev.currentTarget.dataset.treeId // ev.currentTarget.getAttribute('data-tree-id')
 
   // 获取拖拽节点
   const outNode = treeOut.value.getNode(outId)
   const tmp = toRaw(outNode.data)
   const copy = structuredClone(tmp)
   changeNodeId(copy)
+  // console.log(copy, 'copy', inId)
   treeIn.value.append(copy, inId)
+  emitter.emit('data-js-mind', dataSourceIn.value)
+}
+watch(() => dataSourceIn.value, (newVal, oldVal) => {
+  // console.log(toRaw(newVal), toRaw(oldVal))
+  // 使用watch的话，有些额外属性页被监控了（show 属性，其实只是控制样式），为想好如何处理
+}, { deep: true })
+
+function handleDrop(draggingNode, dropNode, dropType, ev) {
+  console.log('tree drop:', dropNode.label, dropType)
+  emitter.emit('data-js-mind', dataSourceIn.value)
 }
 </script>
 
@@ -187,13 +211,23 @@ function drop_handler(ev, data) {
         draggable
         default-expand-all
         :expand-on-click-node="false"
+        @node-drop="handleDrop"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node" @mouseenter="handleMouseenter(data)" @mouseleave="handleMouseleave(data)">
-            <span :id="data.id" @drop="drop_handler($event, data)" @dragleave="dragleave_handler($event, data)" @dragover="dragover_handler($event,data)" :style="{border: data.css?'1px solid red':'none'}">
+          <span class="custom-tree-node"
+                :id="data.id"
+                :data-tree-id="data.id"
+                @mouseenter="handleMouseenter(data)"
+                @mouseleave="handleMouseleave(data)"
+                @drop="drop_handler($event, data)"
+                @dragleave="dragleave_handler($event, data)"
+                @dragover="dragover_handler($event,data)"
+                :style="{background: data.css?'lightgreen':''}">
+            <span>
               <span v-if="data.children && data.children.length"></span>
               <span v-else style="margin-right: 3px"><el-icon><Platform /></el-icon></span>
-              {{ node.label }}
+              <span v-if="!data.isInput">{{ node.label }}</span>
+              <span v-else><el-input size="small" v-model="currentInput" placeholder="请输入分类名称" @blur="saveCurrentInp(data)"/></span>
             </span>
             <span>
               <a @click="append(data)" :style="{ 'color': !data.show ? 'transparent': ''}">添加</a>
@@ -220,14 +254,13 @@ function drop_handler(ev, data) {
         :expand-on-click-node="false"
       >
         <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <span :id='data.id' draggable="true" @dragstart="handleNodeDragStart">{{ node.label }}</span>
+          <span class="custom-tree-node" :id='data.id' :data-tree-id="data.id" draggable="true" @dragstart="handleNodeDragStart">
+            <span>{{ node.label }}</span>
           </span>
         </template>
       </el-tree>
     </div>
   </div>
-
 </template>
 
 <style lang="scss">
@@ -249,7 +282,8 @@ function drop_handler(ev, data) {
     }
   }
   .middle{
-    display: flex;
+    display: none;
+    //display: flex;
     width: 60px;
     gap: 20px;
     align-items: center;

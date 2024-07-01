@@ -93,10 +93,10 @@ onMounted(() => {
   //overflow: auto;
   .head{
     display: flex;
+    background-color: #f5f8fb;
     margin-bottom: 10px;
-    div{
-      flex: 1;
-    }
+    justify-content: space-between;
+    align-items: center;
     .history-head{
       display: flex;
       align-items: center;

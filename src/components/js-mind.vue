@@ -4,15 +4,17 @@
 
 <script setup>
 import 'jsmind/style/jsmind.css'
-import jsMind from 'jsmind'
+import JsMind from 'jsmind'
 import 'jsmind/draggable-node'
-import { onMounted } from 'vue'
+import { onMounted, toRaw } from 'vue'
+import emitter from '@/utils/mitt.js'
+import { renameObjectProperties } from '@/utils/util.js'
 
 const mind = {
   /* 元数据，定义思维导图的名称、作者、版本等信息 */
   meta: {
     name: '思维导图',
-    author: 'hizzgdev@163.com',
+    author: 'aspire',
     version: '0.2'
   },
   /* 数据格式声明 */
@@ -69,30 +71,43 @@ const mind = {
 const options = {
   container: 'jsmind_container', // [必选] 容器的ID
   editable: true, // [可选] 是否启用编辑
-  theme: '', // [可选] 主题
-  view: {
-    engine: 'canvas', // 思维导图各节点之间线条的绘制引擎
-    hmargin: 120, // 思维导图距容器外框的最小水平距离
-    vmargin: 50, // 思维导图距容器外框的最小垂直距离
-    line_width: 2, // 思维导图线条的粗细
-    line_color: '#ddd' // 思维导图线条的颜色
-  },
-  layout: {
-    hspace: 100, // 节点之间的水平间距
-    vspace: 20, // 节点之间的垂直间距
-    pspace: 20 // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
-  },
-  shortcut: {
-    enable: false // 是否启用快捷键 默认为true
-  }
+  theme: 'primary', // [可选] 主题
+  // view: {
+  //   engine: 'canvas', // 思维导图各节点之间线条的绘制引擎
+  //   hmargin: 120, // 思维导图距容器外框的最小水平距离
+  //   vmargin: 50, // 思维导图距容器外框的最小垂直距离
+  //   line_width: 2, // 思维导图线条的粗细
+  //   line_color: '#ddd' // 思维导图线条的颜色
+  // },
+  // layout: {
+  //   hspace: 100, // 节点之间的水平间距
+  //   vspace: 20, // 节点之间的垂直间距
+  //   pspace: 20 // 节点与连接线之间的水平间距（用于容纳节点收缩/展开控制器）
+  // },
+  // shortcut: {
+  //   enable: false // 是否启用快捷键 默认为true
+  // }
 }
 const emit = defineEmits(['resize'])
 onMounted(() => {
   // 初始化
-  const jm = jsMind.show(options, mind)
+  // const jm = jsMind.show(options, mind)
+  const jm = new JsMind(options)
+  jm.show(mind)
   const height = document.getElementsByTagName('jmnodes')[0].style.height
   const width = document.getElementsByTagName('jmnodes')[0].style.width
   emit('resize', { height, width })
+  emitter.on('data-js-mind', data => {
+    console.log(data, 'data from sample-tree')
+    mind.data.topic = 'haha'
+    const tmp = structuredClone(toRaw(data))
+    renameObjectProperties(tmp, 'label', 'topic')
+    mind.data.children = tmp
+    jm.show(mind)
+    const height = document.getElementsByTagName('jmnodes')[0].style.height
+    const width = document.getElementsByTagName('jmnodes')[0].style.width
+    emit('resize', { height, width })
+  })
 })
 </script>
 
