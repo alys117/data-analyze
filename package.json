@@ -14,6 +14,7 @@
     "@element-plus/icons-vue": "^2.3.1",
     "animate.css": "^4.1.1",
     "element-plus": "^2.7.3",
+    "file-saver": "^2.0.5",
     "jsmind": "^0.8.4",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
@@ -23,7 +24,8 @@
     "vxe-pc-ui": "^4.0.28",
     "vxe-table": "^4.6.17",
     "vxe-table-plugin-element": "^4.0.3",
-    "xe-utils": "^3.5.27"
+    "xe-utils": "^3.5.27",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
