@@ -110,6 +110,11 @@ const dataSourceOut = ref([
   }
 ])
 const currentInput = ref('')
+const setRef = (el, data) => {
+  if (!el) return
+  console.log(data, '编辑状态')
+  el.focus()
+}
 const edit = (data) => {
   data.isInput = true
   currentInput.value = data.label
@@ -118,7 +123,7 @@ const saveCurrentInp = (data) => {
   console.log('保存')
   data.label = currentInput.value
   data.isInput = false
-  emitter.emit('data-js-mind', dataSourceIn.value)
+  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 const append = (data) => {
   const newChild = { id: generateID(8), label: '新节点', children: [] }
@@ -126,7 +131,7 @@ const append = (data) => {
     data.children = []
   }
   data.children.push(newChild)
-  emitter.emit('data-js-mind', dataSourceIn.value)
+  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 const remove = (node, data) => {
   const parent = node.parent
@@ -134,19 +139,15 @@ const remove = (node, data) => {
   const index = children.findIndex((d) => d.id === data.id)
   children.splice(index, 1)
   // dataSourceIn.value = [...dataSourceIn.value] // 这个地方不太明白
-  emitter.emit('data-js-mind', dataSourceIn.value)
+  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 
 const handleMouseenter = (data) => {
-  data.show = true
+  // data.show = true
 }
 const handleMouseleave = (data) => {
-  data.show = false
+  // data.show = false
 }
-
-onMounted(() => {
-
-})
 
 // 拖拽相关api
 const changeNodeId = (tree) => {
@@ -187,17 +188,16 @@ function drop_handler(ev, data) {
   changeNodeId(copy)
   // console.log(copy, 'copy', inId)
   treeIn.value.append(copy, inId)
-  emitter.emit('data-js-mind', dataSourceIn.value)
+  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
+}
+function handleDrop(draggingNode, dropNode, dropType, ev) {
+  // console.log('tree drop:', dropNode.label, dropType)
+  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 watch(() => dataSourceIn.value, (newVal, oldVal) => {
-  // console.log(toRaw(newVal), toRaw(oldVal))
-  // 使用watch的话，有些额外属性页被监控了（show 属性，其实只是控制样式），为想好如何处理
-}, { deep: true })
-
-function handleDrop(draggingNode, dropNode, dropType, ev) {
-  console.log('tree drop:', dropNode.label, dropType)
   emitter.emit('data-js-mind', dataSourceIn.value)
-}
+}, { deep: true })
+onMounted(() => {})
 </script>
 
 <template>
@@ -227,12 +227,12 @@ function handleDrop(draggingNode, dropNode, dropType, ev) {
               <span v-if="data.children && data.children.length"></span>
               <span v-else style="margin-right: 3px"><el-icon><Platform /></el-icon></span>
               <span v-if="!data.isInput">{{ node.label }}</span>
-              <span v-else><el-input size="small" v-model="currentInput" placeholder="请输入分类名称" @blur="saveCurrentInp(data)"/></span>
+              <span v-else><el-input size="small" :ref="(el)=>setRef(el, data)" v-model="currentInput" placeholder="请输入分类名称" @blur="saveCurrentInp(data)"/></span>
             </span>
-            <span>
-              <a @click="append(data)" :style="{ 'color': !data.show ? 'transparent': ''}">添加</a>
-              <a @click="edit(data)" :style="{ 'color': !data.show ? 'transparent': ''}">编辑</a>
-              <a @click="remove(node, data)" :style="{ 'color': !data.show ? 'transparent': ''}">删除</a>
+            <span class="tree-btn">
+              <a @click="append(data)">添加</a>
+              <a @click="edit(data)">编辑</a>
+              <a @click="remove(node, data)">删除</a>
             </span>
           </span>
         </template>
@@ -316,5 +316,11 @@ function handleDrop(draggingNode, dropNode, dropType, ev) {
       background-color: hsla(160, 100%, 37%, 0.2);
     }
   }
+}
+.tree-btn{
+  display: none;
+}
+.tree-btn:hover{
+  display: block;
 }
 </style>
