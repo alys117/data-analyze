@@ -263,7 +263,7 @@ onMounted(() => {})
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @mixin flex {
   display: flex;
 }
@@ -318,9 +318,9 @@ onMounted(() => {})
   }
 }
 .tree-btn{
-  display: none;
+  visibility: hidden;
 }
-.tree-btn:hover{
-  display: block;
+.custom-tree-node:hover .tree-btn{
+  visibility: visible;
 }
 </style>
