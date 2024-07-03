@@ -45,7 +45,7 @@ export default {
     /** 备用操作（如果需要对headColumns数组操作） */
     this.tableHead = this.headColumns
     this.tableData = this.data
-    console.log(this.tableHead)
+    // console.log(this.tableHead)
   },
 
   data() {

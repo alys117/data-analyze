@@ -32,7 +32,7 @@ const isdrag = (x1, y1, x2, y2) => {
   return true
 }
 const handleWheel = (e) => {
-  e.preventDefault()
+  // e.preventDefault()
   if (e.deltaY > 0) {
     // 向下
     console.log('正在向下')
@@ -87,7 +87,7 @@ const vDrag = {
 </script>
 
 <template>
-  <div v-if="isShowQuestionMark" v-drag class="button" :style="{'--zIndex': zIndex, 'filter': 'opacity('+opacity+')'}" @click="openDrawer" @wheel="handleWheel">?</div>
+  <div v-if="isShowQuestionMark" v-drag class="button" :style="{'--zIndex': zIndex, 'filter': 'opacity('+opacity+')'}" @click="openDrawer" @wheel.prevent="handleWheel">?</div>
 </template>
 
 <style scoped>
