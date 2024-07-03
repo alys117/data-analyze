@@ -12,13 +12,14 @@
           <template #header>
             {{item.label}}
             <el-popover
+              :ref="(e)=>setRefs(e, item)"
               :visible="item.visible"
               placement="bottom"
               :width="200"
               trigger="click"
             >
               <template #reference>
-                <el-button :type="item.input===''?'info':'primary'" link :icon="Search" @click.stop="item.visible = !item.visible"/>
+                <el-button :type="item.input===''?'info':'primary'" link :icon="Search" @click.stop="handleSearch(item)" v-click-outside="e => onClickOutside(e, item)"/>
               </template>
               <div>
                 <el-input v-model="item.input" placeholder="请输入" size="small" />
@@ -36,8 +37,26 @@
 </template>
 <script setup>
 import { Search } from '@element-plus/icons-vue'
+import { ClickOutside as vClickOutside } from 'element-plus'
 import Sortable from 'sortablejs'
-import { ref, onMounted } from 'vue'
+import { ref, unref, onMounted } from 'vue'
+const popoverRefs = ref([])
+const a = ref(0)
+const setRefs = (el, item) => {
+  console.log(el, item, a.value)
+  popoverRefs.value.push({ col: item.prop, el: el })
+}
+const onClickOutside = (e, item) => {
+  // const ref = popoverRefs.value.find(i => item.prop === i.prop)
+  console.log(popoverRefs.value)
+  // console.log(ref.el.popperRef.contentRef.contains(e.target))
+  // if (!unref(popoverRefs).popperRef.contentRef.contains(e.target)) {
+  //   columnList.value.forEach(item => {
+  //     item.visible = false
+  //   })
+  // }
+  // console.log('clickOutside-sort')
+}
 const tableData = ref([
   { id: 1, name: '纸巾', type: '百货', price: 30 },
   { id: 2, name: '抽纸', type: '百货', price: 18 },
@@ -59,10 +78,18 @@ onMounted(() => {
   rowDrop()
   columnDrop()
 })
+//
+const handleSearch = (item) => {
+  columnList.value.forEach(item => {
+    item.visible = false
+  })
+  item.input = ''
+  item.visible = !item.visible
+}
 // 列查询
 const searchItem = (item) => {
-  item.visible = false
   console.log(item)
+  item.visible = false
 }
 // 列查询重置
 const resetItem = (item) => {
