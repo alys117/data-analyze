@@ -2,9 +2,7 @@
 import MyStep from '@/components/my-step.vue'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import DragDemo from '@/views/drag-demo.vue'
-import XlsxDemo from '@/views/xlsx-demo.vue'
-import SpanDemo from '@/views/span-demo.vue'
+import TimeLine from '@/components/time-line.vue'
 const router = useRouter()
 
 const loading = ref(true)
@@ -18,9 +16,7 @@ onMounted(() => {
     <div class="step-container">
       <my-step :step="3" />
     </div>
-    <drag-demo/>
-    <xlsx-demo/>
-    <span-demo/>
+    <time-line level="end"/>
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
       <el-button size="default" type="primary" @click="router.push('/step4')">下一步</el-button>

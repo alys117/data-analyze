@@ -23,6 +23,7 @@ onMounted(() => {
     <popover-demo/>
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
+      <el-button size="default" type="primary" @click="router.push('/demo')">demo</el-button>
     </div>
   </div>
 </template>
