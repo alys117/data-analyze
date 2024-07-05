@@ -81,9 +81,7 @@ const next = () => {
 
 <template>
   <div v-loading="loading">
-    <div class="step-container"  >
-      <my-step :step="1" />
-    </div>
+    <my-step :step="1"/>
     <div class="cus-table-container">
       <div class="cus-table-head">
         <div class="left-label">请选择</div>
@@ -116,14 +114,11 @@ const next = () => {
     <div class="step-forward">
       <el-button size="default" type="success" @click="router.push('/talk')">返回会话</el-button>
       <el-button size="default" type="primary" @click="next">下一步</el-button>
-<!--      <el-button size="small" type="primary" @click="console.log(childRefs)">childRefs</el-button>-->
+      <!--      <el-button size="small" type="primary" @click="console.log(childRefs)">childRefs</el-button>-->
     </div>
   </div>
 </template>
 <style lang="scss" scoped>
-.step-container{
-  padding: 20px;
-}
 .cus-table-container{
   padding: 20px 20px 0 20px;
 }

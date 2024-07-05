@@ -102,11 +102,14 @@ $complete: #2667db;
 .step-component{
   display: flex;
   align-items: center;
-  min-width: 1500px;
   color: $default;
+  padding: 20px;
+  width: fit-content;
+  margin: auto;
 }
 
 .step-info{
+  flex-shrink: 0;
   width: 100px;
   height: 30px;
   text-align: center;

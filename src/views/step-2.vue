@@ -27,9 +27,7 @@ onMounted(() => {
 
 <template>
   <div v-loading="loading">
-    <div class="step-container">
-      <my-step :step="2" />
-    </div>
+    <my-step :step="2" />
     <div class="main-container">
       <div class="left">
         <div class="head">
@@ -80,9 +78,6 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-.step-container{
-  padding: 20px;
-}
 .main-container{
   display: flex;
   padding: 20px;

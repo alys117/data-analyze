@@ -226,3 +226,22 @@ export const renameObjectProperties = (obj, oldName, newName) => {
   // 返回修改后的对象或数组
   return obj
 }
+
+export const findFamily = (tree, itemId, path = []) => {
+  for (const item of tree) {
+    if (item.id === itemId) {
+      // 找到目标项
+      return [...path, item]
+    }
+
+    if (item.children && item.children.length > 0) {
+      const result = findFamily(item.children, itemId, [...path, item])
+      if (result) {
+        // 子树中找到目标项
+        return result
+      }
+    }
+  }
+  // 未找到目标项
+  return null
+}
