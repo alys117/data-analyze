@@ -81,6 +81,7 @@ onMounted(() => {
 .main-container{
   display: flex;
   padding: 20px;
+  //width: fit-content;
   //background-color: #f5f8fb;
 }
 .left{

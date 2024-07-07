@@ -121,6 +121,7 @@ const next = () => {
 <style lang="scss" scoped>
 .cus-table-container{
   padding: 20px 20px 0 20px;
+  //width: fit-content;
 }
 .step-forward{
   padding: 20px;
