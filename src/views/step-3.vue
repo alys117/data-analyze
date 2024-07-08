@@ -6,6 +6,7 @@ import emitter from '@/utils/mitt.js'
 import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
 import { ArrowRight } from '@element-plus/icons-vue'
+import PieChart from '@/components/echart/pie-chart.vue'
 const router = useRouter()
 
 const loading = ref(true)
@@ -105,6 +106,9 @@ function setId(activities) {
 const completePoint = () => {
   emitter.emit('change-point', { id: currentAct.value.id, type: 'primary' })
 }
+const resetPoint = () => {
+  emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
+}
 </script>
 
 <template>
@@ -121,7 +125,7 @@ const completePoint = () => {
               <span style="font-size: 16px">{{ item.content }}</span>
             </el-breadcrumb-item>
           </el-breadcrumb>
-          <div style="background: #fcfcfc;padding: 10px">
+          <div style="background: #fcfcfc;padding: 10px;margin: 20px">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam amet animi dolor eos eveniet id iusto maxime molestias numquam, obcaecati praesentium quidem quis quisquam, sunt vel veritatis vero? Aliquam aliquid, expedita illo
             ipsam possimus quis quo repudiandae sit vel vitae? Adipisci cumque cupiditate delectus deleniti eligendi esse eveniet expedita fuga fugit ipsa laborum maxime nam nemo odio, officia porro, quo reiciendis tempora, ullam voluptas.
             Accusantium aliquid cumque deleniti, deserunt ex exercitationem, illum inventore iusto nostrum numquam optio praesentium quam qui, recusandae sint soluta ullam vel vero. Dignissimos, dolorem esse ex inventore ipsum iste magni
@@ -130,7 +134,9 @@ const completePoint = () => {
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consectetur dolores explicabo provident. At delectus magni nam ratione similique. Ad aliquid aperiam consequatur dolorem esse laborum minima nostrum praesentium quo?
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consectetur dolores explicabo provident. At delectus magni nam ratione similique. Ad aliquid aperiam consequatur dolorem esse laborum minima nostrum praesentium quo?
           </div>
-          <el-button type="primary" @click="completePoint">emit</el-button>
+          <el-button type="primary" @click="completePoint">complete</el-button>
+          <el-button type="danger" @click="resetPoint">uncomplete</el-button>
+          <pie-chart/>
         </div>
       </div>
       <div class="step-forward">

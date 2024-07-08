@@ -40,8 +40,9 @@ const gridOptions = reactive({
 const dealGrid = (info) => {
   gridOptions.columns = []
   for (const key in info['所需字段']) {
-    gridOptions.columns.push({ field: key, title: info['所需字段'][key] })
+    gridOptions.columns.push({ field: key, title: info['所需字段'][key], width: 80 })
   }
+  delete gridOptions.columns.at(-1).width
   // console.log(gridOptions.columns, 'gridOptions.columns')
   gridOptions.data = []
   info['样例数据'].forEach((item, index) => {
@@ -89,8 +90,9 @@ const crudStore = reactive({
   onLoadData: (type) => {
     gridOptions.columns = []
     for (const key in tableInfo[type]) {
-      gridOptions.columns.push({ field: key, title: tableInfo[type][key] })
+      gridOptions.columns.push({ field: key, title: tableInfo[type][key], width: 80 })
     }
+    delete gridOptions.columns.at(-1).width
   },
   /** 更多自定义方法 */
   moreFn: () => {
