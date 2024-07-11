@@ -99,7 +99,7 @@ onMounted(() => {
   emit('resize', { height, width })
   emitter.on('data-js-mind', data => {
     console.log(data, 'data from sample-tree')
-    mind.data.topic = 'haha'
+    mind.data.topic = '大纲'
     const tmp = structuredClone(toRaw(data))
     renameObjectProperties(tmp, 'label', 'topic')
     mind.data.children = tmp

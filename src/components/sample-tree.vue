@@ -1,12 +1,11 @@
 <script setup>
-import { ref, toRaw, onMounted, watch } from 'vue'
+// import { ref, toRaw, onMounted, watch } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
 import { generateID } from '@/utils/util.js'
 
-const { treeData } = defineProps(['tree-data'])
-console.log(treeData, 'dsIn')
-const dataSourceIn = ref(treeData.dsIn)
+const props = defineProps(['tree-data'])
+const dataSourceIn = ref()
 const dataSourceOut = ref([
   {
     id: 100,
@@ -151,6 +150,11 @@ function handleDrop(draggingNode, dropNode, dropType, ev) {
 watch(() => dataSourceIn.value, (newVal, oldVal) => {
   emitter.emit('data-js-mind', dataSourceIn.value)
 }, { deep: true })
+watch(() => props.treeData, (val) => {
+  if (val) {
+    dataSourceIn.value = props.treeData.dsIn
+  }
+})
 onMounted(() => {})
 </script>
 
