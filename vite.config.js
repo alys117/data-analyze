@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import Icons from 'unplugin-icons/vite'
+// import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import svgLoader from 'vite-svg-loader'
@@ -17,6 +17,13 @@ export default defineConfig({
     /** 将 SVG 静态图转化为 Vue 组件 */
     svgLoader({ defaultImport: 'url' }),
     AutoImport({
+      imports: ['vue', 'vue-router', 'pinia'],
+      // eslint报错解决
+      eslintrc: {
+        enabled: false, // Default `false` 重新生成下面文件的时候再设置为true
+        filepath: './.eslintrc-auto-import.json', // Default `./.eslintrc-auto-import.json`
+        globalsPropValue: true // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
+      },
       resolvers: [
         ElementPlusResolver(),
         IconsResolver({

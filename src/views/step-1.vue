@@ -1,13 +1,13 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
 import CusTable from '@/components/cus-table.vue'
-import { ref, onMounted } from 'vue'
+import { fakeData2 } from '@/views/fakeData.js'
 import { useRouter } from 'vue-router'
-import { fakeData } from '@/views/fakeData.js'
 const router = useRouter()
+
 const body = {
-  'question': '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理',
-  'other': []
+  question: '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理',
+  other: []
 }
 const selectTables = ref([]) // 选择的表，多选
 const tableOptions = ref([]) // 选择的表，多选
@@ -25,14 +25,14 @@ const fetchTables = async() => {
   })
   const json = await response.json()
   loading.value = false
-  console.log(json)
+  return json
 }
-const fake = async() => {
+const fakeFetchTables = async() => {
   loading.value = true
   return await new Promise((resolve) => {
     setTimeout(() => {
       loading.value = false
-      resolve(fakeData)
+      resolve(fakeData2)
     }, 1000)
   })
 }
@@ -41,8 +41,10 @@ const changeTable = () => {
   console.log(selectTables.value, childRefs.value.length, 'changeTable')
 }
 onMounted(async() => {
+  // 获取问题
+  body.question = history.state.params.question
   // const data = await fetchTables()
-  const data = await fake()
+  const data = await fakeFetchTables()
   tableInfos.value = data
   for (const tableName in data) {
     tableOptions.value.push({ label: tableName, value: tableName })
@@ -62,7 +64,7 @@ const next = () => {
   childRefs.value.splice(0, n)
   // console.log(childRefs.value, 'childRefs.value', n)
   const result = {
-    theme: '',
+    question: history.state.params.question,
     tables_name: [],
     columns_name: {}
   }

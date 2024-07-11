@@ -105,7 +105,7 @@ const changeByChild = (id) => {
 </script>
 <style lang="scss" scoped>
 .el-timeline-item {
-  padding-bottom: 0.01px;
+  padding-bottom: 0.02px;
 }
 .pass-node[data-id="var(--primary-color)"] {
   background: #7c7c7c;

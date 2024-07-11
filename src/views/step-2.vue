@@ -1,11 +1,9 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
 import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
+import { outline } from './fakeData.js'
 const router = useRouter()
-const route = useRoute()
 
 const input3 = ref('')
 const select = ref('')
@@ -17,11 +15,47 @@ const handle = ({ height, width }) => {
   height1.value = height
 }
 const loading = ref(true)
-onMounted(() => {
+onMounted(async() => {
   setTimeout(() => {
     loading.value = false
   }, 0)
-  console.log(history.state, 'history.state')
+  const body = history.state.params
+  body['business_tree'] = 'aa->bb'
+  body['other'] = []
+  // const data = await fetch('/api/report_outline', {
+  //   method: 'post',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     'accept': 'application/json'
+  //   },
+  //   body: JSON.stringify(body)
+  // }).then(res => res.json())
+  const data = outline
+  function convertStructure(obj) {
+    const result = []
+
+    for (const key in obj) {
+      const value = obj[key]
+      if (Array.isArray(value)) {
+        const children = value.map(item => {
+          if (typeof item === 'object') {
+            return convertStructure(item)[0] // Assuming each object in array has only one key-value pair
+          }
+          return { label: item }
+        })
+        result.push({ label: key, children })
+      } else {
+        result.push({
+          label: key,
+          children: [{ label: value }]
+        })
+      }
+    }
+
+    return result
+  }
+  const tree = convertStructure(data)
+  console.log(tree, '333333333')
 })
 </script>
 
@@ -58,7 +92,7 @@ onMounted(() => {
         </div>
         <div class="content">
           <div class="tree-container">
-            <sample-tree/>
+            <sample-tree :tree-data="{dsIn: [{id: 123, label: 'haha', children: []}]}"/>
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ const chatWindowInfo = ref({})
 // 全部的设置参数
 const SettingInfo = ref({
   cutSetting: 1,
-  readefile: false,
+  readeFile: false,
   inputStatus: true,
   translateEnglish: false,
   openProductionPicture: false,
@@ -63,7 +63,11 @@ onActivated(() => {
 const endTalk = function() {
   showTalk.value = false
   setTimeout(() => {
-    router.push('/step1')
+    const question = '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理'
+    router.push({
+      name: 'Step1',
+      state: { params: { question }}
+    })
   }, 500)
 }
 </script>
