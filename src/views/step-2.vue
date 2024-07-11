@@ -3,6 +3,7 @@ import MyStep from '@/components/my-step.vue'
 import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
 import { outline } from './fakeData.js'
+import { generateID } from '@/utils/util.js'
 const router = useRouter()
 
 const input3 = ref('')
@@ -15,6 +16,7 @@ const handle = ({ height, width }) => {
   height1.value = height
 }
 const loading = ref(true)
+const outlineTree = ref()
 onMounted(async() => {
   setTimeout(() => {
     loading.value = false
@@ -30,7 +32,6 @@ onMounted(async() => {
   //   },
   //   body: JSON.stringify(body)
   // }).then(res => res.json())
-  const data = outline
   function convertStructure(obj) {
     const result = []
 
@@ -41,21 +42,22 @@ onMounted(async() => {
           if (typeof item === 'object') {
             return convertStructure(item)[0] // Assuming each object in array has only one key-value pair
           }
-          return { label: item }
+          return { id: generateID(10), label: item }
         })
-        result.push({ label: key, children })
+        result.push({ id: generateID(10), label: key, children })
       } else {
         result.push({
+          id: generateID(10),
           label: key,
-          children: [{ label: value }]
+          children: [{ id: generateID(10), label: value }]
         })
       }
     }
 
     return result
   }
-  const tree = convertStructure(data)
-  console.log(tree, '333333333')
+  outlineTree.value = convertStructure(outline)
+  console.log(outlineTree.value)
 })
 </script>
 
@@ -92,7 +94,7 @@ onMounted(async() => {
         </div>
         <div class="content">
           <div class="tree-container">
-            <sample-tree :tree-data="{dsIn: [{id: 123, label: 'haha', children: []}]}"/>
+            <sample-tree :tree-data="{dsIn: outlineTree}"/>
           </div>
         </div>
       </div>
