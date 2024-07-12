@@ -3,6 +3,7 @@
     <v-chart ref="chartRef" :option="option" autoresize class="chart" />
     <div>
       <el-button @click="aaa">aaa</el-button>
+      <el-button @click="exportPNG">导出png</el-button>
     </div>
   </div>
 </template>
@@ -136,6 +137,20 @@ const chartRef = ref()
 const aaa = () => {
   console.log('aaa', chartRef.value)
   chartRef.value.resize()
+}
+const exportPNG = async() => {
+  const picInfo = chartRef.value.getDataURL({
+    type: 'png',
+    pixelRatio: 1.5, // 放大两倍下载，之后压缩到同等大小展示。解决生成图片在移动端模糊问题
+    backgroundColor: '#fff'
+  }) // 获取到的是一串base64信息
+  const elink = document.createElement('a')
+  elink.download = '仪表盘'
+  elink.style.display = 'none'
+  elink.href = picInfo
+  document.body.appendChild(elink)
+  elink.click()
+  URL.revokeObjectURL(elink.href) // 释放URL 对象
 }
 </script>
 

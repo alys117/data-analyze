@@ -2,8 +2,8 @@
 import MyStep from '@/components/my-step.vue'
 import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
-import { outline } from './fakeData.js'
-import { generateID } from '@/utils/util.js'
+import { convertFormat, revertFormat } from '@/utils/util.js'
+import { fetchOutline } from '@/api/request.js'
 const router = useRouter()
 
 const input3 = ref('')
@@ -24,41 +24,19 @@ onMounted(async() => {
   const body = history.state.params
   body['business_tree'] = 'aa->bb'
   body['other'] = []
-  // const data = await fetch('/api/report_outline', {
-  //   method: 'post',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     'accept': 'application/json'
-  //   },
-  //   body: JSON.stringify(body)
-  // }).then(res => res.json())
-  function convertStructure(obj) {
-    const result = []
-
-    for (const key in obj) {
-      const value = obj[key]
-      if (Array.isArray(value)) {
-        const children = value.map(item => {
-          if (typeof item === 'object') {
-            return convertStructure(item)[0] // Assuming each object in array has only one key-value pair
-          }
-          return { id: generateID(10), label: item }
-        })
-        result.push({ id: generateID(10), label: key, children })
-      } else {
-        result.push({
-          id: generateID(10),
-          label: key,
-          children: [{ id: generateID(10), label: value }]
-        })
-      }
-    }
-
-    return result
-  }
-  outlineTree.value = convertStructure(outline)
-  console.log(outlineTree.value)
+  const outline = await fetchOutline(body)
+  outlineTree.value = convertFormat(outline)
 })
+const sampleTreeRef = ref()
+const next2step3 = () => {
+  const treeData = sampleTreeRef.value.getOutline()
+  const outline = revertFormat(treeData)
+
+  router.push({
+    path: '/step3',
+    state: { params: { outline, treeData }}
+  })
+}
 </script>
 
 <template>
@@ -94,7 +72,7 @@ onMounted(async() => {
         </div>
         <div class="content">
           <div class="tree-container">
-            <sample-tree :tree-data="{dsIn: outlineTree}"/>
+            <sample-tree ref="sampleTreeRef" :tree-data="{dsIn: outlineTree}"/>
           </div>
         </div>
       </div>
@@ -108,7 +86,7 @@ onMounted(async() => {
 
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step1')">上一步</el-button>
-      <el-button size="default" type="primary" @click="router.push('/step3')">下一步</el-button>
+      <el-button size="default" type="primary" @click="next2step3">下一步</el-button>
     </div>
   </div>
 </template>

@@ -1503,3 +1503,126 @@ export const outline = {
     '检查数据列的完整性，确保无缺失值'
   ]
 }
+
+export const historyTree = [
+  {
+    id: 100,
+    label: '一级 历史条目-1',
+    children: [
+      {
+        id: 101,
+        label: '二级 历史条目-1-1',
+        children: [
+          {
+            id: 102,
+            label: '三级 历史条目-1-1-1'
+          },
+          {
+            id: 103,
+            label: '三级 历史条目--1-1-2'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 104,
+    label: '一级 历史条目-2',
+    children: [
+      {
+        id: 105,
+        label: '二级 历史条目-2-1',
+        children: [
+          {
+            id: 106,
+            label: '三级 历史条目2-1-1'
+          },
+          {
+            id: 107,
+            label: '三级 历史条目2-1-2'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 200,
+    label: '一级 历史条目-3',
+    children: [
+      {
+        id: 201,
+        label: '二级 历史条目-3-1'
+      },
+      {
+        id: 202,
+        label: '二级 历史条目-3-2'
+      }
+    ]
+  }
+]
+
+export const timelineData = [
+  {
+    content: 'Custom icon',
+    timestamp: '2018-04-12 20:46',
+    type: ''
+  },
+  {
+    content: 'Custom color',
+    timestamp: '2018-04-03 20:46',
+    // hollow: true,
+    type: '',
+    children: [
+      {
+        content: 'child',
+        timestamp: '2018-04-03 20:46'
+      },
+      {
+        content: 'Custom hollow',
+        timestamp: '2018-04-03 20:46'
+      }
+    ]
+  },
+  {
+    content: 'Custom size',
+    timestamp: '2018-04-03 20:46',
+    children: [
+      {
+        content: 'child',
+        timestamp: '2018-04-03 20:46'
+      },
+      {
+        content: 'Custom hollow',
+        timestamp: '2018-04-03 20:46',
+        children: [
+          {
+            content: 'child',
+            timestamp: '2018-04-03 20:46'
+          },
+          {
+            content: 'Custom hollow',
+            timestamp: '2018-04-03 20:46'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    content: 'Custom hollow',
+    timestamp: '2018-04-03 20:46'
+  },
+  {
+    content: 'Default node',
+    timestamp: '2018-04-03 20:46',
+    children: [
+      {
+        content: 'child',
+        timestamp: '2018-04-03 20:46'
+      },
+      {
+        content: 'Custom hollow',
+        timestamp: '2018-04-03 20:46'
+      }
+    ]
+  }
+]

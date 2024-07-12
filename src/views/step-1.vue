@@ -1,8 +1,9 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
 import CusTable from '@/components/cus-table.vue'
-import { fakeData2 } from '@/views/fakeData.js'
+import { fetchTables } from '@/api/request.js'
 import { useRouter } from 'vue-router'
+import { MessageBox } from '@element-plus/icons-vue'
 const router = useRouter()
 
 const body = {
@@ -13,38 +14,13 @@ const selectTables = ref([]) // 选择的表，多选
 const tableOptions = ref([]) // 选择的表，多选
 const tableInfos = ref({})
 const loading = ref(false)
-const fetchTables = async() => {
-  loading.value = true
-  const response = await fetch('/api/select_tables', {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
-    body: JSON.stringify(body)
-  })
-  const json = await response.json()
-  loading.value = false
-  return json
-}
-const fakeFetchTables = async() => {
-  loading.value = true
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      loading.value = false
-      resolve(fakeData2)
-    }, 1000)
-  })
-}
 
-const changeTable = () => {
-  console.log(selectTables.value, childRefs.value.length, 'changeTable')
-}
 onMounted(async() => {
-  // 获取问题
+  // 在history的state属性中获取对话中的问题
   body.question = history.state.params.question
-  // const data = await fetchTables()
-  const data = await fakeFetchTables()
+  loading.value = true
+  const data = await fetchTables(body)
+  loading.value = false
   tableInfos.value = data
   for (const tableName in data) {
     tableOptions.value.push({ label: tableName, value: tableName })
@@ -61,6 +37,10 @@ const setChildRef = (el, table) => {
 
 const next = () => {
   const n = childRefs.value.length - selectTables.value.length
+  if(!selectTables.value.length){
+    ElMessage.error('请先挑选表！')
+    return
+  }
   childRefs.value.splice(0, n)
   // console.log(childRefs.value, 'childRefs.value', n)
   const result = {
@@ -88,7 +68,6 @@ const next = () => {
       <div class="cus-table-head">
         <div class="left-label">请选择</div>
         <el-select v-model="selectTables"
-                   @change="changeTable"
                    placeholder="请选择"
                    style="width: 500px"
                    multiple

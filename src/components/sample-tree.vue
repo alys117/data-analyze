@@ -3,65 +3,11 @@
 import emitter from '@/utils/mitt.js'
 import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
 import { generateID } from '@/utils/util.js'
+import { historyTree } from '@/api/fakeData.js'
 
 const props = defineProps(['tree-data'])
 const dataSourceIn = ref()
-const dataSourceOut = ref([
-  {
-    id: 100,
-    label: '一级 食物',
-    children: [
-      {
-        id: 101,
-        label: '二级 水果',
-        children: [
-          {
-            id: 102,
-            label: '三级 苹果'
-          },
-          {
-            id: 103,
-            label: '三级 香蕉'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 104,
-    label: '一级 食物',
-    children: [
-      {
-        id: 105,
-        label: '二级 水果',
-        children: [
-          {
-            id: 106,
-            label: '三级 苹果'
-          },
-          {
-            id: 107,
-            label: '三级 香蕉'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 200,
-    label: '一级 2',
-    children: [
-      {
-        id: 201,
-        label: '二级 2-1'
-      },
-      {
-        id: 202,
-        label: '二级 2-2'
-      }
-    ]
-  }
-])
+const dataSourceOut = ref(historyTree)
 const currentInput = ref('')
 const setRef = (el, data) => {
   if (!el) return
@@ -147,6 +93,11 @@ function handleDrop(draggingNode, dropNode, dropType, ev) {
   // console.log('tree drop:', dropNode.label, dropType)
   // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
+
+defineExpose({
+
+  getOutline: () => dataSourceIn.value
+})
 watch(() => dataSourceIn.value, (newVal, oldVal) => {
   emitter.emit('data-js-mind', dataSourceIn.value)
 }, { deep: true })

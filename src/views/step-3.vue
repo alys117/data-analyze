@@ -7,6 +7,7 @@ import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
 import { ArrowRight } from '@element-plus/icons-vue'
 import PieChart from '@/components/echart/pie-chart.vue'
+import { timelineData } from '@/api/fakeData.js'
 const router = useRouter()
 
 const loading = ref(true)
@@ -14,6 +15,7 @@ const currentAct = ref({})
 
 const result = ref([])
 onMounted(() => {
+  // activities.value = history.state.params.treeData
   loading.value = false
   setId(activities)
   emitter.on('load-advice', (activity) => {
@@ -29,75 +31,12 @@ onMounted(() => {
     }, 200)
   })
 })
-const activities = reactive([
-  {
-    content: 'Custom icon',
-    timestamp: '2018-04-12 20:46',
-    type: ''
-  },
-  {
-    content: 'Custom color',
-    timestamp: '2018-04-03 20:46',
-    // hollow: true,
-    type: '',
-    children: [
-      {
-        content: 'child',
-        timestamp: '2018-04-03 20:46'
-      },
-      {
-        content: 'Custom hollow',
-        timestamp: '2018-04-03 20:46'
-      }
-    ]
-  },
-  {
-    content: 'Custom size',
-    timestamp: '2018-04-03 20:46',
-    children: [
-      {
-        content: 'child',
-        timestamp: '2018-04-03 20:46'
-      },
-      {
-        content: 'Custom hollow',
-        timestamp: '2018-04-03 20:46',
-        children: [
-          {
-            content: 'child',
-            timestamp: '2018-04-03 20:46'
-          },
-          {
-            content: 'Custom hollow',
-            timestamp: '2018-04-03 20:46'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    content: 'Custom hollow',
-    timestamp: '2018-04-03 20:46'
-  },
-  {
-    content: 'Default node',
-    timestamp: '2018-04-03 20:46',
-    children: [
-      {
-        content: 'child',
-        timestamp: '2018-04-03 20:46'
-      },
-      {
-        content: 'Custom hollow',
-        timestamp: '2018-04-03 20:46'
-      }
-    ]
-  }
-])
+const activities = reactive(timelineData)
 
 function setId(activities) {
   activities.forEach((activity) => {
     activity.id = generateID(8)
+    activity.content = activity.label || activity.content
     if (activity.children && activity.children.length) {
       setId(activity.children)
     }

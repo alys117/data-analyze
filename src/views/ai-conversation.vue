@@ -1,10 +1,10 @@
 <script setup>
-import { ref, onMounted, onActivated } from 'vue'
 import AI_HEAD_IMG_URL from '@/assets/chatgpt.jpg'
 import ChatWindow from '@/components/chatHome/chat-window.vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const showTalk = ref(true)
+const chatWindowRef = ref()
 onMounted(() => {
   chatWindowInfo.value = {
     img: '',
@@ -61,9 +61,12 @@ onActivated(() => {
   showTalk.value = true
 })
 const endTalk = function() {
+  const question =
+    chatWindowRef.value.chatList.length
+      ? chatWindowRef.value.chatList.at(-1).msg
+      : '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理'
   showTalk.value = false
   setTimeout(() => {
-    const question = '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理'
     router.push({
       name: 'Step1',
       state: { params: { question }}
@@ -81,7 +84,7 @@ const endTalk = function() {
     >
       <div v-show="showTalk" class="chat-container">
         <chat-window
-          ref="chatWindow"
+          ref="chatWindowRef"
           :frined-info="chatWindowInfo"
           :setting-info="SettingInfo"
           :store-statu="storeStatus"

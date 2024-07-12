@@ -24,8 +24,8 @@
     "vue-echarts": "^6.7.3",
     "vue-router": "^4.3.0",
     "vue3-markdown-it": "^1.0.10",
-    "vxe-pc-ui": "^4.0.28",
-    "vxe-table": "^4.6.17",
+    "vxe-pc-ui": "^4.0.51",
+    "vxe-table": "^4.7.48",
     "vxe-table-plugin-element": "^4.0.3",
     "xe-utils": "^3.5.27",
     "xlsx": "^0.18.5"

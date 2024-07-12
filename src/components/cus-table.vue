@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { VXETable } from 'vxe-table'
+import VxeUIExport from 'vxe-pc-ui'
 const { tableInfo } = defineProps({
   tableInfo: {
     type: Object,
@@ -15,12 +15,12 @@ onMounted(() => {
 })
 
 // 下面是对表格的操作 ！！！
-
+const cusTableContent = ref()
 const xGrid = ref()
 const gridOptions = reactive({
   border: true,
   loading: false,
-  height: 300,
+  height: 308,
   size: 'small',
   columns: [],
   data: [],
@@ -40,10 +40,9 @@ const gridOptions = reactive({
 const dealGrid = (info) => {
   gridOptions.columns = []
   for (const key in info['所需字段']) {
-    gridOptions.columns.push({ field: key, title: info['所需字段'][key], width: 100 })
+    gridOptions.columns.push({ field: key, title: info['所需字段'][key], width: crudStore.getWidth('所需字段') })
   }
   // delete gridOptions.columns.at(-1).width
-  // console.log(gridOptions.columns, 'gridOptions.columns')
   gridOptions.data = []
   info['样例数据'].forEach((item, index) => {
     gridOptions.data.push(item)
@@ -84,13 +83,20 @@ const crudStore = reactive({
       // console.log(column.field)
       column.field && useField.push(column.field)
     })
-    VXETable.modal.message('使用的字段：' + useField.join(', '))
+    VxeUIExport.modal.message('使用的字段：' + useField.join(', '))
     return useField
+  },
+  getWidth: (type) => {
+    const containerWidth = cusTableContent.value.offsetWidth
+    const len = Object.keys(tableInfo[type]).length
+    let width = Math.floor(containerWidth / len)
+    width = width < 100 ? 100 : width
+    return width
   },
   onLoadData: (type) => {
     gridOptions.columns = []
     for (const key in tableInfo[type]) {
-      gridOptions.columns.push({ field: key, title: tableInfo[type][key], width: 100 })
+      gridOptions.columns.push({ field: key, title: tableInfo[type][key], width: crudStore.getWidth(type) })
     }
     // delete gridOptions.columns.at(-1).width
   },
@@ -116,7 +122,7 @@ const gridEvents = {
 </script>
 
 <template>
-  <div class="cus-table-content">
+  <div ref="cusTableContent" class="cus-table-content">
     <vxe-grid ref="xGrid" v-bind="gridOptions" v-on="gridEvents">
       <!-- 左侧按钮列表 -->
       <template #toolbar-btns>

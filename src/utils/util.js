@@ -245,3 +245,43 @@ export const findFamily = (tree, itemId, path = []) => {
   // 未找到目标项
   return null
 }
+
+export function convertFormat(obj) {
+  const result = []
+
+  for (const key in obj) {
+    const value = obj[key]
+    if (Array.isArray(value)) {
+      const children = value.map(item => {
+        if (typeof item === 'object') {
+          return convertFormat(item)[0] // Assuming each object in array has only one key-value pair
+        }
+        return { id: generateID(10), label: item }
+      })
+      result.push({ id: generateID(10), label: key, children })
+    } else {
+      result.push({
+        id: generateID(10),
+        label: key,
+        children: [{ id: generateID(10), label: value }]
+      })
+    }
+  }
+  return result
+}
+
+export function revertFormat(arr) {
+  const result = {}
+
+  arr.forEach(item => {
+    if (item.children && item.children.every(child => typeof child === 'object' && !child.children)) {
+      // 如果 children 中的每个元素都是基本类型（不包含更深层的 children）
+      result[item.label] = item.children.map(child => child.label)
+    } else if (item.children && item.children.some(child => typeof child === 'object' && child.children)) {
+      // 如果 children 中至少有一个元素包含更深层的 children
+      result[item.label] = revertFormat(item.children)
+    }
+  })
+
+  return result
+}
