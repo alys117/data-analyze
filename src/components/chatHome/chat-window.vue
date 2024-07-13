@@ -289,8 +289,8 @@ export default {
     },
     endTalk() {
       // 结束会话
-      console.log(this.$parent)
-      this.$emit('endTalk', 'haha')
+      // console.log(this.$parent)
+      this.$emit('endTalk', '暂未使用')
     },
     readStream(reader, _this, currentResLocation, type) {
       return reader.read().then(({ done, value }) => {

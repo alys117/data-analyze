@@ -15,7 +15,7 @@
       :data-id="activity.id"
     >
       <div style="margin-bottom: 20px" @click="checkPoint(activity)">
-        {{ activity.id + '~' + activity.content }}
+        {{ activity.content }}
       </div>
       <div v-if="activity.children && activity.children.length">
         <time-line :activities="activity.children" :level="level + 1" @relation="changeByChild" style="padding: 0" />

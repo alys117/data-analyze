@@ -17,7 +17,7 @@ const fakeSelectTables = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(fakeData2)
-    }, 500)
+    }, 50)
   })
 }
 
@@ -37,7 +37,7 @@ const fakeFetchOutline = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(outline)
-    }, 500)
+    }, 50)
   })
 }
 

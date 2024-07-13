@@ -60,7 +60,8 @@ const storeStatus = ref(0)
 onActivated(() => {
   showTalk.value = true
 })
-const endTalk = function() {
+const endTalk = (param) => {
+  // console.log('endTalk', param)
   const question =
     chatWindowRef.value.chatList.length
       ? chatWindowRef.value.chatList.at(-1).msg

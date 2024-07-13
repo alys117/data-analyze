@@ -31,7 +31,7 @@ const childRefs = ref([]) // 用于存储子组件引用的数组
 // 回调函数，用于设置子组件的引用
 const setChildRef = (el, table) => {
   if (!el) return
-  console.log(table, el, 'setChildRef', selectTables.value)
+  // console.log(table, el, 'setChildRef', selectTables.value)
   childRefs.value.push({ tableName: table, el: el })
 }
 

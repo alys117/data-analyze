@@ -12,16 +12,16 @@ const router = useRouter()
 
 const loading = ref(true)
 const currentAct = ref({})
-
+let activities = reactive(timelineData)
 const result = ref([])
 onMounted(() => {
-  // activities.value = history.state.params.treeData
+  activities = reactive(history.state.params.treeData)
+  // console.log(activities, 'activities')
   loading.value = false
   setId(activities)
   emitter.on('load-advice', (activity) => {
     currentAct.value = activity
     result.value = findFamily(activities, activity.id)
-    console.log(result, 'result')
     loading.value = true
     setTimeout(() => {
       loading.value = false
@@ -31,7 +31,6 @@ onMounted(() => {
     }, 200)
   })
 })
-const activities = reactive(timelineData)
 
 function setId(activities) {
   activities.forEach((activity) => {

@@ -95,8 +95,7 @@ function handleDrop(draggingNode, dropNode, dropType, ev) {
 }
 
 defineExpose({
-
-  getOutline: () => dataSourceIn.value
+  getOutline: () => toRaw(dataSourceIn.value)
 })
 watch(() => dataSourceIn.value, (newVal, oldVal) => {
   emitter.emit('data-js-mind', dataSourceIn.value)

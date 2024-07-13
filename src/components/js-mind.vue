@@ -98,7 +98,7 @@ onMounted(() => {
   const width = document.getElementsByTagName('jmnodes')[0].style.width
   emit('resize', { height, width })
   emitter.on('data-js-mind', data => {
-    console.log(data, 'data from sample-tree')
+    // console.log(data, 'data from sample-tree')
     mind.data.topic = '大纲'
     const tmp = structuredClone(toRaw(data))
     renameObjectProperties(tmp, 'label', 'topic')

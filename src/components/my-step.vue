@@ -52,7 +52,7 @@ const { step } = defineProps({
     default: () => 1
   }
 })
-console.log(step, '步骤')
+// console.log(step, '步骤')
 
 </script>
 

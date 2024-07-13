@@ -31,9 +31,8 @@ const sampleTreeRef = ref()
 const next2step3 = () => {
   const treeData = sampleTreeRef.value.getOutline()
   const outline = revertFormat(treeData)
-
   router.push({
-    path: '/step3',
+    name: 'Step3',
     state: { params: { outline, treeData }}
   })
 }
