@@ -6,29 +6,54 @@ import emitter from '@/utils/mitt.js'
 import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
 import { ArrowRight } from '@element-plus/icons-vue'
-import PieChart from '@/components/echart/pie-chart.vue'
-import { timelineData } from '@/api/fakeData.js'
+import { fetchChartDescription, fetchDrawData, fetchRewriteOutline } from '@/api/request.js'
+import CustomChart from '@/components/echart/custom-chart.vue'
 const router = useRouter()
 
 const loading = ref(true)
 const currentAct = ref({})
-let activities = reactive(timelineData)
-const result = ref([])
+const activities = reactive([])
+const breadcrumbItems = ref([])
 onMounted(() => {
-  activities = reactive(history.state.params.treeData)
-  // console.log(activities, 'activities')
-  loading.value = false
+  activities.push(...history.state.params.treeData)
+  // Object.assign(activities, history.state.params.treeData)
   setId(activities)
-  emitter.on('load-advice', (activity) => {
+  // setTimeout(() => {
+  //   if (activities instanceof Array) {
+  //     activities.length = 0
+  //     console.log(1233333)
+  //   } else {
+  //     Object.keys(activities).forEach((v, i) => {
+  //       delete activities[v]
+  //     })
+  //   }
+  //   Object.assign(activities, timelineData)
+  //   setId(activities)
+  // }, 2000)
+  loading.value = false
+  emitter.on('load-advice', async(activity) => {
     currentAct.value = activity
-    result.value = findFamily(activities, activity.id)
+    console.log('set CurrentAct', currentAct.value)
+    breadcrumbItems.value = findFamily(activities, activity.id)
     loading.value = true
-    setTimeout(() => {
-      loading.value = false
-      if (!activity.type) {
-        emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
-      }
-    }, 200)
+    const body = {
+      question: activity.content,
+      columns_name: history.state.params.columns_name,
+      other: []
+    }
+    const rewriteData = await fetchRewriteOutline(body)
+    loading.value = false
+    console.log('rewrite', rewriteData)
+    const drawData = await fetchDrawData(rewriteData)
+    console.log('draw', drawData)
+    breadcrumbItems.value.at(-1).chartData = drawData
+    chartRef.value.reDraw(drawData)
+    const descp = await fetchChartDescription()
+    console.log('descp', descp)
+    breadcrumbItems.value.at(-1).description = descp
+    if (!activity.type) {
+      emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
+    }
   })
 })
 
@@ -47,6 +72,10 @@ const completePoint = () => {
 const resetPoint = () => {
   emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
 }
+const description = computed(() => {
+  return currentAct.value.description.replace(/\n/g, '<br>')
+})
+const chartRef = ref()
 </script>
 
 <template>
@@ -55,26 +84,24 @@ const resetPoint = () => {
       <my-step :step="3" />
       <div class="step3-container">
         <div class="timeline-container">
-          <time-line :activities="activities" :level="1"/>
+          <time-line :activities="activities" :level="1" />
         </div>
         <div class="step3-main">
           <el-breadcrumb :separator-icon="ArrowRight">
-            <el-breadcrumb-item v-for="item in result" :key="item.id">
+            <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.id">
               <span style="font-size: 16px">{{ item.content }}</span>
             </el-breadcrumb-item>
+            <div v-if="!breadcrumbItems.length" style="font-size: 16px">
+              未分析
+            </div>
           </el-breadcrumb>
-          <div style="background: #fcfcfc;padding: 10px;margin: 20px">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam amet animi dolor eos eveniet id iusto maxime molestias numquam, obcaecati praesentium quidem quis quisquam, sunt vel veritatis vero? Aliquam aliquid, expedita illo
-            ipsam possimus quis quo repudiandae sit vel vitae? Adipisci cumque cupiditate delectus deleniti eligendi esse eveniet expedita fuga fugit ipsa laborum maxime nam nemo odio, officia porro, quo reiciendis tempora, ullam voluptas.
-            Accusantium aliquid cumque deleniti, deserunt ex exercitationem, illum inventore iusto nostrum numquam optio praesentium quam qui, recusandae sint soluta ullam vel vero. Dignissimos, dolorem esse ex inventore ipsum iste magni
-            maiores perferendis possimus, sequi tempore voluptatibus?
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consectetur dolores explicabo provident. At delectus magni nam ratione similique. Ad aliquid aperiam consequatur dolorem esse laborum minima nostrum praesentium quo?
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consectetur dolores explicabo provident. At delectus magni nam ratione similique. Ad aliquid aperiam consequatur dolorem esse laborum minima nostrum praesentium quo?
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consectetur dolores explicabo provident. At delectus magni nam ratione similique. Ad aliquid aperiam consequatur dolorem esse laborum minima nostrum praesentium quo?
+          <div style="background: #fcfcfc;padding: 10px;margin: 20px;">
+            <div v-if="!currentAct.description"></div>
+            <div v-else v-html="description"></div>
           </div>
           <el-button type="primary" @click="completePoint">complete</el-button>
           <el-button type="danger" @click="resetPoint">uncomplete</el-button>
-          <pie-chart/>
+          <custom-chart ref="chartRef"/>
         </div>
       </div>
       <div class="step-forward">
@@ -92,6 +119,7 @@ const resetPoint = () => {
 }
 .step3-container{
   display: flex;
+  min-width: 1628px;
   //height: calc(100vh - 112px - 72px - 17px);
   .timeline-container{
     border-right: 1px dashed #acacac ;
@@ -100,6 +128,7 @@ const resetPoint = () => {
   }
   .step3-main{
     padding-left: 20px;
+    width: 100%;
   }
 }
 </style>

@@ -33,7 +33,7 @@ const next2step3 = () => {
   const outline = revertFormat(treeData)
   router.push({
     name: 'Step3',
-    state: { params: { outline, treeData }}
+    state: { params: { outline, treeData, columns_name: history.state.params.columns_name }}
   })
 }
 </script>

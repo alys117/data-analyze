@@ -1,6 +1,6 @@
 <template>
   <el-timeline>
-    <div v-html="dynamicStyleTag"></div>
+<!--    <div v-html="dynamicStyleTag"></div>-->
     <el-timeline-item
       v-for="(activity, index) in activities"
       :key="index"
@@ -41,14 +41,14 @@ const { activities, level } = defineProps({
 const levelClass = computed(() => {
   return `pass-node ` + Array(level).fill(1).map((i, index) => 'level' + (i + index)).join(' ')
 })
-
+// 有bug，稍后解决
 const dynamicStyleTag = computed(() => {
   const styles = activities.reduce((pre, cur, index, arr) => {
     if (index === arr.length - 1) {
       return `[data-id='${pre.id}'] .el-timeline-item__tail{ display: block !important;}\n[data-id='${cur.id}'] .el-timeline-item__tail{ display: none !important;}`
     }
     return `[data-id='${pre.id}'] .el-timeline-item__tail{ display: block !important;}\n[data-id='${cur.id}'] .el-timeline-item__tail{ display: block !important;}`
-  })
+  }, '')
   return `<style>${styles}</style>`
 })
 const emit = defineEmits(['relation'])
@@ -130,10 +130,18 @@ const changeByChild = (id) => {
 .pass-node.level1.level2.level3:last-child :deep(.el-timeline-item__tail) {
   display: none;
 }
+
 .pass-node.level1.level2.level3.level4 :deep(.el-timeline-item__tail) {
   display: block;
 }
 .pass-node.level1.level2.level3.level4:last-child :deep(.el-timeline-item__tail) {
+  display: none;
+}
+
+.pass-node.level1.level2.level3.level4.level5 :deep(.el-timeline-item__tail) {
+  display: block;
+}
+.pass-node.level1.level2.level3.level4.level5:last-child :deep(.el-timeline-item__tail) {
   display: none;
 }
 </style>
