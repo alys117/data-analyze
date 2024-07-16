@@ -97,7 +97,7 @@ const fetchDescrip = async(body) => {
 const fakeFetchDescp = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(desciption + '\n\n\n随机值：' + generateID(8))
+      resolve(desciption)
     }, 50)
   })
 }

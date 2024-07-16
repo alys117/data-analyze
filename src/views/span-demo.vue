@@ -1,6 +1,7 @@
 <template>
+  <el-button @click="exportClick">导出</el-button>
   <div class="table">
-    <el-table :data="tableData" :span-method="objectSpanMethod" border style="width: 100%">
+    <el-table id="table1" :data="tableData" :span-method="objectSpanMethod" border style="width: 100%">
       <el-table-column prop="time" label="时间"/>
       <el-table-column prop="grade" label="年级"/>
       <el-table-column prop="name" label="姓名"/>
@@ -11,6 +12,8 @@
 </template>
 
 <script>
+import * as XLXS from 'xlsx'
+
 export default {
   name: 'TableDemo',
   data() {
@@ -22,13 +25,26 @@ export default {
         { time: '2020-08-10', grade: '三年一班', name: '小雷', subjects: '数学', score: 80 },
         { time: '2020-08-11', grade: '三年三班', name: '小花', subjects: '语文', score: 60 },
         { time: '2020-08-11', grade: '三年三班', name: '小花', subjects: '数学', score: 60 }
-
       ],
       mergeObj: {},
       mergeArr: ['time', 'grade', 'name', 'subjects', 'score']
     }
   },
   methods: {
+    exportClick() {
+      // 设置当前日期
+      const time = new Date()
+      const year = time.getFullYear()
+      const month = time.getMonth() + 1
+      const day = time.getDate()
+      const name = year + '' + month + '' + day
+      // 导出文件名
+      // 通过id，获取导出的表格数据
+      const wb = XLXS.utils.table_to_book(document.getElementById('table1'), {
+        raw: true
+      })
+      XLXS.writeFileXLSX(wb, name + '.xlsx')
+    },
     getSpanArr(data) {
       this.mergeArr.forEach((key, index1) => {
         let count = 0 // 用来记录需要合并行的起始位置

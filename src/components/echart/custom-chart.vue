@@ -2,9 +2,7 @@
   <div class="pie-chart-container">
     <v-chart ref="chartRef" :option="option" autoresize class="chart" />
     <div>
-      <el-button @click="aaa">aaa</el-button>
-      <el-button @click="exportPNG">导出png</el-button>
-      {{ chartData + '---' }}
+<!--      <el-button @click="exportPNG">导出png</el-button>-->
     </div>
   </div>
 </template>
@@ -39,7 +37,20 @@ import { ref, provide } from 'vue'
 provide(THEME_KEY, 'light')
 const reDraw = (data) => {
   console.log('reDraw', data)
-  option.value.series[0].data[0] = 190
+  option.value.legend.data = Object.keys(data.draw_data.y)
+  option.value.xAxis[0].data = data.draw_data.x.x_axis
+  option.value.series = []
+  for (const datum in data.draw_data.y) {
+    option.value.series.push({
+      name: datum,
+      type: 'bar',
+      // stack: 'Total',
+      emphasis: {
+        focus: 'series'
+      },
+      data: data.draw_data.y[datum]
+    })
+  }
 }
 defineExpose({ reDraw })
 
@@ -74,7 +85,7 @@ const option = ref({
     {
       type: 'category',
       boundaryGap: false,
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      data: []
     }
   ],
   yAxis: [
@@ -83,23 +94,19 @@ const option = ref({
     }
   ],
   series: [
-    {
-      name: 'Email',
-      type: 'bar',
-      stack: 'Total',
-      emphasis: {
-        focus: 'series'
-      },
-      data: [120, 132, 101, 134, 90, 230, 210]
-    }
+    // {
+    //   name: 'Email',
+    //   type: 'bar',
+    //   stack: 'Total',
+    //   emphasis: {
+    //     focus: 'series'
+    //   },
+    //   data: [120, 132, 101, 134, 90, 230, 210]
+    // }
   ]
 })
 
 const chartRef = ref()
-const aaa = () => {
-  console.log('aaa', chartRef.value)
-  chartRef.value.resize()
-}
 const exportPNG = async() => {
   const picInfo = chartRef.value.getDataURL({
     type: 'png',

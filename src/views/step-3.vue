@@ -33,7 +33,6 @@ onMounted(() => {
   loading.value = false
   emitter.on('load-advice', async(activity) => {
     currentAct.value = activity
-    console.log('set CurrentAct', currentAct.value)
     breadcrumbItems.value = findFamily(activities, activity.id)
     loading.value = true
     const body = {
@@ -43,13 +42,13 @@ onMounted(() => {
     }
     const rewriteData = await fetchRewriteOutline(body)
     loading.value = false
-    console.log('rewrite', rewriteData)
+    // console.log('rewrite', rewriteData)
     const drawData = await fetchDrawData(rewriteData)
-    console.log('draw', drawData)
+    // console.log('draw', drawData)
     breadcrumbItems.value.at(-1).chartData = drawData
     chartRef.value.reDraw(drawData)
     const descp = await fetchChartDescription()
-    console.log('descp', descp)
+    // console.log('descp', descp)
     breadcrumbItems.value.at(-1).description = descp
     if (!activity.type) {
       emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
