@@ -2,6 +2,9 @@
 import AI_HEAD_IMG_URL from '@/assets/chatgpt.jpg'
 import ChatWindow from '@/components/chatHome/chat-window.vue'
 import { useRouter } from 'vue-router'
+import { useStepStore } from '@/stores/step.js'
+import { generateID } from '@/utils/util.js'
+const step = useStepStore()
 const router = useRouter()
 const showTalk = ref(true)
 const chatWindowRef = ref()
@@ -67,6 +70,7 @@ const endTalk = (param) => {
       ? chatWindowRef.value.chatList.at(-1).msg
       : '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理'
   showTalk.value = false
+  step.setAiConversation({ question })
   setTimeout(() => {
     router.push({
       name: 'Step1',

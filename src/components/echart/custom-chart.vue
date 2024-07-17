@@ -2,7 +2,7 @@
   <div class="pie-chart-container">
     <v-chart ref="chartRef" :option="option" autoresize class="chart" />
     <div>
-<!--      <el-button @click="exportPNG">导出png</el-button>-->
+      <el-button @click="exportPNG">导出png</el-button>
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@ const reDraw = (data) => {
     })
   }
 }
-defineExpose({ reDraw })
+defineExpose({ reDraw, getDataURL: () => chartRef.value.getDataURL() })
 
 const option = ref({
   title: {
@@ -72,7 +72,7 @@ const option = ref({
   },
   toolbox: {
     feature: {
-      saveAsImage: {}
+      // saveAsImage: {}
     }
   },
   grid: {
@@ -105,14 +105,14 @@ const option = ref({
     // }
   ]
 })
-
 const chartRef = ref()
 const exportPNG = async() => {
   const picInfo = chartRef.value.getDataURL({
     type: 'png',
-    pixelRatio: 1.5, // 放大两倍下载，之后压缩到同等大小展示。解决生成图片在移动端模糊问题
+    pixelRatio: 1, // 放大两倍下载，之后压缩到同等大小展示。解决生成图片在移动端模糊问题
     backgroundColor: '#fff'
   }) // 获取到的是一串base64信息
+  console.log('picInfo', picInfo)
   const elink = document.createElement('a')
   elink.download = '仪表盘'
   elink.style.display = 'none'

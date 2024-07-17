@@ -8,32 +8,33 @@ import TimeLine from '@/components/time-line.vue'
 import { ArrowRight } from '@element-plus/icons-vue'
 import { fetchChartDescription, fetchDrawData, fetchRewriteOutline } from '@/api/request.js'
 import CustomChart from '@/components/echart/custom-chart.vue'
+import { useStepStore } from '@/stores/step.js'
+const step = useStepStore()
 const router = useRouter()
 
 const loading = ref(true)
 const currentAct = ref({})
 const activities = reactive([])
 const breadcrumbItems = ref([])
-onMounted(() => {
-  activities.push(...history.state.params.treeData)
-  // Object.assign(activities, history.state.params.treeData)
+const init = () => {
+  activities.length = 0
+  console.log(history.state.params.treeData, 'history.state.params.treeData', step.step2.treeData)
+  const tmp = structuredClone(toRaw(step.step2.treeData))
+  activities.push(...tmp)
   setId(activities)
-  // setTimeout(() => {
-  //   if (activities instanceof Array) {
-  //     activities.length = 0
-  //     console.log(1233333)
-  //   } else {
-  //     Object.keys(activities).forEach((v, i) => {
-  //       delete activities[v]
-  //     })
-  //   }
-  //   Object.assign(activities, timelineData)
-  //   setId(activities)
-  // }, 2000)
+}
+onActivated(() => {
+  init()
+})
+onMounted(() => {
   loading.value = false
   emitter.on('load-advice', async(activity) => {
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
+    if (activity.chartData) {
+      chartRef.value.reDraw(activity.chartData)
+      return
+    }
     loading.value = true
     const body = {
       question: activity.content,
@@ -41,7 +42,7 @@ onMounted(() => {
       other: []
     }
     const rewriteData = await fetchRewriteOutline(body)
-    loading.value = false
+
     // console.log('rewrite', rewriteData)
     const drawData = await fetchDrawData(rewriteData)
     // console.log('draw', drawData)
@@ -53,12 +54,13 @@ onMounted(() => {
     if (!activity.type) {
       emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
     }
+    loading.value = false
   })
 })
 
 function setId(activities) {
   activities.forEach((activity) => {
-    activity.id = generateID(8)
+    activity.id = activity.id || generateID(8)
     activity.content = activity.label || activity.content
     if (activity.children && activity.children.length) {
       setId(activity.children)
@@ -67,6 +69,7 @@ function setId(activities) {
 }
 const completePoint = () => {
   emitter.emit('change-point', { id: currentAct.value.id, type: 'primary' })
+  currentAct.value.dataURL = chartRef.value.getDataURL()
 }
 const resetPoint = () => {
   emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
@@ -75,6 +78,37 @@ const description = computed(() => {
   return currentAct.value.description.replace(/\n/g, '<br>')
 })
 const chartRef = ref()
+function removePropertyFromTree(tree, propName) {
+  if (Array.isArray(tree)) {
+    // 如果是数组，对数组的每个元素递归处理
+    return tree.map(item => removePropertyFromTree(item, propName))
+  } else if (typeof tree === 'object' && tree !== null) {
+    // 如果是对象，创建一个新对象，复制除了要删除的属性外的所有属性
+    const result = {}
+    for (const key in tree) {
+      if (key === propName) {
+        // 如果是要删除的属性，则跳过
+        continue
+      }
+      // 对象的值可能也是对象或数组，需要递归处理
+      result[key] = removePropertyFromTree(tree[key], propName)
+    }
+    return result
+  }
+  // 如果既不是对象也不是数组，直接返回原值
+  return tree
+}
+const showDOC = () => {
+  const data0 = removePropertyFromTree(activities, 'id')
+  const data1 = removePropertyFromTree(data0, 'hollow')
+  const data2 = removePropertyFromTree(data1, 'label')
+  const data3 = removePropertyFromTree(data2, 'chartData')
+  const data4 = removePropertyFromTree(data3, 'description')
+  const data5 = removePropertyFromTree(data4, 'type')
+
+  console.log(data5)
+  console.log(JSON.stringify(data5, null, 2))
+}
 </script>
 
 <template>
@@ -98,12 +132,14 @@ const chartRef = ref()
             <div v-if="!currentAct.description"></div>
             <div v-else v-html="description"></div>
           </div>
+          <custom-chart ref="chartRef"/>
           <el-button type="primary" @click="completePoint">complete</el-button>
           <el-button type="danger" @click="resetPoint">uncomplete</el-button>
-          <custom-chart ref="chartRef"/>
         </div>
+
       </div>
       <div class="step-forward">
+        <el-button size="default" type="primary" @click="showDOC">查看</el-button>
         <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
         <el-button size="default" type="primary" @click="router.push('/step4')">下一步</el-button>
       </div>

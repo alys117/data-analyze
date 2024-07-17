@@ -4,6 +4,8 @@ import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
 import { convertFormat, revertFormat } from '@/utils/util.js'
 import { fetchOutline } from '@/api/request.js'
+import { useStepStore } from '@/stores/step.js'
+const step = useStepStore()
 const router = useRouter()
 
 const input3 = ref('')
@@ -17,24 +19,39 @@ const handle = ({ height, width }) => {
 }
 const loading = ref(true)
 const outlineTree = ref()
-onMounted(async() => {
-  setTimeout(() => {
-    loading.value = false
-  }, 0)
-  const body = history.state.params
-  body['business_tree'] = 'aa->bb'
-  body['other'] = []
-  const outline = await fetchOutline(body)
-  outlineTree.value = convertFormat(outline)
-})
 const sampleTreeRef = ref()
 const next2step3 = () => {
   const treeData = sampleTreeRef.value.getOutline()
   const outline = revertFormat(treeData)
+  if (!step.step2.outline) {
+    const params = { outline, treeData, columns_name: history.state.params.columns_name }
+    step.setStep2(params)
+  } else {
+    Object.assign(step.step2, { outline, treeData })
+    // step.setStep2(step.step2)
+  }
+  console.log('next2step3', step.step2)
   router.push({
     name: 'Step3',
-    state: { params: { outline, treeData, columns_name: history.state.params.columns_name }}
+    state: { params: toRaw(step.step2) }
   })
+}
+
+onMounted(async() => {
+  console.log('step-2 mounted')
+})
+onActivated(async() => {
+  console.log('step-2 activated')
+  await init()
+})
+const init = async() => {
+  const body = structuredClone(history.state.params || toRaw(step.step1))
+  body['business_tree'] = 'aa->bb'
+  body['other'] = []
+  console.log('step-2 init', body)
+  const outline = await fetchOutline(body)
+  loading.value = false
+  outlineTree.value = convertFormat(outline)
 }
 </script>
 

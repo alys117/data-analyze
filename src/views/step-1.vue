@@ -3,31 +3,18 @@ import MyStep from '@/components/my-step.vue'
 import CusTable from '@/components/cus-table.vue'
 import { fetchTables } from '@/api/request.js'
 import { useRouter } from 'vue-router'
-import { MessageBox } from '@element-plus/icons-vue'
+import { useStepStore } from '@/stores/step.js'
 const router = useRouter()
-
+const step = useStepStore()
 const body = {
-  question: '我想要了解各个地市在家庭宽带业务上的情况，汇报对象是运营经理，行业是通信行业，植本职工作是运营经理助理',
+  question: '',
   other: []
 }
 const selectTables = ref([]) // 选择的表，多选
 const tableOptions = ref([]) // 选择的表，多选
 const tableInfos = ref({})
 const loading = ref(false)
-
-onMounted(async() => {
-  // 在history的state属性中获取对话中的问题
-  body.question = history.state.params.question
-  loading.value = true
-  const data = await fetchTables(body)
-  loading.value = false
-  tableInfos.value = data
-  for (const tableName in data) {
-    tableOptions.value.push({ label: tableName, value: tableName })
-  }
-})
 const childRefs = ref([]) // 用于存储子组件引用的数组
-
 // 回调函数，用于设置子组件的引用
 const setChildRef = (el, table) => {
   if (!el) return
@@ -37,14 +24,14 @@ const setChildRef = (el, table) => {
 
 const next = () => {
   const n = childRefs.value.length - selectTables.value.length
-  if(!selectTables.value.length){
+  if (!selectTables.value.length) {
     ElMessage.error('请先挑选表！')
     return
   }
   childRefs.value.splice(0, n)
   // console.log(childRefs.value, 'childRefs.value', n)
   const result = {
-    question: history.state.params.question,
+    question: step.aiConversation.question,
     tables_name: [],
     columns_name: {}
   }
@@ -54,11 +41,32 @@ const next = () => {
     result.tables_name.push(item.tableName)
     result.columns_name[item.tableName] = fields
   })
+
+  step.setStep1(result) // 设置step1的pinia状态
   router.push({
     name: 'Step2',
     state: { params: result }
   })
 }
+const init = async() => {
+  body.question = step.aiConversation.question
+  loading.value = true
+  const data = await fetchTables(body)
+  loading.value = false
+  tableInfos.value = data
+  tableOptions.value.length = 0
+  for (const tableName in data) {
+    tableOptions.value.push({ label: tableName, value: tableName })
+  }
+  console.log(body.question, 'init question')
+}
+onActivated(async() => {
+  // 在history的state属性中获取对话中的问题
+  body.question === step.aiConversation.question || await init()
+})
+onMounted(async() => {
+  console.log('step-1 mounted')
+})
 </script>
 
 <template>

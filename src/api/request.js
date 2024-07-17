@@ -1,5 +1,4 @@
 import { fakeData2, outline, rewriteOutline, drawData, desciption } from '@/api/fakeData.js'
-import { generateID } from '@/utils/util.js'
 
 const selectTables = async(body) => {
   const response = await fetch('/api/select_tables', {
@@ -78,7 +77,7 @@ const fakeFetchDrawChart = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(drawData)
-    }, 50)
+    }, 100)
   })
 }
 
