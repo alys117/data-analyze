@@ -15,10 +15,10 @@
       :data-id="activity.id"
     >
       <div style="margin-bottom: 20px" @click="checkPoint(activity)">
-        {{ activity.content }}
+        {{ activity.content + activity.id }}
       </div>
       <div v-if="activity.children && activity.children.length">
-        <time-line :activities="activity.children" :level="level + 1" @relation="changeByChild" style="padding: 0" />
+        <time-line :key="activity.id" :activities="activity.children" :level="level + 1" @relation="changeByChild" style="padding: 0" />
       </div>
     </el-timeline-item>
   </el-timeline>
@@ -37,6 +37,7 @@ const { activities, level } = defineProps({
     default: 1
   }
 })
+
 // 这种方法需要些很多css，有多少层就写多少层css
 const levelClass = computed(() => {
   return `pass-node ` + Array(level).fill(1).map((i, index) => 'level' + (i + index)).join(' ')

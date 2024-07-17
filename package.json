@@ -19,6 +19,7 @@
     "jsmind": "^0.8.4",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "sortablejs": "^1.15.2",
     "vue": "^3.4.21",
     "vue-echarts": "^6.7.3",

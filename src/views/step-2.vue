@@ -30,7 +30,7 @@ const next2step3 = () => {
     Object.assign(step.step2, { outline, treeData })
     // step.setStep2(step.step2)
   }
-  console.log('next2step3', step.step2)
+  // console.log('next2step3', step.step2)
   router.push({
     name: 'Step3',
     state: { params: toRaw(step.step2) }

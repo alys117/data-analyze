@@ -20,4 +20,4 @@ export const useStepStore = defineStore('step', () => {
   }
 
   return { step1, setStep1, step2, setStep2, step3, setStep3, aiConversation, setAiConversation }
-})
+}, { persist: true })

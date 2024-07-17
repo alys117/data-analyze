@@ -18,7 +18,7 @@ const activities = reactive([])
 const breadcrumbItems = ref([])
 const init = () => {
   activities.length = 0
-  console.log(history.state.params.treeData, 'history.state.params.treeData', step.step2.treeData)
+  // console.log(history.state.params.treeData, 'history.state.params.treeData', step.step2.treeData)
   const tmp = structuredClone(toRaw(step.step2.treeData))
   activities.push(...tmp)
   setId(activities)
@@ -29,10 +29,14 @@ onActivated(() => {
 onMounted(() => {
   loading.value = false
   emitter.on('load-advice', async(activity) => {
+    console.log(activity, 'load-advice')
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
     if (activity.chartData) {
-      chartRef.value.reDraw(activity.chartData)
+      chartRef.value.reDraw(activity.chartData, '有图表数据')
+      if (!activity.type) {
+        emitter.emit('change-point', { id: activity.id, type: 'danger' })
+      }
       return
     }
     loading.value = true
@@ -52,7 +56,7 @@ onMounted(() => {
     // console.log('descp', descp)
     breadcrumbItems.value.at(-1).description = descp
     if (!activity.type) {
-      emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
+      emitter.emit('change-point', { id: activity.id, type: 'danger' })
     }
     loading.value = false
   })
@@ -99,15 +103,18 @@ function removePropertyFromTree(tree, propName) {
   return tree
 }
 const showDOC = () => {
-  const data0 = removePropertyFromTree(activities, 'id')
-  const data1 = removePropertyFromTree(data0, 'hollow')
-  const data2 = removePropertyFromTree(data1, 'label')
-  const data3 = removePropertyFromTree(data2, 'chartData')
-  const data4 = removePropertyFromTree(data3, 'description')
-  const data5 = removePropertyFromTree(data4, 'type')
-
-  console.log(data5)
-  console.log(JSON.stringify(data5, null, 2))
+  const obj = {
+    doc: 'doc',
+    data: null
+  }
+  obj.data = removePropertyFromTree(activities, 'id')
+  obj.data = removePropertyFromTree(obj.data, 'hollow')
+  obj.data = removePropertyFromTree(obj.data, 'type')
+  obj.data = removePropertyFromTree(obj.data, 'label')
+  obj.data = removePropertyFromTree(obj.data, 'chartData')
+  // obj.data = removePropertyFromTree(obj.data, 'description')
+  console.log(obj)
+  // console.log(JSON.stringify(obj, null, 2))
 }
 </script>
 
@@ -150,7 +157,8 @@ const showDOC = () => {
 <style lang="scss" scoped>
 .step-forward{
   padding: 20px;
-  text-align: right;
+  text-align: left;
+  //text-align: right;
 }
 .step3-container{
   display: flex;
