@@ -16,6 +16,7 @@ const loading = ref(true)
 const currentAct = ref({})
 const activities = reactive([])
 const breadcrumbItems = ref([])
+const chartRef = ref()
 const init = () => {
   activities.length = 0
   // console.log(history.state.params.treeData, 'history.state.params.treeData', step.step2.treeData)
@@ -23,7 +24,14 @@ const init = () => {
   activities.push(...tmp)
   setId(activities)
 }
+const reset = () => {
+  activities.length = 0
+  breadcrumbItems.value.length = 0
+  currentAct.value = {}
+  chartRef.value.clear()
+}
 onActivated(() => {
+  reset()
   init()
 })
 onMounted(() => {
@@ -50,6 +58,7 @@ onMounted(() => {
     // console.log('rewrite', rewriteData)
     const drawData = await fetchDrawData(rewriteData)
     // console.log('draw', drawData)
+    console.log(breadcrumbItems.value, 'breadcrumbItems')
     breadcrumbItems.value.at(-1).chartData = drawData
     chartRef.value.reDraw(drawData)
     const descp = await fetchChartDescription()
@@ -81,7 +90,7 @@ const resetPoint = () => {
 const description = computed(() => {
   return currentAct.value.description.replace(/\n/g, '<br>')
 })
-const chartRef = ref()
+
 function removePropertyFromTree(tree, propName) {
   if (Array.isArray(tree)) {
     // 如果是数组，对数组的每个元素递归处理
@@ -157,8 +166,8 @@ const showDOC = () => {
 <style lang="scss" scoped>
 .step-forward{
   padding: 20px;
-  text-align: left;
-  //text-align: right;
+  //text-align: left;
+  text-align: right;
 }
 .step3-container{
   display: flex;

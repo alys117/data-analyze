@@ -10,13 +10,6 @@ const router = useRouter()
 
 const input3 = ref('')
 const select = ref('')
-const width1 = ref('')
-const height1 = ref('')
-const handle = ({ height, width }) => {
-  console.log('resize', width, height)
-  width1.value = width
-  height1.value = height
-}
 const loading = ref(true)
 const outlineTree = ref()
 const sampleTreeRef = ref()
@@ -94,12 +87,11 @@ const init = async() => {
       </div>
       <div class="right">
         <span class="mind-title">大纲思维导图</span>
-        <div class="mind-container" :style="{'--width': width1, '--height': height1}">
-          <js-mind @resize="handle"/>
+        <div class="mind-container">
+          <js-mind />
         </div>
       </div>
     </div>
-
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step1')">上一步</el-button>
       <el-button size="default" type="primary" @click="next2step3">下一步</el-button>
@@ -139,10 +131,7 @@ const init = async() => {
   .mind-title{
     padding-left: 20px;
   }
-  .mind-container{
-    width: var(--width);
-    height: var(--height);
-  }
+  .mind-container{}
 }
 
 .step-forward{

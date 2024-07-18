@@ -1,5 +1,7 @@
 <template>
-  <div id="jsmind_container"></div>
+  <div class="js-back">
+    <div id="jsMind" :style="{'--width': w,'--height': h}" class="js-mind-container"></div>
+  </div>
 </template>
 
 <script setup>
@@ -9,7 +11,8 @@ import 'jsmind/draggable-node'
 import { onMounted, toRaw } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { renameObjectProperties } from '@/utils/util.js'
-
+const w = ref('100px')
+const h = ref('100px')
 const mind = {
   /* 元数据，定义思维导图的名称、作者、版本等信息 */
   meta: {
@@ -69,9 +72,9 @@ const mind = {
   }
 }
 const options = {
-  container: 'jsmind_container', // [必选] 容器的ID
+  container: 'jsMind', // [必选] 容器的ID
   editable: true, // [可选] 是否启用编辑
-  theme: 'primary', // [可选] 主题
+  theme: 'primary' // [可选] 主题
   // view: {
   //   engine: 'canvas', // 思维导图各节点之间线条的绘制引擎
   //   hmargin: 120, // 思维导图距容器外框的最小水平距离
@@ -97,23 +100,33 @@ onMounted(() => {
   const height = document.getElementsByTagName('jmnodes')[0].style.height
   const width = document.getElementsByTagName('jmnodes')[0].style.width
   emit('resize', { height, width })
-  emitter.on('data-js-mind', data => {
+  emitter.on('data-js-mind', async data => {
     // console.log(data, 'data from sample-tree')
     mind.data.topic = '大纲'
     const tmp = structuredClone(toRaw(data))
     renameObjectProperties(tmp, 'label', 'topic')
     mind.data.children = tmp
-    jm.show(mind)
+    h.value = 0
+    w.value = 0
+    await nextTick(() => {
+      jm.show(mind)
+    })
     const height = document.getElementsByTagName('jmnodes')[0].style.height
     const width = document.getElementsByTagName('jmnodes')[0].style.width
-    emit('resize', { height, width })
+    console.log(height, width, 'height, width')
+    h.value = height
+    w.value = width
   })
 })
 </script>
 
 <style lang="scss" scoped>
-#jsmind_container {
-  width: 100%;
-  height: 100%;
+.js-back{
+  margin: 20px;
+  background-color: #fcfcfc;
+}
+.js-mind-container {
+  width: var(--width);
+  height: var(--height);
 }
 </style>

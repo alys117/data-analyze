@@ -2,7 +2,7 @@
   <div class="pie-chart-container">
     <v-chart ref="chartRef" :option="option" autoresize class="chart" />
     <div>
-      <el-button @click="exportPNG">导出png</el-button>
+<!--      <el-button @click="exportPNG">导出png</el-button>-->
     </div>
   </div>
 </template>
@@ -35,6 +35,13 @@ import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
 
 provide(THEME_KEY, 'light')
+
+const dispose = () => {
+  chartRef.value.dispose()
+}
+const clear = () => {
+  chartRef.value.clear()
+}
 const reDraw = (data) => {
   console.log('reDraw', data)
   option.value.legend.data = Object.keys(data.draw_data.y)
@@ -52,7 +59,7 @@ const reDraw = (data) => {
     })
   }
 }
-defineExpose({ reDraw, getDataURL: () => chartRef.value.getDataURL() })
+defineExpose({ reDraw, dispose, clear, getDataURL: () => chartRef.value.getDataURL() })
 
 const option = ref({
   title: {
