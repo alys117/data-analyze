@@ -50,7 +50,7 @@ onMounted(() => {
     loading.value = true
     const body = {
       question: activity.content,
-      columns_name: history.state.params.columns_name,
+      columns_name: step.step1.columns_name,
       other: []
     }
     const rewriteData = await fetchRewriteOutline(body)
@@ -121,9 +121,21 @@ const showDOC = () => {
   obj.data = removePropertyFromTree(obj.data, 'type')
   obj.data = removePropertyFromTree(obj.data, 'label')
   obj.data = removePropertyFromTree(obj.data, 'chartData')
-  // obj.data = removePropertyFromTree(obj.data, 'description')
+  obj.data = removePropertyFromTree(obj.data, 'description')
   console.log(obj)
   // console.log(JSON.stringify(obj, null, 2))
+}
+const preview = () => {
+  const obj = {
+    doc: 'doc',
+    data: null
+  }
+  obj.data = removePropertyFromTree(activities, 'hollow')
+  obj.data = removePropertyFromTree(obj.data, 'type')
+  // obj.data = removePropertyFromTree(obj.data, 'content')
+  obj.data = removePropertyFromTree(obj.data, 'dataURL')
+  step.setStep3(obj.data)
+  router.push('/step4')
 }
 </script>
 
@@ -144,7 +156,7 @@ const showDOC = () => {
               未分析
             </div>
           </el-breadcrumb>
-          <div style="background: #fcfcfc;padding: 10px;margin: 20px;">
+          <div style="background: #fcfcfc;padding: 10px;margin: 20px 0;">
             <div v-if="!currentAct.description"></div>
             <div v-else v-html="description"></div>
           </div>
@@ -157,7 +169,7 @@ const showDOC = () => {
       <div class="step-forward">
         <el-button size="default" type="primary" @click="showDOC">查看</el-button>
         <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
-        <el-button size="default" type="primary" @click="router.push('/step4')">下一步</el-button>
+        <el-button size="default" type="primary" @click="preview">预览</el-button>
       </div>
     </div>
   </div>

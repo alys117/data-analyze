@@ -16,7 +16,7 @@ export const useStepStore = defineStore('step', () => {
   }
   const step3 = ref({})
   function setStep3(val) {
-    step1.value = val
+    step3.value = val
   }
 
   return { step1, setStep1, step2, setStep2, step3, setStep3, aiConversation, setAiConversation }

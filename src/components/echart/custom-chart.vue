@@ -1,8 +1,8 @@
 <template>
   <div class="pie-chart-container">
     <v-chart ref="chartRef" :option="option" autoresize class="chart" />
-    <div>
-<!--      <el-button @click="exportPNG">导出png</el-button>-->
+    <div style="display: none">
+      <el-button @click="exportPNG" type="primary">导出png</el-button>
     </div>
   </div>
 </template>
@@ -43,7 +43,7 @@ const clear = () => {
   chartRef.value.clear()
 }
 const reDraw = (data) => {
-  console.log('reDraw', data)
+  // console.log('reDraw', data)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
@@ -128,11 +128,23 @@ const exportPNG = async() => {
   elink.click()
   URL.revokeObjectURL(elink.href) // 释放URL 对象
 }
+const props = defineProps({
+  data: {
+    type: Object,
+    required: false,
+    default: null
+  }
+})
+onMounted(() => {
+  if (props.data) {
+    reDraw(props.data)
+  }
+})
 </script>
 
 <style lang="scss" scope>
 .pie-chart-container {
-  margin: 20px;
+  margin: 20px 0;
   background-color: #fff;
   //padding: 20px;
 

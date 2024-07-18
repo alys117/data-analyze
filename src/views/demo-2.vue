@@ -13,7 +13,7 @@ const router = useRouter()
     <xlsx-demo/>
     <span-demo/>
     <div class="step-forward">
-      <el-button size="default" type="primary" @click="router.push('/step4')">上一步</el-button>
+      <el-button size="default" type="primary" @click="router.push('/demo1')">demo-1</el-button>
     </div>
   </div>
 </template>

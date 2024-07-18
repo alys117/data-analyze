@@ -1,6 +1,6 @@
 <template>
   <el-timeline>
-<!--    <div v-html="dynamicStyleTag"></div>-->
+    <!--    <div v-html="dynamicStyleTag"></div>-->
     <el-timeline-item
       v-for="(activity, index) in activities"
       :key="index"
@@ -37,7 +37,6 @@ const { activities, level } = defineProps({
     default: 1
   }
 })
-
 // 这种方法需要些很多css，有多少层就写多少层css
 const levelClass = computed(() => {
   return `pass-node ` + Array(level).fill(1).map((i, index) => 'level' + (i + index)).join(' ')
@@ -84,9 +83,11 @@ const changeByChild = (id) => {
         child.id === id && (flag = true)
       })
       if (flag) {
+        console.log('flag', activities, result)
         const sum = result.reduce((a, b) => a + b)
         switch (sum) {
           case 0:
+            console.log('sum', activity.id, id)
             activity.type = 'danger'
             activity.hollow = true
             break
