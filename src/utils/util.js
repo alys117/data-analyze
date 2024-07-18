@@ -285,3 +285,21 @@ export function revertFormat(arr) {
 
   return result
 }
+
+export function reverseConvertFormat(arr) {
+  const n = arr.findIndex((item) => item.children && item.children.length > 0);
+  console.log(n);
+  if (n === -1) {
+    return arr.map((item) => item.label);
+  }
+  const obj = {};
+  arr.forEach((item) => {
+    if (item.children && item.children.length > 0) {
+      obj[item.label] = item.children.map((child) => reverseConvertFormat([child]));
+    } else {
+      // 没有children属性，直接使用label作为键
+      obj[item.label] = null; // 原始格式中没有这种情况，这是一个假设
+    }
+  });
+  return obj;
+}

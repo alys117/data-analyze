@@ -2,7 +2,7 @@
 import MyStep from '@/components/my-step.vue'
 import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
-import { convertFormat, revertFormat } from '@/utils/util.js'
+import { convertFormat, revertFormat, reverseConvertFormat } from '@/utils/util.js'
 import { fetchOutline } from '@/api/request.js'
 import { useStepStore } from '@/stores/step.js'
 const step = useStepStore()
@@ -13,17 +13,12 @@ const select = ref('')
 const loading = ref(true)
 const outlineTree = ref()
 const sampleTreeRef = ref()
-const next2step3 = () => {
+const toStep3 = () => {
   const treeData = sampleTreeRef.value.getOutline()
-  const outline = revertFormat(treeData)
-  if (!step.step2.outline) {
-    const params = { outline, treeData, columns_name: history.state.params.columns_name }
-    step.setStep2(params)
-  } else {
-    Object.assign(step.step2, { outline, treeData })
-    // step.setStep2(step.step2)
-  }
-  // console.log('next2step3', step.step2)
+  let outline = revertFormat(treeData)
+  outline = reverseConvertFormat(treeData)
+  console.log(outline, 'outline', treeData, 'treeData')
+  step.setStep2({ outline, treeData })
   router.push({
     name: 'Step3',
     state: { params: toRaw(step.step2) }
@@ -35,7 +30,9 @@ onMounted(async() => {
 })
 onActivated(async() => {
   console.log('step-2 activated')
+  loading.value = true
   await init()
+  loading.value = false
 })
 const init = async() => {
   const body = structuredClone(history.state.params || toRaw(step.step1))
@@ -43,7 +40,6 @@ const init = async() => {
   body['other'] = []
   console.log('step-2 init', body)
   const outline = await fetchOutline(body)
-  loading.value = false
   outlineTree.value = convertFormat(outline)
 }
 </script>
@@ -94,7 +90,7 @@ const init = async() => {
     </div>
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step1')">上一步</el-button>
-      <el-button size="default" type="primary" @click="next2step3">下一步</el-button>
+      <el-button size="default" type="primary" @click="toStep3">下一步</el-button>
     </div>
   </div>
 </template>

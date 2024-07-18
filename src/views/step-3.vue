@@ -18,16 +18,20 @@ const activities = reactive([])
 const breadcrumbItems = ref([])
 const chartRef = ref()
 const init = () => {
-  activities.length = 0
-  // console.log(history.state.params.treeData, 'history.state.params.treeData', step.step2.treeData)
-  const tmp = structuredClone(toRaw(step.step2.treeData))
-  activities.push(...tmp)
-  setId(activities)
+  // 这里想不通，why
+  // 这里想不通，why
+  // 这里想不通，why 为什么要要加nextTick，step2 到本页就可以，但是 step4 回到本页就不加nextTick就会有显示问题
+  nextTick(() => {
+    const tmp = structuredClone(toRaw(step.step2.treeData))
+    setId(tmp)
+    activities.push(...tmp)
+  })
 }
 const reset = () => {
   activities.length = 0
   breadcrumbItems.value.length = 0
   currentAct.value = {}
+  console.log('reset')
   chartRef.value.clear()
 }
 onActivated(() => {
@@ -41,6 +45,7 @@ onMounted(() => {
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
     if (activity.chartData) {
+      console.log(33333333333333)
       chartRef.value.reDraw(activity.chartData, '有图表数据')
       if (!activity.type) {
         emitter.emit('change-point', { id: activity.id, type: 'danger' })
@@ -54,19 +59,14 @@ onMounted(() => {
       other: []
     }
     const rewriteData = await fetchRewriteOutline(body)
-
-    // console.log('rewrite', rewriteData)
     const drawData = await fetchDrawData(rewriteData)
-    // console.log('draw', drawData)
     console.log(breadcrumbItems.value, 'breadcrumbItems')
     breadcrumbItems.value.at(-1).chartData = drawData
     chartRef.value.reDraw(drawData)
     const descp = await fetchChartDescription()
-    // console.log('descp', descp)
     breadcrumbItems.value.at(-1).description = descp
-    if (!activity.type) {
-      emitter.emit('change-point', { id: activity.id, type: 'danger' })
-    }
+    emitter.emit('change-point', { id: activity.id, type: 'danger' })
+
     loading.value = false
   })
 })

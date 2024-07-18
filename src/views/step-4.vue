@@ -27,7 +27,7 @@ const scrollHanler = debounce(() => {
   for (let i = 0; i < ids.length; i++) {
     const rect = rects[i]
     if (rect.top > 0 && rect.top < 300) {
-      // emitter.emit('bold', ids[i])
+      emitter.emit('bold', ids[i])
       break
     }
   }

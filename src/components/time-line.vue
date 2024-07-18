@@ -65,7 +65,9 @@ const checkPoint = (activity) => {
 emitter.on('change-point', ({ id, type }) => {
   activities.forEach((activity) => {
     if (activity.id === id) {
+      console.log('type', type, id)
       activity.type = type
+      console.log('type activity', activity)
       // 除非寻找父节点
       emit('relation', id)
     }

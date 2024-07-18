@@ -17,7 +17,7 @@ const toggleDrawer = () => {
       </transition>
     </router-view>
   </main>
-  <div>
+  <div style="display: none">
     <el-drawer
       v-model="drawer"
       :close-on-click-modal="false"
@@ -29,7 +29,7 @@ const toggleDrawer = () => {
       </div>
     </el-drawer>
   </div>
-  <handle-button :trigger-drawer="toggleDrawer" />
+  <handle-button :trigger-drawer="toggleDrawer" style="display: none"/>
 </template>
 
 <style lang="scss" scoped>
