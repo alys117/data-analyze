@@ -1,11 +1,13 @@
 <script setup>
 import { toRaw } from 'vue'
 import { useCounterStore } from '@/stores/counter.js'
+import BaseChild from '@/views/base-child.vue'
 
 const router = useRouter()
 const counter = useCounterStore()
 
 const user = counter.userinfo
+const user2 = reactive({ name: 'york', addr: 'nyc' })
 const refObj = ref({ a: 123 })
 const refNum = ref(5)
 const reactiveObj = reactive({ a: 234 })
@@ -47,7 +49,8 @@ const update = (n) => {
 
 <template>
   <div style="padding: 20px">
-    <el-input v-model="user.name"></el-input>
+    <el-input v-model="user.name"/>
+    <el-input v-model="user2.name"/>
     <div>{{ refObj }}</div>
     <div>{{ refNum }}</div>
     <div>{{ reactivArr }}</div>
@@ -55,9 +58,13 @@ const update = (n) => {
     <div>{{ cloneArr }}</div>
     <div>{{ counter.count }}</div>
     <div>{{ counter.userinfo }}</div>
+    ----------------
+    <base-child :props-user="user" />
+    -----------------------
+    <base-child :props-user="user2" />
     <el-button @click="update(1)" type="danger"> update1 </el-button>
     <el-button @click="update(2)" type="danger"> update2 </el-button>
-    <el-button @click="update(3)"type="danger"> update3 </el-button>
+    <el-button @click="update(3)" type="danger"> update3 </el-button>
     <el-button @click="update(4)" type="danger"> update4 </el-button>
     <el-button @click="update(5)" type="danger"> update5 </el-button>
     <el-button @click="update(6)" type="danger"> update6 </el-button>
