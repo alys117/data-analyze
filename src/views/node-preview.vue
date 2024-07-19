@@ -25,7 +25,7 @@ onMounted(() => {
 
 <template>
   <div v-for="node in nodes" :key="node.id" class="node">
-    <span :id="node.id" :class="['title-' + level]">{{ node.id + '~~' + node.label }}</span>
+    <span :data-node-id="node.id" :class="['title-' + level]">{{ node.label }}</span>
     <div v-if="node.description" style="background: #fcfcfc;padding: 10px;margin: 20px 0;">
       <div v-html="descp(node.description)"></div>
     </div>

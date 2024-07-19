@@ -107,7 +107,7 @@ const endTalk = (param) => {
 </style>
 <style lang="scss" scoped>
 .chat-container{
-  padding: 0 20px;
+  padding: 20px 20px 0 20px;
   height: 100vh;
 }
 </style>

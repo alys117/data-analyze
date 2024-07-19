@@ -14,7 +14,7 @@
       :data-id="activity.id"
     >
       <div :style="{'margin-bottom': '20px', 'font-weight': activity.id === boldId ?'900':'500', 'color': activity.id === boldId ?'#2667db':''}" @click="checkPoint(activity)">
-        {{ activity.content + activity.id }}
+        {{ activity.content }}
       </div>
       <div v-if="activity.children && activity.children.length">
         <time-line-view :key="activity.id" :activities="activity.children" :level="level + 1" style="padding: 0" />
@@ -26,8 +26,6 @@
 <script setup>
 import emitter from '@/utils/mitt.js'
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-const route = useRoute()
 const { activities, level } = defineProps({
   activities: {
     type: Array,

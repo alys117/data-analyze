@@ -3,6 +3,8 @@
     <v-chart ref="chartRef" :option="option" autoresize class="chart" />
     <div style="display: none">
       <el-button @click="exportPNG" type="primary">导出png</el-button>
+      <el-button @click="clear" type="primary">clear</el-button>
+      <el-button @click="resize" type="primary">resize</el-button>
     </div>
   </div>
 </template>
@@ -42,8 +44,13 @@ const dispose = () => {
 const clear = () => {
   chartRef.value.clear()
 }
-const reDraw = (data) => {
-  // console.log('reDraw', data)
+const resize = () => {
+  nextTick(() => {
+    chartRef.value.resize()
+  })
+}
+const reDraw = (data, msg) => {
+  console.log('draw...', msg)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
@@ -59,7 +66,7 @@ const reDraw = (data) => {
     })
   }
 }
-defineExpose({ reDraw, dispose, clear, getDataURL: () => chartRef.value.getDataURL() })
+defineExpose({ reDraw, dispose, clear, resize, getDataURL: () => chartRef.value.getDataURL() })
 
 const option = ref({
   title: {
@@ -75,7 +82,9 @@ const option = ref({
     }
   },
   legend: {
-    // data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
+    data: [
+      // 'Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'
+    ]
   },
   toolbox: {
     feature: {
@@ -132,13 +141,28 @@ const props = defineProps({
   data: {
     type: Object,
     required: false,
-    default: null
+    default: () => {
+      return {
+        draw_data: {
+          x: {
+            x_axis: []
+          },
+          y: { }
+        }
+      }
+    }
   }
 })
 onMounted(() => {
-  if (props.data) {
+  // 设置overflow: auto;后就不需要resize了
+  // window.addEventListener('resize', () => {
+  //   console.log('resize......', props.data.tip)
+  //   chartRef.value.resize()
+  // })
+  if(props.data){
     reDraw(props.data)
   }
+
 })
 </script>
 

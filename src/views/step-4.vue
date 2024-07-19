@@ -21,7 +21,7 @@ const scrollHanler = debounce(() => {
   console.log('scroll')
   const ids = findAllIds(nodes.value)
   const rects = ids.map((id) => {
-    const el = document.getElementById(id)
+    const el = document.querySelector(`[data-node-id="${id}"]`)
     return el.getBoundingClientRect()
   })
   for (let i = 0; i < ids.length; i++) {
@@ -47,7 +47,8 @@ onMounted(() => {
   // setId(nodes)
   emitter.on('scroll-to', (id) => {
     console.log('scroll-to', id)
-    const el = document.getElementById(id)
+    const el = document.querySelector(`[data-node-id="${id}"]`)
+    console.log(el)
     el.scrollIntoView({ behavior: 'smooth' })
   })
   console.log('step-4 mounted')
@@ -93,12 +94,14 @@ function dealWith(activities) {
   min-width: 1628px;
   display: flex;
   .index{
+    flex-shrink: 0;
     min-width: 400px;
     max-width: 600px;
     border-right: 1px dotted #eee;
     overflow: auto;
     padding: 20px;
     height: calc(100vh - 113px);
+    background-color: #fcfcfc;
   }
   .content{
     height: calc(100vh - 113px);

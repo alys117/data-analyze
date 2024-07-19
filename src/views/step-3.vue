@@ -25,14 +25,14 @@ const init = () => {
     const tmp = structuredClone(toRaw(step.step2.treeData))
     setId(tmp)
     activities.push(...tmp)
+    chartRef.value.clear()
+    chartRef.value.resize()
   })
 }
 const reset = () => {
   activities.length = 0
   breadcrumbItems.value.length = 0
   currentAct.value = {}
-  console.log('reset')
-  chartRef.value.clear()
 }
 onActivated(() => {
   reset()
@@ -41,15 +41,11 @@ onActivated(() => {
 onMounted(() => {
   loading.value = false
   emitter.on('load-advice', async(activity) => {
-    console.log(activity, 'load-advice')
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
     if (activity.chartData) {
-      console.log(33333333333333)
-      chartRef.value.reDraw(activity.chartData, '有图表数据')
-      if (!activity.type) {
-        emitter.emit('change-point', { id: activity.id, type: 'danger' })
-      }
+      chartRef.value.reDraw(activity.chartData, '使用缓存数据')
+      activity.type || emitter.emit('change-point', { id: activity.id, type: 'danger' })
       return
     }
     loading.value = true
@@ -65,6 +61,7 @@ onMounted(() => {
     chartRef.value.reDraw(drawData)
     const descp = await fetchChartDescription()
     breadcrumbItems.value.at(-1).description = descp
+    activity.dataURL = chartRef.value.getDataURL()
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
     loading.value = false
@@ -120,8 +117,8 @@ const showDOC = () => {
   obj.data = removePropertyFromTree(obj.data, 'hollow')
   obj.data = removePropertyFromTree(obj.data, 'type')
   obj.data = removePropertyFromTree(obj.data, 'label')
-  obj.data = removePropertyFromTree(obj.data, 'chartData')
-  obj.data = removePropertyFromTree(obj.data, 'description')
+  // obj.data = removePropertyFromTree(obj.data, 'chartData')
+  // obj.data = removePropertyFromTree(obj.data, 'description')
   console.log(obj)
   // console.log(JSON.stringify(obj, null, 2))
 }
@@ -156,11 +153,11 @@ const preview = () => {
               未分析
             </div>
           </el-breadcrumb>
-          <div style="background: #fcfcfc;padding: 10px;margin: 20px 0;">
+          <div class="description">
             <div v-if="!currentAct.description"></div>
             <div v-else v-html="description"></div>
           </div>
-          <custom-chart ref="chartRef"/>
+          <custom-chart ref="chartRef" />
           <el-button type="primary" @click="completePoint">complete</el-button>
           <el-button type="danger" @click="resetPoint">uncomplete</el-button>
         </div>
@@ -191,8 +188,14 @@ const preview = () => {
     flex-shrink: 0;
   }
   .step3-main{
+    .description{
+      background: #fcfcfc;
+      padding: 10px;
+      margin: 20px 20px 20px 0;
+    }
     padding-left: 20px;
     width: 100%;
+    overflow: auto;
   }
 }
 </style>
