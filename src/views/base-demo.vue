@@ -5,18 +5,18 @@ import { useCounterStore } from '@/stores/counter.js'
 const router = useRouter()
 const counter = useCounterStore()
 
-
-const refObj = ref({a:123})
+const user = counter.userinfo
+const refObj = ref({ a: 123 })
 const refNum = ref(5)
-const reactiveObj = reactive({a:234})
-const reactivArr = reactive([{a:555},'hello'])
+const reactiveObj = reactive({ a: 234 })
+const reactivArr = reactive([{ a: 555 }, 'hello'])
 const cloneArr = toRaw(reactivArr)
-onMounted(()=>{
-  console.log(refObj,refNum,reactiveObj)
+onMounted(() => {
+  console.log(refObj, refNum, reactiveObj)
   console.log(reactivArr, cloneArr)
   console.log(counter)
 })
-const update = (n)=>{
+const update = (n) => {
   switch (n) {
     case 1:
       refObj.value.b = 3333
@@ -47,7 +47,7 @@ const update = (n)=>{
 
 <template>
   <div style="padding: 20px">
-
+    <el-input v-model="user.name"></el-input>
     <div>{{ refObj }}</div>
     <div>{{ refNum }}</div>
     <div>{{ reactivArr }}</div>
@@ -61,12 +61,14 @@ const update = (n)=>{
     <el-button @click="update(4)" type="danger"> update4 </el-button>
     <el-button @click="update(5)" type="danger"> update5 </el-button>
     <el-button @click="update(6)" type="danger"> update6 </el-button>
+    <div style="margin: 20px">
+      <el-button size="default" type="primary" @click="counter.setCount(10)">setCount</el-button>
+      <el-button size="default" type="primary" @click="counter.addUserinfoProps('hobby', ['suck', 'swarm'])">addUserinfoProps</el-button>
+      <el-button size="default" type="primary" @click="counter.resetUserinfo({name: 'jerry', age: 1})">resetUserinfo</el-button>
+      <el-button size="default" type="primary" @click="router.push('/talk')">AI-Conversation</el-button>
+    </div>
   </div>
-  <div style="margin: 20px">
-    <el-button size="default" type="primary" @click="counter.setCount(10)">setCount</el-button>
-    <el-button size="default" type="primary" @click="counter.setUserinfo({name: 'tom', age: 2})">setUserinfo</el-button>
-    <el-button size="default" type="primary" @click="router.push('/talk')">AI-Conversation</el-button>
-  </div>
+
 </template>
 
 <style scoped lang="scss">

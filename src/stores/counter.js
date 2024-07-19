@@ -12,8 +12,12 @@ export const useCounterStore = defineStore('counter', () => {
   function setCount(value) {
     count.value = value
   }
-  function setUserinfo(value) {
-    userinfo.value = value
+  function addUserinfoProps(key, value) {
+    userinfo.value[key] = value
   }
-  return { count, doubleCount, increment, setCount, userinfo, setUserinfo }
+
+  function resetUserinfo (val) {
+    userinfo.value = val
+  }
+  return { count, doubleCount, increment, setCount, userinfo, addUserinfoProps, resetUserinfo }
 },{ persist: true })
