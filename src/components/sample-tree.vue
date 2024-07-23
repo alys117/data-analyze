@@ -2,8 +2,9 @@
 // import { ref, toRaw, onMounted, watch } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
-import { generateID } from '@/utils/util.js'
+import { convertFormat, generateID } from '@/utils/util.js'
 import { historyTree } from '@/api/fakeData.js'
+import { fetchHistory } from '@/api/request.js'
 
 const props = defineProps(['tree-data'])
 const dataSourceIn = ref()
@@ -105,12 +106,16 @@ watch(() => props.treeData, (val) => {
     dataSourceIn.value = props.treeData.dsIn
   }
 })
-onMounted(() => {})
+onMounted(async() => {
+  const fakeHis = await fetchHistory()
+  // console.log(convertFormat(fakeHis))
+  dataSourceOut.value = convertFormat(fakeHis)
+})
 </script>
 
 <template>
   <div class="transfer-container">
-    <div class="tree">
+    <div class="tree tree-wrap">
       <el-tree
         ref='treeIn'
         class="flow-tree"
@@ -137,7 +142,7 @@ onMounted(() => {})
               <span v-if="!data.isInput">{{ node.label }}</span>
               <span v-else><el-input size="small" :ref="(el)=>setRef(el, data)" v-model="currentInput" placeholder="请输入分类名称" @blur="saveCurrentInp(data)"/></span>
             </span>
-            <span class="tree-btn">
+            <span class="tree-btn" style="text-wrap: nowrap;margin-left: 5px">
               <a @click="append(data)">添加</a>
               <a @click="edit(data)">编辑</a>
               <a @click="remove(node, data)">删除</a>
@@ -152,10 +157,10 @@ onMounted(() => {})
       <div><el-button type="primary" size="small" class="button-a" :icon="RefreshLeft"/></div>
       <div><el-button type="primary" size="small" class="button-a" :icon="Check" @click="console.log(toRaw(dataSourceIn))" /></div>
     </div>
-    <div class="tree">
+    <div class="tree tree-wrap">
       <el-tree
         ref='treeOut'
-        class="tree"
+        class="flow-tree"
         :data="dataSourceOut"
         node-key="id"
         default-expand-all
@@ -178,11 +183,13 @@ onMounted(() => {})
 .transfer-container{
   @include flex;
   .tree {
-    min-width: 400px;
+    //width: 400px;
     overflow: auto;
+    // 树滚动条
     .flow-tree {
+      width: 500px;
       overflow: auto;
-      .el-tree-node {
+      :deep(.el-tree-node) {
         .el-tree-node__children {
           overflow: visible
         }
@@ -230,5 +237,18 @@ onMounted(() => {})
 }
 .custom-tree-node:hover .tree-btn{
   visibility: visible;
+}
+
+// 树节点文本换行
+.tree-wrap :deep(.el-tree-node) {
+  white-space: normal;
+  outline: 0;
+
+  .el-tree-node__content {
+    text-align: left;
+    align-items: start;
+    margin: 4px;
+    height: 100%;
+  }
 }
 </style>

@@ -47,6 +47,7 @@ export default defineConfig({
   server: {
     // port: 5173,
     open: true,
+    timeout: 4000000,
     headers: {
       'Pray': 'xiaohuozi'
     },

@@ -1,4 +1,4 @@
-import { fakeData2, outline, rewriteOutline, drawData, desciption } from '@/api/fakeData.js'
+import { fakeData2, outline, rewriteOutline, drawData, desciption, historyTree2 } from '@/api/fakeData.js'
 
 const selectTables = async(body) => {
   const response = await fetch('/api/select_tables', {
@@ -82,7 +82,7 @@ const fakeFetchDrawChart = async() => {
 }
 
 const fetchDescrip = async(body) => {
-  const data = await fetch('/api/description', {
+  const data = await fetch('/api/chart_description', {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
@@ -101,6 +101,26 @@ const fakeFetchDescp = async() => {
   })
 }
 
+const fetchFile = async(body) => {
+  const data = await fetch('/api/write_to_word', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }).then(res => res.json())
+  return data
+}
+
+const fetchHistory = async(body) => {
+  return await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(historyTree2)
+    }, 50)
+  })
+}
+
 let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription
 if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchTables = fakeSelectTables
@@ -115,4 +135,4 @@ if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchDrawData = fetchDrawChart
   fetchChartDescription = fetchDescrip
 }
-export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription }
+export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistory }

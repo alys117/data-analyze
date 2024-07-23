@@ -23,31 +23,31 @@
               </span>
             </label> -->
             <label @click="clearMsgList">
-              <span class="iconfont icon-qingchu" />
+              <span class="iconfont icon-qingchu" ></span>
             </label>
             <label @click="importFromJsonArr">
-              <span class="iconfont icon-daoru" />
+              <span class="iconfont icon-daoru" ></span>
             </label>
             <label @click="exportObjArrToJson">
-              <span class="iconfont icon-daochu" />
+              <span class="iconfont icon-daochu" ></span>
             </label>
             <label for="imgFile">
-              <span class="iconfont icon-tupian" />
+              <span class="iconfont icon-tupian" ></span>
             </label>
             <label for="docFile">
-              <span class="iconfont icon-wenben" />
+              <span class="iconfont icon-wenben" ></span>
             </label>
-            <input id="imgFile" type="file" name="" accept="image/*" @change="sendImg">
-            <input id="docFile" type="file" name="" accept="application/*,text/*" @change="sendFile">
+            <input id="imgFile" type="file" name="" accept="image/*" @change="sendImg"/>
+            <input id="docFile" type="file" name="" accept="application/*,text/*" @change="sendFile"/>
             <!-- 导入当前会话内容 -->
-            <input ref="onupdateJosnArr" type="file" style="display: none;" @change="handleFileUpload">
+            <input ref="onupdateJosnArr" type="file" style="display: none;" @change="handleFileUpload"/>
           </div>
         </el-col>
       </el-row>
 
     </div>
     <div v-show="!acqStatus">
-      <div class="line" />
+      <div class="line" ></div>
     </div>
 
     <div class="botoom">
@@ -82,16 +82,16 @@
               <Markdown :source="item.msg.trim()" />
             </div>
             <div v-if="item.chatType == 1" class="chat-img">
-              <img v-if="item.extend.imgType == 1" :src="item.msg" alt="表情" style="width: 100px; height: 100px">
+              <img v-if="item.extend.imgType == 1" :src="item.msg" alt="表情" style="width: 100px; height: 100px"/>
               <el-image v-else style="border-radius: 10px" :src="item.msg" :preview-src-list="srcImgList" />
             </div>
             <div v-if="item.chatType == 2" class="chat-img">
               <div class="word-file">
-<!--                <FileCard :file-type="item.extend.fileType" :file="item.msg" />-->
+                <!--                <FileCard :file-type="item.extend.fileType" :file="item.msg" />-->
               </div>
             </div>
             <div class="info-time">
-              <img :src="item.headImg" alt="">
+              <img :src="item.headImg" alt=""/>
               <span>{{ item.name }}</span>
               <span>{{ item.time }}</span>
             </div>
@@ -101,7 +101,7 @@
               <span style="font-size:16px">{{ item.msg }}</span>
             </div>
             <div v-if="item.chatType == 1" class="chat-img">
-              <img v-if="item.extend.imgType == 1" :src="item.msg" alt="表情" style="width: 100px; height: 100px">
+              <img v-if="item.extend.imgType == 1" :src="item.msg" alt="表情" style="width: 100px; height: 100px"/>
               <el-image
                 v-else
                 style="max-width: 300px; border-radius: 10px"
@@ -111,33 +111,33 @@
             </div>
             <div v-if="item.chatType == 2" class="chat-img">
               <div class="word-file">
-<!--                <FileCard :file-type="item.extend.fileType" :file="item.msg" />-->
+                <!--                <FileCard :file-type="item.extend.fileType" :file="item.msg" />-->
               </div>
             </div>
             <div class="info-time">
               <span>{{ item.name }}</span>
               <span>{{ item.time }}</span>
-              <img :src="item.headImg" alt="">
+              <img :src="item.headImg" alt=""/>
             </div>
           </div>
         </div>
       </div>
       <div class="chatInputs">
         <!--表情-->
-<!--        <div v-show="buttonStatus" class="emoji boxinput" @click="clickEmoji">-->
-<!--          <img src="@/assets/img/emoji/smiling-face.png" alt="">-->
-<!--        </div>-->
+        <!--        <div v-show="buttonStatus" class="emoji boxinput" @click="clickEmoji">-->
+        <!--          <img src="@/assets/img/emoji/smiling-face.png" alt="">-->
+        <!--        </div>-->
         <!--录音-->
-<!--        <div v-if="recording" v-show="buttonStatus" class="luyin boxinput">-->
-<!--          <i class="el-icon-microphone" style="margin-top: 17%;" />-->
-<!--        </div>-->
-<!--        <div v-if="!recording" v-show="buttonStatus" class="luyin boxinput">-->
-<!--          <i class="el-icon-turn-off-microphone" style="margin-top: 17%;" />-->
-<!--        </div>-->
+        <!--        <div v-if="recording" v-show="buttonStatus" class="luyin boxinput">-->
+        <!--          <i class="el-icon-microphone" style="margin-top: 17%;" />-->
+        <!--        </div>-->
+        <!--        <div v-if="!recording" v-show="buttonStatus" class="luyin boxinput">-->
+        <!--          <i class="el-icon-turn-off-microphone" style="margin-top: 17%;" />-->
+        <!--        </div>-->
         <!--emo表情列表-->
-<!--        <div v-show="buttonStatus" class="emoji-content">-->
-<!--          <Emoji v-show="showEmoji" @sendEmoji="sendEmoji" @closeEmoji="clickEmoji" />-->
-<!--        </div>-->
+        <!--        <div v-show="buttonStatus" class="emoji-content">-->
+        <!--          <Emoji v-show="showEmoji" @sendEmoji="sendEmoji" @closeEmoji="clickEmoji" />-->
+        <!--        </div>-->
         <!--输入框-->
         <textarea
           id="textareaMsg"
@@ -155,21 +155,21 @@
           autocapitalize="off"
           autocomplete="off"
           @keyup.enter="handleKeyDown"
-        />
+        ></textarea>
         <!--发送-->
         <div>
           <div class="send boxinput" @click="sendText">
-            <img src="@/assets/emoji/rocket.png" alt="">
+            <img src="@/assets/emoji/rocket.png" alt=""/>
           </div>
         </div>
         <div>
           <div class="send boxinput" style="margin-left: 10px" @click="clearHis">
-            <img src="@/assets/emoji/clear.png" alt="">
+            <img src="@/assets/emoji/clear.png" alt=""/>
           </div>
         </div>
         <div>
           <div class="send boxinput" style="margin-left: 10px" @click="endTalk">
-            <img src="@/assets/emoji/end.png" alt="">
+            <img src="@/assets/emoji/end.png" alt=""/>
           </div>
         </div>
       </div>
@@ -320,14 +320,18 @@ export default {
         let decoded = new TextDecoder().decode(value)
         decoded = _this.chatList[currentResLocation].reminder + decoded
         if (decoded) {
-          try {
-            // json格式的，容易黏包
-            const text = JSON.parse(decoded).text
-            if (text) { _this.chatList[currentResLocation].msg = _this.chatList[currentResLocation].msg + text }
-            // _this.chatList[currentResLocation].msg = _this.chatList[currentResLocation].msg + decoded
-          } catch (err) {
-            console.log(decoded, 'err')
-          }
+          // json格式的，容易黏包
+          const arrjson = decoded.split('\n')
+          arrjson.forEach(jsonstr => {
+            if (!jsonstr) return
+            try {
+              const text = JSON.parse(jsonstr).text
+              if (text) { _this.chatList[currentResLocation].msg = _this.chatList[currentResLocation].msg + text }
+              // _this.chatList[currentResLocation].msg = _this.chatList[currentResLocation].msg + decoded
+            } catch (e) {
+              console.log(decoded, 'err')
+            }
+          })
         }
         return this.readStreamChat(reader, _this, currentResLocation, type)
       })
@@ -632,7 +636,8 @@ export default {
         'conversation_id': this.conversation_id,
         'history_len': 10,
         'stream': true,
-        'model_name': 'deepseek-chat',
+        // 'model_name': 'deepseek-chat',
+        'model_name': 'Qwen-72B-Chat',
         'temperature': 0.7,
         'max_tokens': 0,
         'prompt_name': 'analysis_report_input_rewrite'

@@ -1,12 +1,13 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
+import { saveAs } from 'file-saver'
 import { useRouter } from 'vue-router'
 import { ref, reactive, onMounted } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
 import { ArrowRight } from '@element-plus/icons-vue'
-import { fetchChartDescription, fetchDrawData, fetchRewriteOutline } from '@/api/request.js'
+import { fetchChartDescription, fetchDrawData, fetchRewriteOutline, fetchFile } from '@/api/request.js'
 import CustomChart from '@/components/echart/custom-chart.vue'
 import { useStepStore } from '@/stores/step.js'
 const step = useStepStore()
@@ -44,7 +45,12 @@ onMounted(() => {
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
     if (activity.chartData) {
-      chartRef.value.reDraw(activity.chartData, '使用缓存数据')
+      if (activity.chartData.draw_data) {
+        chartRef.value.reDraw(activity.chartData, '使用缓存数据')
+        if (!activity.dataURL) {
+          activity.dataURL = chartRef.value.getDataURL()
+        }
+      }
       activity.type || emitter.emit('change-point', { id: activity.id, type: 'danger' })
       return
     }
@@ -55,11 +61,21 @@ onMounted(() => {
       other: []
     }
     const rewriteData = await fetchRewriteOutline(body)
+    rewriteData.answer_plot = rewriteData['绘图要求']
+    rewriteData.user_input = rewriteData['问题']
+    delete rewriteData['绘图要求']
+    delete rewriteData['问题']
+    rewriteData.table_name_list = step.step1.tables_name
+    rewriteData.columns_name = step.step1.columns_name
     const drawData = await fetchDrawData(rewriteData)
     console.log(breadcrumbItems.value, 'breadcrumbItems')
     breadcrumbItems.value.at(-1).chartData = drawData
-    chartRef.value.reDraw(drawData)
-    const descp = await fetchChartDescription()
+    if (drawData.draw_data) chartRef.value.reDraw(drawData)
+    const descriptionBody = {
+      sql: drawData.sql,
+      question: rewriteData.user_input
+    }
+    const descp = await fetchChartDescription(descriptionBody)
     breadcrumbItems.value.at(-1).description = descp
     activity.dataURL = chartRef.value.getDataURL()
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
@@ -108,7 +124,7 @@ function removePropertyFromTree(tree, propName) {
   // 如果既不是对象也不是数组，直接返回原值
   return tree
 }
-const showDOC = () => {
+const showDOC = async() => {
   const obj = {
     doc: 'doc',
     data: null
@@ -120,6 +136,12 @@ const showDOC = () => {
   // obj.data = removePropertyFromTree(obj.data, 'chartData')
   // obj.data = removePropertyFromTree(obj.data, 'description')
   console.log(obj)
+  const now = new Date().getTime()
+  const data = await fetchFile({ content: obj.data, file_name: now + '.docx' })
+  console.log(data, 'file....')
+  fetch(`/api/get_chart/${now}.docx`).then(res => res.blob()).then(blob => {
+    saveAs(blob, '报告.docx')
+  })
   // console.log(JSON.stringify(obj, null, 2))
 }
 const preview = () => {
@@ -134,6 +156,58 @@ const preview = () => {
   step.setStep3(obj.data)
   router.push('/step4')
 }
+const getChartAndDescription = (activity, tasks) => {
+  const task = new Promise(async(resolve) => {
+    const body = {
+      question: activity.content,
+      columns_name: step.step1.columns_name,
+      other: []
+    }
+    const rewriteData = await fetchRewriteOutline(body)
+    rewriteData.answer_plot = rewriteData['绘图要求']
+    rewriteData.user_input = rewriteData['问题']
+    delete rewriteData['绘图要求']
+    delete rewriteData['问题']
+    rewriteData.table_name_list = step.step1.tables_name
+    rewriteData.columns_name = step.step1.columns_name
+    const drawData = await fetchDrawData(rewriteData)
+    activity.chartData = drawData
+    const descriptionBody = {
+      sql: drawData.sql,
+      question: rewriteData.user_input
+    }
+    const descp = await fetchChartDescription(descriptionBody)
+    activity.description = descp
+    breadcrumbItems.value = findFamily(activities, activity.id)
+    breadcrumbItems.value.at(-1).description = descp
+    chartRef.value.reDraw(drawData)
+    activity.dataURL = chartRef.value.getDataURL()
+    resolve('task =' + activity.content)
+  })
+  tasks.push(task)
+}
+const requestAll = (activity, tasks) => {
+  if (activity instanceof Array) {
+    activity.forEach((child) => {
+      requestAll(child, tasks)
+    })
+    return
+  }
+  if (activity.children && activity.children.length) {
+    requestAll(activity.children, tasks)
+  } else {
+    getChartAndDescription(activity, tasks)
+  }
+}
+const allMission = (activities) => {
+  loading.value = true
+  const tasks = []
+  requestAll(activities, tasks)
+  Promise.all(tasks).then(() => {
+    console.log('Mission all over')
+    loading.value = false
+  })
+}
 </script>
 
 <template>
@@ -142,6 +216,10 @@ const preview = () => {
       <my-step :step="3" />
       <div class="step3-container">
         <div class="timeline-container">
+          <div style="display: flex;justify-content: flex-end;padding: 10px">
+            <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
+            <el-button type="primary" @click="console.log(activities)">check</el-button>
+          </div>
           <time-line :activities="activities" :level="1" />
         </div>
         <div class="step3-main">
@@ -164,7 +242,7 @@ const preview = () => {
 
       </div>
       <div class="step-forward">
-        <el-button size="default" type="primary" @click="showDOC">查看</el-button>
+        <el-button size="default" type="primary" @click="showDOC">导出</el-button>
         <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
         <el-button size="default" type="primary" @click="preview">预览</el-button>
       </div>

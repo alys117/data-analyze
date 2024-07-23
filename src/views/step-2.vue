@@ -88,6 +88,12 @@ const init = async() => {
         </div>
       </div>
     </div>
+<!--    <div style="padding: 20px">-->
+<!--      <span class="mind-title">大纲思维导图</span>-->
+<!--      <div class="mind-container">-->
+<!--        <js-mind />-->
+<!--      </div>-->
+<!--    </div>-->
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step1')">上一步</el-button>
       <el-button size="default" type="primary" @click="toStep3">下一步</el-button>
