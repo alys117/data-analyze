@@ -49,7 +49,7 @@ const resize = () => {
     chartRef.value.resize()
   })
 }
-const reDraw = (data, msg) => {
+const reDraw = (data, msg = 'no echarts data') => {
   console.log('draw...', msg)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis

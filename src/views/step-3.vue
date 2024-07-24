@@ -44,6 +44,8 @@ onMounted(() => {
   emitter.on('load-advice', async(activity) => {
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
+    chartRef.value.clear()
+    console.log('clear')
     if (activity.chartData) {
       if (activity.chartData.draw_data) {
         chartRef.value.reDraw(activity.chartData, '使用缓存数据')
@@ -68,8 +70,9 @@ onMounted(() => {
     rewriteData.table_name_list = step.step1.tables_name
     rewriteData.columns_name = step.step1.columns_name
     const drawData = await fetchDrawData(rewriteData)
-    console.log(breadcrumbItems.value, 'breadcrumbItems')
+    // console.log(breadcrumbItems.value, 'breadcrumbItems')
     breadcrumbItems.value.at(-1).chartData = drawData
+    console.log(drawData.draw_data, 'draw_data')
     if (drawData.draw_data) chartRef.value.reDraw(drawData)
     const descriptionBody = {
       sql: drawData.sql,
@@ -77,7 +80,7 @@ onMounted(() => {
     }
     const descp = await fetchChartDescription(descriptionBody)
     breadcrumbItems.value.at(-1).description = descp
-    activity.dataURL = chartRef.value.getDataURL()
+    if (drawData.draw_data) activity.dataURL = chartRef.value.getDataURL()
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
     loading.value = false
@@ -157,7 +160,7 @@ const preview = () => {
   router.push('/step4')
 }
 const getChartAndDescription = (activity, tasks) => {
-  const task = new Promise(async(resolve) => {
+  const task = async() => {
     const body = {
       question: activity.content,
       columns_name: step.step1.columns_name,
@@ -180,11 +183,12 @@ const getChartAndDescription = (activity, tasks) => {
     activity.description = descp
     breadcrumbItems.value = findFamily(activities, activity.id)
     breadcrumbItems.value.at(-1).description = descp
-    chartRef.value.reDraw(drawData)
-    activity.dataURL = chartRef.value.getDataURL()
-    resolve('task =' + activity.content)
-  })
-  tasks.push(task)
+    currentAct.value = activity
+    if (drawData.draw_data) chartRef.value.reDraw(drawData)
+    if (drawData.draw_data) activity.dataURL = chartRef.value.getDataURL()
+    return 'task =' + activity.content
+  }
+  tasks.push(task())
 }
 const requestAll = (activity, tasks) => {
   if (activity instanceof Array) {
@@ -218,7 +222,7 @@ const allMission = (activities) => {
         <div class="timeline-container">
           <div style="display: flex;justify-content: flex-end;padding: 10px">
             <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
-            <el-button type="primary" @click="console.log(activities)">check</el-button>
+            <el-button type="primary" @click="console.log(activities, currentAct)">check</el-button>
           </div>
           <time-line :activities="activities" :level="1" />
         </div>
@@ -253,14 +257,13 @@ const allMission = (activities) => {
 <style lang="scss" scoped>
 .step-forward{
   padding: 20px;
-  //text-align: left;
   text-align: right;
 }
 .step3-container{
   display: flex;
   min-width: 1628px;
-  //height: calc(100vh - 112px - 72px - 17px);
   .timeline-container{
+    max-width: 500px;
     border-right: 1px dashed #acacac ;
     padding-right: 20px;
     flex-shrink: 0;

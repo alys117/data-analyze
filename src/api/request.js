@@ -74,9 +74,14 @@ const fetchDrawChart = async(body) => {
 }
 
 const fakeFetchDrawChart = async() => {
+  const n = Math.random()
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(drawData)
+      const data = structuredClone(drawData)
+      data.draw_data = n > 0.5 ? drawData.draw_data : ''
+      // console.log('随机数', n, data.draw_data)
+      console.log('%c' + '随机数' + n, 'color: red; font-size: 20px;')
+      resolve(data)
     }, 100)
   })
 }
@@ -96,8 +101,8 @@ const fetchDescrip = async(body) => {
 const fakeFetchDescp = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(desciption)
-    }, 50)
+      resolve(desciption + Math.random())
+    }, Math.random() * 1000)
   })
 }
 

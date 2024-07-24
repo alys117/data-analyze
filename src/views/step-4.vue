@@ -76,7 +76,7 @@ function dealWith(activities) {
         <node-preview :nodes="nodes" />
         <div class="step-forward">
           <el-button size="default" type="primary" @click="router.push('/step3')">上一步</el-button>
-          <el-button size="default" type="primary" @click="router.push('/demo1')">demo</el-button>
+<!--          <el-button size="default" type="primary" @click="router.push('/demo1')">demo</el-button>-->
         </div>
       </div>
     </div>

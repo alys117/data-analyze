@@ -136,9 +136,9 @@ onMounted(async() => {
                 @dragleave="dragleave_handler($event, data)"
                 @dragover="dragover_handler($event,data)"
                 :style="{background: data.css?'lightgreen':''}">
-            <span>
+            <span style="display: flex; align-items: center;">
               <span v-if="data.children && data.children.length"></span>
-              <span v-else style="margin-right: 3px"><el-icon><Platform /></el-icon></span>
+              <span v-else style="color: #7c7c7c;display: flex;margin-right: 5px;"><el-icon><Platform /></el-icon></span>
               <span v-if="!data.isInput">{{ node.label }}</span>
               <span v-else><el-input size="small" :ref="(el)=>setRef(el, data)" v-model="currentInput" placeholder="请输入分类名称" @blur="saveCurrentInp(data)"/></span>
             </span>
@@ -187,7 +187,7 @@ onMounted(async() => {
     overflow: auto;
     // 树滚动条
     .flow-tree {
-      width: 500px;
+      width: 450px;
       overflow: auto;
       :deep(.el-tree-node) {
         .el-tree-node__children {
@@ -238,16 +238,35 @@ onMounted(async() => {
 .custom-tree-node:hover .tree-btn{
   visibility: visible;
 }
+</style>
+<style scoped>
+/* 这里需要用到深度选择器，否则改变不了样式，
+无论scoped是否存在都需要使用到深度选择器 */
+/*:deep(.el-tree-node) {
+  white-space: normal;
+  outline: 0;
+}
 
-// 树节点文本换行
-.tree-wrap :deep(.el-tree-node) {
+:deep(.el-tree-node__content) {
+  text-align: left;
+  align-items: start;
+  margin: 4px;
+  height: 100%;
+
+}*/
+</style>
+<style scoped lang="scss">
+// 如果使用了sass时，也可以这样写，
+// 使用了sass也可以像上面一样写，就写两个深度选择器
+// 这个我也是F12，然后看到它们对应的关系的
+:deep(.el-tree-node) {
   white-space: normal;
   outline: 0;
 
   .el-tree-node__content {
     text-align: left;
-    align-items: start;
-    margin: 4px;
+    //align-items: start;
+    margin: 8px;
     height: 100%;
   }
 }
