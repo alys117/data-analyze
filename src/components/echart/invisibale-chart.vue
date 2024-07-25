@@ -1,6 +1,8 @@
 <template>
   <div class="pie-chart-container">
     <v-chart ref="chartRef"
+             @click="handleClick"
+             @finished="finished"
              :option="option"
              autoresize
              class="chart" />
@@ -53,9 +55,7 @@ const resize = () => {
   })
 }
 const reDraw = (data, msg) => {
-  loading.value = true
   console.log(data, '图表数据', msg)
-  if (!data.draw_data) return
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
@@ -71,7 +71,7 @@ const reDraw = (data, msg) => {
     })
   }
 }
-defineExpose({ reDraw, dispose, clear, resize, getDataURL: () => chartRef.value.getDataURL() })
+defineExpose({ reDraw, dispose, clear, resize, getDataURL: () => chartRef.value.getDataURL(), getConnectedDataURL: () => chartRef.value.getConnectedDataURL() })
 
 const option = ref({
   title: {
@@ -127,7 +127,6 @@ const option = ref({
   ]
 })
 const chartRef = ref()
-const loading = ref(true)
 const exportPNG = async() => {
   const picInfo = chartRef.value.getDataURL({
     type: 'png',
@@ -143,31 +142,19 @@ const exportPNG = async() => {
   elink.click()
   URL.revokeObjectURL(elink.href) // 释放URL 对象
 }
-const props = defineProps({
-  data: {
-    type: Object,
-    required: false,
-    default: () => {
-      return {
-        draw_data: {
-          x: {
-            x_axis: []
-          },
-          y: { }
-        }
-      }
-    }
-  }
-})
+const handleClick = (params) => {
+  console.log('click', params)
+}
+const finished = async() => {
+  // console.log('finished', option.value.series)
+  // const dataURL = await chartRef.value.getDataURL()
+}
 onMounted(() => {
   // 设置overflow: auto;后就不需要resize了
   // window.addEventListener('resize', () => {
   //   console.log('resize......', props.data.tip)
   //   chartRef.value.resize()
-  // }
-  if (props.data) {
-    reDraw(props.data)
-  }
+  // })
 })
 </script>
 

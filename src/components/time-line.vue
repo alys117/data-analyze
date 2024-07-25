@@ -65,9 +65,9 @@ const checkPoint = (activity) => {
 emitter.on('change-point', ({ id, type }) => {
   activities.forEach((activity) => {
     if (activity.id === id) {
-      console.log('type', type, id)
+      // console.log('type', type, id)
       activity.type = type
-      console.log('type activity', activity)
+      // console.log('type activity', activity)
       // 除非寻找父节点
       emit('relation', id)
     }
@@ -75,7 +75,7 @@ emitter.on('change-point', ({ id, type }) => {
 })
 
 const changeByChild = (id) => {
-  console.log('changeByChild', id, activities)
+  // console.log('changeByChild', id, activities)
   activities.forEach((activity) => {
     if (activity.children && activity.children.length) {
       let flag = false
@@ -85,11 +85,10 @@ const changeByChild = (id) => {
         child.id === id && (flag = true)
       })
       if (flag) {
-        console.log('flag', activities, result)
+        // console.log('flag', activities, result)
         const sum = result.reduce((a, b) => a + b)
         switch (sum) {
           case 0:
-            console.log('sum', activity.id, id)
             activity.type = 'danger'
             activity.hollow = true
             break

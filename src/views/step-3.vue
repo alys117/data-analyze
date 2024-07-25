@@ -2,7 +2,7 @@
 import MyStep from '@/components/my-step.vue'
 import { saveAs } from 'file-saver'
 import { useRouter } from 'vue-router'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, toRaw } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
@@ -10,6 +10,7 @@ import { ArrowRight } from '@element-plus/icons-vue'
 import { fetchChartDescription, fetchDrawData, fetchRewriteOutline, fetchFile } from '@/api/request.js'
 import CustomChart from '@/components/echart/custom-chart.vue'
 import { useStepStore } from '@/stores/step.js'
+import InvisibaleChart from '@/components/echart/invisibale-chart.vue'
 const step = useStepStore()
 const router = useRouter()
 
@@ -18,6 +19,18 @@ const currentAct = ref({})
 const activities = reactive([])
 const breadcrumbItems = ref([])
 const chartRef = ref()
+const invisibleList = ref([])
+const invisibleRef = ref([])
+const setRef = (el, item) => {
+  if (!el) return
+  if (invisibleRef.value.find(i => i.id === item.id)) return
+  invisibleRef.value.push({ id: item.id, el: el })
+}
+const exportDataURL = () => {
+  invisibleRef.value.forEach(item => {
+    console.log(item.id, item.el.getDataURL())
+  })
+}
 const init = () => {
   // 这里想不通，why
   // 这里想不通，why
@@ -26,14 +39,15 @@ const init = () => {
     const tmp = structuredClone(toRaw(step.step2.treeData))
     setId(tmp)
     activities.push(...tmp)
-    chartRef.value.clear()
-    chartRef.value.resize()
+    // chartRef.value.clear()
+    // chartRef.value.resize()
   })
 }
 const reset = () => {
   activities.length = 0
   breadcrumbItems.value.length = 0
   currentAct.value = {}
+  chartRef.value.clear()
 }
 onActivated(() => {
   reset()
@@ -45,7 +59,7 @@ onMounted(() => {
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
     chartRef.value.clear()
-    console.log('clear')
+    console.log('clear chart')
     if (activity.chartData) {
       if (activity.chartData.draw_data) {
         chartRef.value.reDraw(activity.chartData, '使用缓存数据')
@@ -72,15 +86,18 @@ onMounted(() => {
     const drawData = await fetchDrawData(rewriteData)
     // console.log(breadcrumbItems.value, 'breadcrumbItems')
     breadcrumbItems.value.at(-1).chartData = drawData
-    console.log(drawData.draw_data, 'draw_data')
-    if (drawData.draw_data) chartRef.value.reDraw(drawData)
+    // console.log(drawData.draw_data, 'draw_data')
+    if (drawData.draw_data) {
+      console.log('reDraw')
+      chartRef.value.reDraw(drawData)
+      invisibleRef.value.find((item) => item.id === activity.id).el.reDraw(drawData)
+    }
     const descriptionBody = {
       sql: drawData.sql,
       question: rewriteData.user_input
     }
     const descp = await fetchChartDescription(descriptionBody)
     breadcrumbItems.value.at(-1).description = descp
-    if (drawData.draw_data) activity.dataURL = chartRef.value.getDataURL()
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
     loading.value = false
@@ -93,6 +110,8 @@ function setId(activities) {
     activity.content = activity.label || activity.content
     if (activity.children && activity.children.length) {
       setId(activity.children)
+    } else {
+      invisibleList.value.push({ id: activity.id, dataURL: '' })
     }
   })
 }
@@ -127,18 +146,29 @@ function removePropertyFromTree(tree, propName) {
   // 如果既不是对象也不是数组，直接返回原值
   return tree
 }
+function setDataURL(activities) {
+  activities.forEach((activity) => {
+    if (activity.chartData && activity.chartData.draw_data) {
+      activity.dataURL = invisibleRef.value.find((item) => item.id === activity.id).el.getDataURL()
+    }
+    if (activity.children && activity.children.length) {
+      setDataURL(activity.children)
+    }
+  })
+}
 const showDOC = async() => {
   const obj = {
     doc: 'doc',
     data: null
   }
+  setId(activities)
+  setDataURL(activities)
   obj.data = removePropertyFromTree(activities, 'id')
   obj.data = removePropertyFromTree(obj.data, 'hollow')
   obj.data = removePropertyFromTree(obj.data, 'type')
   obj.data = removePropertyFromTree(obj.data, 'label')
   // obj.data = removePropertyFromTree(obj.data, 'chartData')
   // obj.data = removePropertyFromTree(obj.data, 'description')
-  console.log(obj)
   const now = new Date().getTime()
   const data = await fetchFile({ content: obj.data, file_name: now + '.docx' })
   console.log(data, 'file....')
@@ -152,6 +182,7 @@ const preview = () => {
     doc: 'doc',
     data: null
   }
+  setDataURL(activities)
   obj.data = removePropertyFromTree(activities, 'hollow')
   obj.data = removePropertyFromTree(obj.data, 'type')
   // obj.data = removePropertyFromTree(obj.data, 'content')
@@ -174,6 +205,10 @@ const getChartAndDescription = (activity, tasks) => {
     rewriteData.table_name_list = step.step1.tables_name
     rewriteData.columns_name = step.step1.columns_name
     const drawData = await fetchDrawData(rewriteData)
+    if (drawData.draw_data) {
+      chartRef.value.reDraw(drawData)
+      invisibleRef.value.find((item) => item.id === activity.id).el.reDraw(drawData)
+    }
     activity.chartData = drawData
     const descriptionBody = {
       sql: drawData.sql,
@@ -184,8 +219,6 @@ const getChartAndDescription = (activity, tasks) => {
     breadcrumbItems.value = findFamily(activities, activity.id)
     breadcrumbItems.value.at(-1).description = descp
     currentAct.value = activity
-    if (drawData.draw_data) chartRef.value.reDraw(drawData)
-    if (drawData.draw_data) activity.dataURL = chartRef.value.getDataURL()
     return 'task =' + activity.content
   }
   tasks.push(task())
@@ -222,7 +255,8 @@ const allMission = (activities) => {
         <div class="timeline-container">
           <div style="display: flex;justify-content: flex-end;padding: 10px">
             <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
-            <el-button type="primary" @click="console.log(activities, currentAct)">check</el-button>
+            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>
+            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>
           </div>
           <time-line :activities="activities" :level="1" />
         </div>
@@ -240,8 +274,16 @@ const allMission = (activities) => {
             <div v-else v-html="description"></div>
           </div>
           <custom-chart ref="chartRef" />
+          <div v-for="item of invisibleList" :key="item.id">
+            <!--            <custom-chart ref="shadowRef" :style="{position: 'fixed', left: -100*(index+1)+'vw' }" />-->
+            <div style="height: 0; overflow: auto">
+              <invisibale-chart :ref="el=>setRef(el, item)" />
+            </div>
+          </div>
+
           <el-button type="primary" @click="completePoint">complete</el-button>
           <el-button type="danger" @click="resetPoint">uncomplete</el-button>
+          <el-button type="danger" @click="exportDataURL">export</el-button>
         </div>
 
       </div>

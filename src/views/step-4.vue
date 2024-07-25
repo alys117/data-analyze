@@ -62,6 +62,10 @@ function dealWith(activities) {
     }
   })
 }
+function back2step3() {
+  step.setStep3(null)
+  router.push('/step3')
+}
 </script>
 
 <template>
@@ -75,8 +79,8 @@ function dealWith(activities) {
       <div ref="contentRef" class="content">
         <node-preview :nodes="nodes" />
         <div class="step-forward">
-          <el-button size="default" type="primary" @click="router.push('/step3')">上一步</el-button>
-<!--          <el-button size="default" type="primary" @click="router.push('/demo1')">demo</el-button>-->
+          <el-button size="default" type="primary" @click="back2step3">上一步</el-button>
+          <!--          <el-button size="default" type="primary" @click="router.push('/demo1')">demo</el-button>-->
         </div>
       </div>
     </div>

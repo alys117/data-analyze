@@ -29,7 +29,9 @@ onMounted(() => {
     <div v-if="node.description" style="background: #fcfcfc;padding: 10px;margin: 20px 0;">
       <div v-html="descp(node.description)"></div>
     </div>
-    <custom-chart v-if="node.chartData" :data="node.chartData" />
+    <div v-if="node.chartData && node.chartData.draw_data">
+      <custom-chart v-if="node.chartData" :data="node.chartData" />
+    </div>
     <div v-if="node.children && node.children.length">
       <node-preview :nodes="node.children" :level="level+1" />
     </div>

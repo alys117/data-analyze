@@ -74,13 +74,20 @@ const fetchDrawChart = async(body) => {
 }
 
 const fakeFetchDrawChart = async() => {
-  const n = Math.random()
   return await new Promise((resolve) => {
     setTimeout(() => {
+      const n = Math.random()
       const data = structuredClone(drawData)
-      data.draw_data = n > 0.5 ? drawData.draw_data : ''
-      // console.log('随机数', n, data.draw_data)
+      if (n > 0.5) data.draw_data = ''
       console.log('%c' + '随机数' + n, 'color: red; font-size: 20px;')
+      if (data.draw_data) {
+        Object.keys(data.draw_data.y).forEach((key) => {
+          data.draw_data.y[key] = data.draw_data.y[key].map((item) => {
+            const m = Math.random()
+            return m.toFixed(4)
+          })
+        })
+      }
       resolve(data)
     }, 100)
   })
