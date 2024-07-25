@@ -11,6 +11,7 @@ import { fetchChartDescription, fetchDrawData, fetchRewriteOutline, fetchFile } 
 import CustomChart from '@/components/echart/custom-chart.vue'
 import { useStepStore } from '@/stores/step.js'
 import InvisibaleChart from '@/components/echart/invisibale-chart.vue'
+import to from 'await-to-js'
 const step = useStepStore()
 const router = useRouter()
 
@@ -76,14 +77,24 @@ onMounted(() => {
       columns_name: step.step1.columns_name,
       other: []
     }
-    const rewriteData = await fetchRewriteOutline(body)
+    const [err, rewriteData] = await to(fetchRewriteOutline(body))
+    if (err) {
+      console.log('/api/rewrite_report_outline 接口报错', err)
+      loading.value = false
+      return
+    }
     rewriteData.answer_plot = rewriteData['绘图要求']
     rewriteData.user_input = rewriteData['问题']
     delete rewriteData['绘图要求']
     delete rewriteData['问题']
     rewriteData.table_name_list = step.step1.tables_name
     rewriteData.columns_name = step.step1.columns_name
-    const drawData = await fetchDrawData(rewriteData)
+    const [err2, drawData] = await to(fetchDrawData(rewriteData))
+    if (err2) {
+      console.log('/api/draw_data 接口报错', err2)
+      loading.value = false
+      return
+    }
     // console.log(breadcrumbItems.value, 'breadcrumbItems')
     breadcrumbItems.value.at(-1).chartData = drawData
     // console.log(drawData.draw_data, 'draw_data')
@@ -96,7 +107,12 @@ onMounted(() => {
       sql: drawData.sql,
       question: rewriteData.user_input
     }
-    const descp = await fetchChartDescription(descriptionBody)
+    const [err3, descp] = await to(fetchChartDescription(descriptionBody))
+    if (err3) {
+      console.log('/api/chart_description 接口报错', err3)
+      loading.value = false
+      return
+    }
     breadcrumbItems.value.at(-1).description = descp
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
@@ -197,14 +213,22 @@ const getChartAndDescription = (activity, tasks) => {
       columns_name: step.step1.columns_name,
       other: []
     }
-    const rewriteData = await fetchRewriteOutline(body)
+    const [err, rewriteData] = await to(fetchRewriteOutline(body))
+    if (err) {
+      console.log('/api/rewrite_report_outline 接口报错', err)
+      return
+    }
     rewriteData.answer_plot = rewriteData['绘图要求']
     rewriteData.user_input = rewriteData['问题']
     delete rewriteData['绘图要求']
     delete rewriteData['问题']
     rewriteData.table_name_list = step.step1.tables_name
     rewriteData.columns_name = step.step1.columns_name
-    const drawData = await fetchDrawData(rewriteData)
+    const [err2, drawData] = await to(fetchDrawData(rewriteData))
+    if (err2) {
+      console.log('/api/draw_data 接口报错', err2)
+      return
+    }
     if (drawData.draw_data) {
       chartRef.value.reDraw(drawData)
       invisibleRef.value.find((item) => item.id === activity.id).el.reDraw(drawData)
@@ -214,7 +238,11 @@ const getChartAndDescription = (activity, tasks) => {
       sql: drawData.sql,
       question: rewriteData.user_input
     }
-    const descp = await fetchChartDescription(descriptionBody)
+    const [err3, descp] = await to(fetchChartDescription(descriptionBody))
+    if (err3) {
+      console.log('/api/chart_description 接口报错', err3)
+      return
+    }
     activity.description = descp
     breadcrumbItems.value = findFamily(activities, activity.id)
     breadcrumbItems.value.at(-1).description = descp
