@@ -72,8 +72,8 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/fallback/, '')
       },
       // 使用 proxy 实例
-      '/api1': {
-        target: 'http://36.138.6.177:7864',
+      '/mock': {
+        target: 'http://localhost:8000',
         changeOrigin: true,
         configure: (proxy, options) => {
           // proxy 是 'http-proxy' 的实例

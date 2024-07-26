@@ -14,6 +14,7 @@ import InvisibaleChart from '@/components/echart/invisibale-chart.vue'
 import to from 'await-to-js'
 const step = useStepStore()
 const router = useRouter()
+const route = useRoute()
 
 const loading = ref(true)
 const currentAct = ref({})
@@ -30,6 +31,32 @@ const setRef = (el, item) => {
 const exportDataURL = () => {
   invisibleRef.value.forEach(item => {
     console.log(item.id, item.el.getDataURL())
+  })
+}
+const mock = async() => {
+  const [err, data] = await to(sometimesWrongRequest())
+  if (err) {
+    console.error('err', err)
+    console.log('出错的处理逻辑')
+  }else {
+    console.log('success', data)
+    console.log('成功的处理逻辑')
+  }
+}
+const sometimesWrongRequest = async() => {
+  return new Promise((resolve, reject) => {
+    fetch('http://localhost:8000/aaaa/draw_chart', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json'
+      },
+      body: JSON.stringify({ question: 'whatever' })
+    }).then(res => res.json()).then(data => {
+      resolve(data)
+    }).catch((err) => {
+      reject({ msg: '/mock/draw_chart 请球失败', error: err })
+    })
   })
 }
 const init = () => {
@@ -51,6 +78,7 @@ const reset = () => {
   chartRef.value.clear()
 }
 onActivated(() => {
+  if(router.options.history.state.back === '/step4') return
   reset()
   init()
 })
@@ -58,17 +86,21 @@ onMounted(() => {
   loading.value = false
   emitter.on('load-advice', async(activity) => {
     currentAct.value = activity
+    console.log('点击了', activity)
     breadcrumbItems.value = findFamily(activities, activity.id)
-    chartRef.value.clear()
+    chartRef.value && chartRef.value.clear()
     console.log('clear chart')
-    if (activity.chartData) {
-      if (activity.chartData.draw_data) {
-        chartRef.value.reDraw(activity.chartData, '使用缓存数据')
-        if (!activity.dataURL) {
-          activity.dataURL = chartRef.value.getDataURL()
+    if(activity.status === 1) {
+      if (activity.chartData) {
+        if (activity.chartData.draw_data) {
+          chartRef.value.reDraw(activity.chartData, '使用缓存数据')
+          if (!activity.dataURL) {
+            activity.dataURL = chartRef.value.getDataURL()
+          }
         }
       }
       activity.type || emitter.emit('change-point', { id: activity.id, type: 'danger' })
+      console.log('结束')
       return
     }
     loading.value = true
@@ -81,6 +113,7 @@ onMounted(() => {
     if (err) {
       console.log('/api/rewrite_report_outline 接口报错', err)
       loading.value = false
+      activity.status = -1
       return
     }
     rewriteData.answer_plot = rewriteData['绘图要求']
@@ -93,6 +126,7 @@ onMounted(() => {
     if (err2) {
       console.log('/api/draw_data 接口报错', err2)
       loading.value = false
+      activity.status = -1
       return
     }
     // console.log(breadcrumbItems.value, 'breadcrumbItems')
@@ -111,9 +145,11 @@ onMounted(() => {
     if (err3) {
       console.log('/api/chart_description 接口报错', err3)
       loading.value = false
+      activity.status = -1
       return
     }
     breadcrumbItems.value.at(-1).description = descp
+    activity.status = 1
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
     loading.value = false
@@ -216,7 +252,8 @@ const getChartAndDescription = (activity, tasks) => {
     const [err, rewriteData] = await to(fetchRewriteOutline(body))
     if (err) {
       console.log('/api/rewrite_report_outline 接口报错', err)
-      return
+      activity.status = -1
+      return '/api/rewrite_report_outline 接口报错， 终止该节点处理 ' + activity.content
     }
     rewriteData.answer_plot = rewriteData['绘图要求']
     rewriteData.user_input = rewriteData['问题']
@@ -226,8 +263,9 @@ const getChartAndDescription = (activity, tasks) => {
     rewriteData.columns_name = step.step1.columns_name
     const [err2, drawData] = await to(fetchDrawData(rewriteData))
     if (err2) {
-      console.log('/api/draw_data 接口报错', err2)
-      return
+      console.log('/api/draw_data 接口报错, 终止该节点处理', err2)
+      activity.status = -1
+      return '/api/draw_data 接口报错， 终止该节点处理 ' + activity.content
     }
     if (drawData.draw_data) {
       chartRef.value.reDraw(drawData)
@@ -240,12 +278,14 @@ const getChartAndDescription = (activity, tasks) => {
     }
     const [err3, descp] = await to(fetchChartDescription(descriptionBody))
     if (err3) {
-      console.log('/api/chart_description 接口报错', err3)
-      return
+      console.log('/api/chart_description 接口报错，终止该节点处理', err3)
+      activity.status = -1
+      return '/api/chart_description 接口报错, 终止该节点处理 ' + activity.content
     }
     activity.description = descp
     breadcrumbItems.value = findFamily(activities, activity.id)
     breadcrumbItems.value.at(-1).description = descp
+    activity.status = 1
     currentAct.value = activity
     return 'task =' + activity.content
   }
@@ -268,8 +308,8 @@ const allMission = (activities) => {
   loading.value = true
   const tasks = []
   requestAll(activities, tasks)
-  Promise.all(tasks).then(() => {
-    console.log('Mission all over')
+  Promise.allSettled(tasks).then((result) => {
+    console.log('Mission all over', result)
     loading.value = false
   })
 }
@@ -283,8 +323,8 @@ const allMission = (activities) => {
         <div class="timeline-container">
           <div style="display: flex;justify-content: flex-end;padding: 10px">
             <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
-            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>
-            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>
+<!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
+<!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
           </div>
           <time-line :activities="activities" :level="1" />
         </div>
@@ -309,9 +349,10 @@ const allMission = (activities) => {
             </div>
           </div>
 
-          <el-button type="primary" @click="completePoint">complete</el-button>
-          <el-button type="danger" @click="resetPoint">uncomplete</el-button>
-          <el-button type="danger" @click="exportDataURL">export</el-button>
+<!--          <el-button type="primary" @click="completePoint">complete</el-button>-->
+<!--          <el-button type="danger" @click="resetPoint">uncomplete</el-button>-->
+<!--          <el-button type="danger" @click="exportDataURL">export</el-button>-->
+<!--          <el-button type="danger" @click="mock">mock</el-button>-->
         </div>
 
       </div>

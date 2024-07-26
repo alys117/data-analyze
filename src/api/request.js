@@ -62,19 +62,24 @@ const fakeFetchRewriteOutline = async() => {
 }
 
 const fetchDrawChart = async(body) => {
-  const data = await fetch('/api/draw_chart', {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
-    body: JSON.stringify(body)
-  }).then(res => res.json())
-  return data
+  return new Promise((resolve, reject) => {
+    fetch('/api/draw_chart', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }).then(res => res.json()).then((data) => {
+      resolve(data)
+    }).catch((err) => {
+      reject(err)
+    })
+  })
 }
 
 const fakeFetchDrawChart = async() => {
-  return await new Promise((resolve) => {
+  return await new Promise((resolve, reject) => {
     setTimeout(() => {
       const n = Math.random()
       const data = structuredClone(drawData)
@@ -88,8 +93,8 @@ const fakeFetchDrawChart = async() => {
           })
         })
       }
-      resolve(data)
-    }, 100)
+      Math.random() > 0.5 ? resolve(data) : reject({ error: '模拟错误' })
+    }, 1000 * Math.random())
   })
 }
 
