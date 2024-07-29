@@ -117,6 +117,28 @@ onMounted(async() => {
   <div class="transfer-container">
     <div class="tree tree-wrap">
       <el-tree
+        ref='treeOut'
+        class="flow-tree"
+        :data="dataSourceOut"
+        node-key="id"
+        default-expand-all
+        :expand-on-click-node="false"
+      >
+        <template #default="{ node, data }">
+          <span class="custom-tree-node" :id='data.id' :data-tree-id="data.id" draggable="true" @dragstart="handleNodeDragStart">
+            <span>{{ node.label }}</span>
+          </span>
+        </template>
+      </el-tree>
+    </div>
+    <div class="middle">
+      <div><el-button type="primary" size="small" class="button-a" :icon="DArrowRight"/></div>
+      <div><el-button type="primary" size="small" class="button-a" :icon="DArrowLeft"/></div>
+      <div><el-button type="primary" size="small" class="button-a" :icon="RefreshLeft"/></div>
+      <div><el-button type="primary" size="small" class="button-a" :icon="Check" @click="console.log(toRaw(dataSourceIn))" /></div>
+    </div>
+    <div class="tree tree-wrap">
+      <el-tree
         ref='treeIn'
         class="flow-tree"
         :data="dataSourceIn"
@@ -147,28 +169,6 @@ onMounted(async() => {
               <a @click="edit(data)">编辑</a>
               <a @click="remove(node, data)">删除</a>
             </span>
-          </span>
-        </template>
-      </el-tree>
-    </div>
-    <div class="middle">
-      <div><el-button type="primary" size="small" class="button-a" :icon="DArrowRight"/></div>
-      <div><el-button type="primary" size="small" class="button-a" :icon="DArrowLeft"/></div>
-      <div><el-button type="primary" size="small" class="button-a" :icon="RefreshLeft"/></div>
-      <div><el-button type="primary" size="small" class="button-a" :icon="Check" @click="console.log(toRaw(dataSourceIn))" /></div>
-    </div>
-    <div class="tree tree-wrap">
-      <el-tree
-        ref='treeOut'
-        class="flow-tree"
-        :data="dataSourceOut"
-        node-key="id"
-        default-expand-all
-        :expand-on-click-node="false"
-      >
-        <template #default="{ node, data }">
-          <span class="custom-tree-node" :id='data.id' :data-tree-id="data.id" draggable="true" @dragstart="handleNodeDragStart">
-            <span>{{ node.label }}</span>
           </span>
         </template>
       </el-tree>

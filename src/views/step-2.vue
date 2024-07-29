@@ -30,6 +30,10 @@ onMounted(async() => {
 })
 onActivated(async() => {
   console.log('step-2 activated')
+  if (router.options.history.state.back === '/step3' && outlineTree.value) {
+    loading.value = false
+    return
+  }
   loading.value = true
   await init()
   loading.value = false
@@ -50,11 +54,8 @@ const init = async() => {
     <div class="main-container">
       <div class="left">
         <div class="head">
-          <div>
-            <div>大纲栏</div>
-          </div>
           <div class="history-head">
-            <span>历史大纲栏</span>
+            <span style="padding-left: 10px">历史大纲栏</span>
             <div class="history-head-child">
               <el-input
                 v-model="input3"
@@ -74,6 +75,11 @@ const init = async() => {
               </el-input>
             </div>
           </div>
+          <div>
+            <div>
+              <span style="padding-left: 10px">历史大纲栏</span>
+            </div>
+          </div>
         </div>
         <div class="content">
           <div class="tree-container">
@@ -88,12 +94,12 @@ const init = async() => {
         </div>
       </div>
     </div>
-<!--    <div style="padding: 20px">-->
-<!--      <span class="mind-title">大纲思维导图</span>-->
-<!--      <div class="mind-container">-->
-<!--        <js-mind />-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--    <div style="padding: 20px">-->
+    <!--      <span class="mind-title">大纲思维导图</span>-->
+    <!--      <div class="mind-container">-->
+    <!--        <js-mind />-->
+    <!--      </div>-->
+    <!--    </div>-->
     <div class="step-forward">
       <el-button size="default" type="primary" @click="router.push('/step1')">上一步</el-button>
       <el-button size="default" type="primary" @click="toStep3">下一步</el-button>
@@ -115,7 +121,6 @@ const init = async() => {
     display: flex;
     background-color: #f5f8fb;
     margin-bottom: 10px;
-    justify-content: space-between;
     align-items: center;
     .history-head{
       display: flex;
@@ -132,6 +137,8 @@ const init = async() => {
   flex-direction: column;
   .mind-title{
     padding-left: 20px;
+    background-color: #f5f8fb;
+    line-height: 32px;
   }
   .mind-container{}
 }

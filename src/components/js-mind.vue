@@ -122,7 +122,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .js-back{
-  margin: 20px;
+  //margin: 20px;
   background-color: #fcfcfc;
 }
 .js-mind-container {

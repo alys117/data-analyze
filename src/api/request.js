@@ -83,7 +83,8 @@ const fakeFetchDrawChart = async() => {
     setTimeout(() => {
       const n = Math.random()
       const data = structuredClone(drawData)
-      if (n > 0.5) data.draw_data = ''
+      data.draw_data = Math.random() > 0.8 ? drawData.draw_data : drawData.draw_data_2
+      if (n > 0.8) data.draw_data = ''
       console.log('%c' + '随机数' + n, 'color: red; font-size: 20px;')
       if (data.draw_data) {
         Object.keys(data.draw_data.y).forEach((key) => {
@@ -93,7 +94,7 @@ const fakeFetchDrawChart = async() => {
           })
         })
       }
-      Math.random() > 0.5 ? resolve(data) : reject({ error: '模拟错误' })
+      Math.random() > 0.2 ? resolve(data) : reject({ error: '模拟错误' })
     }, 1000 * Math.random())
   })
 }

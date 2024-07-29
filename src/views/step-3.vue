@@ -14,7 +14,6 @@ import InvisibaleChart from '@/components/echart/invisibale-chart.vue'
 import to from 'await-to-js'
 const step = useStepStore()
 const router = useRouter()
-const route = useRoute()
 
 const loading = ref(true)
 const currentAct = ref({})
@@ -38,7 +37,7 @@ const mock = async() => {
   if (err) {
     console.error('err', err)
     console.log('出错的处理逻辑')
-  }else {
+  } else {
     console.log('success', data)
     console.log('成功的处理逻辑')
   }
@@ -77,12 +76,21 @@ const reset = () => {
   currentAct.value = {}
   chartRef.value.clear()
 }
+const changedDataURLArr = ref([])
 onActivated(() => {
-  if(router.options.history.state.back === '/step4') return
+  if (router.options.history.state.back === '/step4' && activities.length) return
   reset()
   init()
 })
 onMounted(() => {
+  emitter.on('legendselectchanged', (legend) => {
+    const changedDataURL = chartRef.value.getDataURL()
+    if (changedDataURLArr.value.find(item => item.id === currentAct.value.id)) {
+      changedDataURLArr.value.find(item => item.id === currentAct.value.id).dataURL = changedDataURL
+    } else {
+      changedDataURLArr.value.push({ id: currentAct.value.id, dataURL: changedDataURL })
+    }
+  })
   loading.value = false
   emitter.on('load-advice', async(activity) => {
     currentAct.value = activity
@@ -90,7 +98,7 @@ onMounted(() => {
     breadcrumbItems.value = findFamily(activities, activity.id)
     chartRef.value && chartRef.value.clear()
     console.log('clear chart')
-    if(activity.status === 1) {
+    if (activity.status === 1) {
       if (activity.chartData) {
         if (activity.chartData.draw_data) {
           chartRef.value.reDraw(activity.chartData, '使用缓存数据')
@@ -126,6 +134,7 @@ onMounted(() => {
     if (err2) {
       console.log('/api/draw_data 接口报错', err2)
       loading.value = false
+      ElMessageBox.alert('未知错误，请重新请求！！', '系统提示', { type: 'error' })
       activity.status = -1
       return
     }
@@ -323,8 +332,9 @@ const allMission = (activities) => {
         <div class="timeline-container">
           <div style="display: flex;justify-content: flex-end;padding: 10px">
             <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
-<!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
-<!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
+            <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
+            <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
+            <!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
           </div>
           <time-line :activities="activities" :level="1" />
         </div>
@@ -349,10 +359,10 @@ const allMission = (activities) => {
             </div>
           </div>
 
-<!--          <el-button type="primary" @click="completePoint">complete</el-button>-->
-<!--          <el-button type="danger" @click="resetPoint">uncomplete</el-button>-->
-<!--          <el-button type="danger" @click="exportDataURL">export</el-button>-->
-<!--          <el-button type="danger" @click="mock">mock</el-button>-->
+          <!--          <el-button type="primary" @click="completePoint">complete</el-button>-->
+          <!--          <el-button type="danger" @click="resetPoint">uncomplete</el-button>-->
+          <!--          <el-button type="danger" @click="exportDataURL">export</el-button>-->
+          <!--          <el-button type="danger" @click="mock">mock</el-button>-->
         </div>
 
       </div>

@@ -83,7 +83,7 @@ const crudStore = reactive({
       // console.log(column.field)
       column.field && useField.push(column.field)
     })
-    VxeUIExport.modal.message('使用的字段：' + useField.join(', '))
+    VxeUIExport.modal.message('使用的字段：' + $grid.getTableColumn().tableColumn.map(i => i.title).join(', '))
     return useField
   },
   getWidth: (type) => {

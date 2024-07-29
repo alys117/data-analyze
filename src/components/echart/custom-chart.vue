@@ -2,6 +2,7 @@
   <div class="pie-chart-container">
     <v-chart ref="chartRef"
              :option="option"
+             @legendselectchanged="legendselectchanged"
              autoresize
              class="chart" />
     <div style="display: none">
@@ -34,7 +35,8 @@
 //   ToolboxComponent,
 //   GridComponent
 // ])
-
+import * as echarts from 'echarts'
+import emitter from '@/utils/mitt.js'
 import 'echarts'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
@@ -52,6 +54,17 @@ const resize = () => {
     chartRef.value.resize()
   })
 }
+const legendselectchanged = (legend) => {
+  emitter.emit('legendselectchanged', legend)
+}
+// 创建渐变色对象
+const gradient = new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+  offset: 0,
+  color: 'rgba(0, 0, 255, 1)' // 起始颜色
+}, {
+  offset: 1,
+  color: 'rgba(0, 0, 255, 0)' // 结束颜色，透明度为0
+}]);
 const reDraw = (data, msg) => {
   loading.value = true
   console.log(data, '图表数据', msg)
@@ -62,16 +75,22 @@ const reDraw = (data, msg) => {
   for (const datum in data.draw_data.y) {
     option.value.series.push({
       name: datum,
-      type: 'bar',
+      type: Math.random() > 0.5 ? 'bar' : 'line',
       // stack: 'Total',
       emphasis: {
         focus: 'series'
       },
-      data: data.draw_data.y[datum]
+      roundCap: true, // 设置圆角
+      data: data.draw_data.y[datum],
+      itemStyle: {
+        // 修改柱子圆角
+        barBorderRadius: 10, // 设置柱子圆角
+        color: gradient // 设置渐变色为填充色
+      }
     })
   }
 }
-defineExpose({ reDraw, dispose, clear, resize, getDataURL: () => chartRef.value.getDataURL() })
+defineExpose({ reDraw, dispose, clear, resize, legendselectchanged, getDataURL: () => chartRef.value.getDataURL() })
 
 const option = ref({
   title: {
@@ -105,7 +124,7 @@ const option = ref({
   xAxis: [
     {
       type: 'category',
-      boundaryGap: false,
+      // boundaryGap: false,
       data: []
     }
   ],
