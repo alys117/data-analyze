@@ -66,8 +66,6 @@ const init = () => {
     const tmp = structuredClone(toRaw(step.step2.treeData))
     setId(tmp)
     activities.push(...tmp)
-    // chartRef.value.clear()
-    // chartRef.value.resize()
   })
 }
 const reset = () => {
@@ -93,20 +91,20 @@ onMounted(() => {
   })
   loading.value = false
   emitter.on('load-advice', async(activity) => {
+    chartRef.value.clear()
     currentAct.value = activity
-    console.log('点击了', activity)
     breadcrumbItems.value = findFamily(activities, activity.id)
-    chartRef.value && chartRef.value.clear()
-    console.log('clear chart')
     if (activity.status === 1) {
+      // console.log(activity.id, activity.chartData.draw_data.y, 'get')
       if (activity.chartData) {
         if (activity.chartData.draw_data) {
-          chartRef.value.reDraw(activity.chartData, '使用缓存数据')
+          chartRef.value && chartRef.value.reDraw(activity.chartData, '使用缓存数据')
           if (!activity.dataURL) {
             activity.dataURL = chartRef.value.getDataURL()
           }
         }
       }
+      chartRef.value.setTip(!activity.chartData.draw_data)
       activity.type || emitter.emit('change-point', { id: activity.id, type: 'danger' })
       console.log('结束')
       return
@@ -139,13 +137,13 @@ onMounted(() => {
       return
     }
     // console.log(breadcrumbItems.value, 'breadcrumbItems')
-    breadcrumbItems.value.at(-1).chartData = drawData
-    // console.log(drawData.draw_data, 'draw_data')
+    // breadcrumbItems.value.at(-1).chartData = drawData
+    activity.chartData = drawData
     if (drawData.draw_data) {
-      console.log('reDraw')
       chartRef.value.reDraw(drawData)
       invisibleRef.value.find((item) => item.id === activity.id).el.reDraw(drawData)
     }
+    chartRef.value.setTip(!drawData.draw_data)
     const descriptionBody = {
       sql: drawData.sql,
       question: rewriteData.user_input
@@ -280,6 +278,7 @@ const getChartAndDescription = (activity, tasks) => {
       chartRef.value.reDraw(drawData)
       invisibleRef.value.find((item) => item.id === activity.id).el.reDraw(drawData)
     }
+    chartRef.value.setTip(!drawData.draw_data)
     activity.chartData = drawData
     const descriptionBody = {
       sql: drawData.sql,

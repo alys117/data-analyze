@@ -77,25 +77,26 @@ const fetchDrawChart = async(body) => {
     })
   })
 }
-
 const fakeFetchDrawChart = async() => {
+  const n = Math.random()
   return await new Promise((resolve, reject) => {
     setTimeout(() => {
-      const n = Math.random()
+      console.log('%c' + '随机数' + n, 'color: orange; font-size: 14px;')
+      if (n < 0.4) {
+        reject({ error: '模拟错误' })
+      }
       const data = structuredClone(drawData)
-      data.draw_data = Math.random() > 0.8 ? drawData.draw_data : drawData.draw_data_2
-      if (n > 0.8) data.draw_data = ''
-      console.log('%c' + '随机数' + n, 'color: red; font-size: 20px;')
+      // data.draw_data = n > 0.5 ? drawData.draw_data : drawData.draw_data_2 // 这里藏着一个大坑，不能直接赋值，否则会改变原始数据
+      data.draw_data = n > 0.5 ? data.draw_data : data.draw_data_2
+      delete data.draw_data_2
+      if (n > 0.9) data.draw_data = ''
       if (data.draw_data) {
-        Object.keys(data.draw_data.y).forEach((key) => {
-          data.draw_data.y[key] = data.draw_data.y[key].map((item) => {
-            const m = Math.random()
-            return m.toFixed(4)
-          })
+        Object.keys(data.draw_data.y).forEach((key, index) => {
+          data.draw_data.y[key] = data.draw_data.y[key].map(item => Math.random().toFixed(4))
         })
       }
-      Math.random() > 0.2 ? resolve(data) : reject({ error: '模拟错误' })
-    }, 1000 * Math.random())
+      resolve(data)
+    }, 1000 * n)
   })
 }
 

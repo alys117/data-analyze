@@ -1,5 +1,9 @@
 <template>
   <div class="pie-chart-container">
+    <div style="display: flex;align-items: center" v-if="tip">
+      <span style="margin: 10px;padding: 10px; background-color: #fdfdfd;font-size: 20px;font-family: 'Microsoft YaHei UI'">问题不能满足哟，麻烦修改后再分析</span>
+      <el-button type="warning">返回</el-button>
+    </div>
     <v-chart ref="chartRef"
              :option="option"
              @legendselectchanged="legendselectchanged"
@@ -57,25 +61,43 @@ const resize = () => {
 const legendselectchanged = (legend) => {
   emitter.emit('legendselectchanged', legend)
 }
+function hexToRgb(hex, prefix = 'rgba(', suffix = ')') {
+  // 确保我们有一个有效的十六进制字符串
+  hex = hex.replace('#', '')
+  if (hex.length !== 6) {
+    throw new Error('Invalid HEX color')
+  }
+  // 将十六进制转换为十进制
+  var r = parseInt(hex.substring(0, 2), 16)
+  var g = parseInt(hex.substring(2, 4), 16)
+  var b = parseInt(hex.substring(4, 6), 16)
+  return r + ', ' + g + ', ' + b
+}
+const tip = ref(false)
 // 创建渐变色对象
-const gradient = new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-  offset: 0,
-  color: 'rgba(0, 0, 255, 1)' // 起始颜色
-}, {
-  offset: 1,
-  color: 'rgba(0, 0, 255, 0)' // 结束颜色，透明度为0
-}]);
+const rgbColors = ['84, 112, 198', '145, 204, 117', '250, 200, 88', '238, 102, 102', '115, 192, 222', '59, 162, 114']
 const reDraw = (data, msg) => {
+  clear()
   loading.value = true
-  console.log(data, '图表数据', msg)
+  // console.log(data, '图表数据', msg)
   if (!data.draw_data) return
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
+  let count = 0
   for (const datum in data.draw_data.y) {
+    const gradient = new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+      offset: 0,
+      color: 'rgba(' + rgbColors[count % 6] + ', 1)' // 起始颜色
+    }, {
+      offset: 1,
+      color: 'rgba(' + rgbColors[count % 6] + ', 0.3)' // 结束颜色，透明度为0
+    }])
+    count++
     option.value.series.push({
       name: datum,
-      type: Math.random() > 0.5 ? 'bar' : 'line',
+      // type: Math.random() > 0.5 ? 'bar' : 'line',
+      type: 'bar',
       // stack: 'Total',
       emphasis: {
         focus: 'series'
@@ -84,13 +106,16 @@ const reDraw = (data, msg) => {
       data: data.draw_data.y[datum],
       itemStyle: {
         // 修改柱子圆角
-        barBorderRadius: 10, // 设置柱子圆角
+        borderRadius: 10, // 设置柱子圆角
         color: gradient // 设置渐变色为填充色
       }
     })
   }
 }
-defineExpose({ reDraw, dispose, clear, resize, legendselectchanged, getDataURL: () => chartRef.value.getDataURL() })
+function setTip(flag) {
+  tip.value = flag
+}
+defineExpose({ setTip, reDraw, dispose, clear, resize, legendselectchanged, getDataURL: () => chartRef.value.getDataURL() })
 
 const option = ref({
   title: {

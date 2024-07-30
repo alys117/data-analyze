@@ -55,7 +55,7 @@ const resize = () => {
   })
 }
 const reDraw = (data, msg) => {
-  console.log(data, '图表数据', msg)
+  // console.log(data, '图表数据', msg)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []

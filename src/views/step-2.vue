@@ -77,7 +77,7 @@ const init = async() => {
           </div>
           <div>
             <div>
-              <span style="padding-left: 10px">历史大纲栏</span>
+              <span style="padding-left: 10px">大纲栏</span>
             </div>
           </div>
         </div>
