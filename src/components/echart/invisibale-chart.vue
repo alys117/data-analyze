@@ -40,6 +40,7 @@
 import 'echarts'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
+import * as echarts from 'echarts'
 
 provide(THEME_KEY, 'light')
 
@@ -54,12 +55,22 @@ const resize = () => {
     chartRef.value.resize()
   })
 }
+const rgbColors = ['84, 112, 198', '145, 204, 117', '250, 200, 88', '238, 102, 102', '115, 192, 222', '59, 162, 114']
 const reDraw = (data, msg) => {
-  // console.log(data, '图表数据', msg)
+  clear()
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
+  let count = 0
   for (const datum in data.draw_data.y) {
+    const gradient = new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+      offset: 0,
+      color: 'rgba(' + rgbColors[count % 6] + ', 1)' // 起始颜色
+    }, {
+      offset: 1,
+      color: 'rgba(' + rgbColors[count % 6] + ', 0.3)' // 结束颜色，透明度为0
+    }])
+    count++
     option.value.series.push({
       name: datum,
       type: 'bar',
@@ -67,7 +78,12 @@ const reDraw = (data, msg) => {
       emphasis: {
         focus: 'series'
       },
-      data: data.draw_data.y[datum]
+      data: data.draw_data.y[datum],
+      itemStyle: {
+        // 修改柱子圆角
+        borderRadius: 10, // 设置柱子圆角
+        color: gradient // 设置渐变色为填充色
+      }
     })
   }
 }
@@ -105,7 +121,7 @@ const option = ref({
   xAxis: [
     {
       type: 'category',
-      boundaryGap: false,
+      // boundaryGap: false,
       data: []
     }
   ],

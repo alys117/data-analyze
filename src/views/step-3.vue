@@ -73,6 +73,7 @@ const reset = () => {
   breadcrumbItems.value.length = 0
   currentAct.value = {}
   chartRef.value.clear()
+  chartRef.value.setTip(false)
 }
 const changedDataURLArr = ref([])
 onActivated(() => {
@@ -249,7 +250,7 @@ const preview = () => {
   step.setStep3(obj.data)
   router.push('/step4')
 }
-const getChartAndDescription = (activity, tasks) => {
+const pushTasks = (activity, tasks) => {
   const task = async() => {
     const body = {
       question: activity.content,
@@ -275,10 +276,10 @@ const getChartAndDescription = (activity, tasks) => {
       return '/api/draw_data 接口报错， 终止该节点处理 ' + activity.content
     }
     if (drawData.draw_data) {
-      chartRef.value.reDraw(drawData)
+      // chartRef.value.reDraw(drawData) // 先不画了
       invisibleRef.value.find((item) => item.id === activity.id).el.reDraw(drawData)
     }
-    chartRef.value.setTip(!drawData.draw_data)
+    // chartRef.value.setTip(!drawData.draw_data) // 先不画了
     activity.chartData = drawData
     const descriptionBody = {
       sql: drawData.sql,
@@ -291,10 +292,10 @@ const getChartAndDescription = (activity, tasks) => {
       return '/api/chart_description 接口报错, 终止该节点处理 ' + activity.content
     }
     activity.description = descp
-    breadcrumbItems.value = findFamily(activities, activity.id)
-    breadcrumbItems.value.at(-1).description = descp
+    // breadcrumbItems.value = findFamily(activities, activity.id)
+    // breadcrumbItems.value.at(-1).description = descp
     activity.status = 1
-    currentAct.value = activity
+    // currentAct.value = activity
     return 'task =' + activity.content
   }
   tasks.push(task())
@@ -309,15 +310,17 @@ const requestAll = (activity, tasks) => {
   if (activity.children && activity.children.length) {
     requestAll(activity.children, tasks)
   } else {
-    getChartAndDescription(activity, tasks)
+    pushTasks(activity, tasks)
   }
 }
+const analyzed = ref(false)
 const allMission = (activities) => {
   loading.value = true
   const tasks = []
   requestAll(activities, tasks)
   Promise.allSettled(tasks).then((result) => {
     console.log('Mission all over', result)
+    analyzed.value = true
     loading.value = false
   })
 }
@@ -343,7 +346,7 @@ const allMission = (activities) => {
               <span style="font-size: 16px">{{ item.content }}</span>
             </el-breadcrumb-item>
             <div v-if="!breadcrumbItems.length" style="font-size: 16px">
-              未分析
+              {{ analyzed ? '已完成分析' : '未分析' }}
             </div>
           </el-breadcrumb>
           <div class="description">

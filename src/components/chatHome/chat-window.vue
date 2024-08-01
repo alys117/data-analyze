@@ -637,7 +637,7 @@ export default {
         'history_len': 10,
         'stream': true,
         // 'model_name': 'deepseek-chat',
-        'model_name': 'Qwen-72B-Chat',
+        'model_name': 'deepseek-ai/DeepSeek-V2-Chat',
         'temperature': 0.7,
         'max_tokens': 0,
         'prompt_name': 'analysis_report_input_rewrite'

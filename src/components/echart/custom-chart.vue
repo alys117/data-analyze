@@ -2,7 +2,7 @@
   <div class="pie-chart-container">
     <div style="display: flex;align-items: center" v-if="tip">
       <span style="margin: 10px;padding: 10px; background-color: #fdfdfd;font-size: 20px;font-family: 'Microsoft YaHei UI'">问题不能满足哟，麻烦修改后再分析</span>
-      <el-button type="warning">返回</el-button>
+      <el-button type="warning" @click="router.push('/step2')">返回</el-button>
     </div>
     <v-chart ref="chartRef"
              :option="option"
@@ -44,6 +44,7 @@ import emitter from '@/utils/mitt.js'
 import 'echarts'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
+const router = useRouter()
 
 provide(THEME_KEY, 'light')
 
