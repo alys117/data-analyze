@@ -18,6 +18,10 @@ export const useStepStore = defineStore('step', () => {
   function setStep3(val) {
     step3.value = val
   }
+  const treeCache = ref({})
+  function setTreeCache(val){
+    treeCache.value = val
+  }
 
-  return { step1, setStep1, step2, setStep2, step3, setStep3, aiConversation, setAiConversation }
+  return { step1, setStep1, step2, setStep2, step3, setStep3, aiConversation, setAiConversation, treeCache, setTreeCache }
 }, { persist: true })

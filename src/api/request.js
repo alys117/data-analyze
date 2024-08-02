@@ -82,7 +82,7 @@ const fakeFetchDrawChart = async() => {
   return await new Promise((resolve, reject) => {
     setTimeout(() => {
       console.log('%c' + '随机数' + n, 'color: orange; font-size: 14px;')
-      if (n < 0.4) {
+      if (n < 0.1) {
         reject({ error: '模拟错误' })
       }
       const data = structuredClone(drawData)

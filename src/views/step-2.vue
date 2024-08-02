@@ -30,6 +30,12 @@ onMounted(async() => {
 })
 onActivated(async() => {
   console.log('step-2 activated')
+  if (step.treeCache) {
+    outlineTree.value = step.treeCache
+    console.log('有缓存', outlineTree.value)
+    loading.value = false
+    return
+  }
   if (router.options.history.state.back === '/step3' && outlineTree.value) {
     loading.value = false
     return

@@ -77,11 +77,18 @@ const reset = () => {
 }
 const changedDataURLArr = ref([])
 onActivated(() => {
+  if (step.treeCache && step.treeCache.length) {
+    // reset()
+    // activities.push(...step.treeCache)
+    // console.log('使用cache')
+    return
+  }
   if (router.options.history.state.back === '/step4' && activities.length) return
   reset()
   init()
 })
 onMounted(() => {
+  console.log('step-3 mounted')
   emitter.on('legendselectchanged', (legend) => {
     const changedDataURL = chartRef.value.getDataURL()
     if (changedDataURLArr.value.find(item => item.id === currentAct.value.id)) {
@@ -158,6 +165,7 @@ onMounted(() => {
     }
     breadcrumbItems.value.at(-1).description = descp
     activity.status = 1
+    step.setTreeCache(activities)
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
     loading.value = false

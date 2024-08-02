@@ -15,7 +15,8 @@
       :data-id="activity.id"
     >
       <div style="margin-bottom: 20px" @click="checkPoint(activity)">
-        {{ activity.content }}
+        <span v-if="!activity.edit" @dblclick="activity.edit = true">{{ activity.content }}</span>
+        <el-input v-if="activity.edit" @blur="activity.edit = false" v-model="activity.content" @change="activity.label=activity.content" />
       </div>
       <div v-if="activity.children && activity.children.length">
         <time-line :key="activity.id" :activities="activity.children" :level="level + 1" @relation="changeByChild" style="padding: 0" />

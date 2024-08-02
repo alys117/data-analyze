@@ -66,6 +66,10 @@ onActivated(async() => {
 })
 onMounted(async() => {
   console.log('step-1 mounted')
+  step.setTreeCache(null)
+  step.setStep2(null)
+  step.setStep3(null)
+  step.setStep1(null)
 })
 </script>
 

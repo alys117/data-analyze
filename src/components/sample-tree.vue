@@ -104,6 +104,7 @@ watch(() => dataSourceIn.value, (newVal, oldVal) => {
 watch(() => props.treeData, (val) => {
   if (val) {
     dataSourceIn.value = props.treeData.dsIn
+    console.log('变化了', dataSourceIn.value)
   }
 })
 onMounted(async() => {
