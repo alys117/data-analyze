@@ -1,5 +1,5 @@
 <template>
-  <div class="pie-chart-container">
+  <div class="chart-container">
     <div style="display: flex;align-items: center" v-if="tip">
       <span style="margin: 10px;padding: 10px; background-color: #fdfdfd;font-size: 20px;font-family: 'Microsoft YaHei UI'">问题不能满足哟，麻烦修改后再分析</span>
       <el-button type="warning" @click="router.push('/step2')">返回</el-button>
@@ -14,7 +14,18 @@
       <el-button @click="clear" type="primary">clear</el-button>
       <el-button @click="resize" type="primary">resize</el-button>
     </div>
+    <div v-if="isHasData" style="position: absolute;top: 0px;left: 0px;">
+      <el-link @click="edit"><Edit style="height: 1em"/>编辑数据</el-link>
+    </div>
+    <el-dialog title="编辑数据" v-model="dialogVisible" append-to-body>
+      <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
+      <div style="display: flex;justify-content: flex-end;margin-top: 20px">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="render">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
+
 </template>
 
 <script setup>
@@ -44,10 +55,18 @@ import emitter from '@/utils/mitt.js'
 import 'echarts'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
+import { Edit } from '@element-plus/icons-vue'
 const router = useRouter()
 
 provide(THEME_KEY, 'light')
-
+const dialogVisible = ref(false)
+function edit() {
+  dialogVisible.value = true
+}
+function render() {
+  dialogVisible.value = false
+  emitter.emit('changeData', { draw_data: JSON.parse(customData.value) })
+}
 const dispose = () => {
   chartRef.value.dispose()
 }
@@ -77,11 +96,15 @@ function hexToRgb(hex, prefix = 'rgba(', suffix = ')') {
 const tip = ref(false)
 // 创建渐变色对象
 const rgbColors = ['84, 112, 198', '145, 204, 117', '250, 200, 88', '238, 102, 102', '115, 192, 222', '59, 162, 114']
+const customData = ref({})
+const isHasData = ref(false)
 const reDraw = (data, msg) => {
   clear()
   loading.value = true
   // console.log(data, '图表数据', msg)
   if (!data.draw_data) return
+  isHasData.value = true
+  customData.value = JSON.stringify(data.draw_data, null, 2)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
@@ -193,16 +216,20 @@ const props = defineProps({
     type: Object,
     required: false,
     default: () => {
-      return {
-        draw_data: {
-          x: {
-            x_axis: []
-          },
-          y: { }
-        }
-      }
+      return null
+      // return {
+      //   draw_data: {
+      //     x: {
+      //       x_axis: []
+      //     },
+      //     y: { }
+      //   }
+      // }
     }
   }
+})
+onActivated(() => {
+  isHasData.value = false
 })
 onMounted(() => {
   // 设置overflow: auto;后就不需要resize了
@@ -217,9 +244,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scope>
-.pie-chart-container {
+.chart-container {
   margin: 20px 0;
   background-color: #fff;
+  position: relative;
   //padding: 20px;
 
   .chart {

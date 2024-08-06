@@ -5,14 +5,15 @@ import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-
 import { convertFormat, generateID } from '@/utils/util.js'
 import { historyTree } from '@/api/fakeData.js'
 import { fetchHistory } from '@/api/request.js'
-
+const route = useRoute()
+const router = useRouter()
 const props = defineProps(['tree-data'])
 const dataSourceIn = ref()
 const dataSourceOut = ref(historyTree)
 const currentInput = ref('')
 const setRef = (el, data) => {
   if (!el) return
-  console.log(data, '编辑状态')
+  // console.log(data, '编辑状态')
   el.focus()
 }
 const edit = (data) => {
@@ -20,7 +21,7 @@ const edit = (data) => {
   currentInput.value = data.label
 }
 const saveCurrentInp = (data) => {
-  console.log('保存')
+  // console.log('保存')
   data.label = currentInput.value
   data.isInput = false
   // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
@@ -99,7 +100,10 @@ defineExpose({
   getOutline: () => toRaw(dataSourceIn.value)
 })
 watch(() => dataSourceIn.value, (newVal, oldVal) => {
-  emitter.emit('data-js-mind', dataSourceIn.value)
+  // console.log('jsmind', router, route, newVal)
+  if (route.fullPath === '/step2') {
+    emitter.emit('data-js-mind', dataSourceIn.value)
+  }
 }, { deep: true })
 watch(() => props.treeData, (val) => {
   if (val) {
@@ -107,8 +111,15 @@ watch(() => props.treeData, (val) => {
     console.log('变化了', dataSourceIn.value)
   }
 })
+onActivated(async() => {
+  if (router.options.history.state.back === '/step1') return
+  emitter.emit('data-js-mind', dataSourceIn.value)
+})
 onMounted(async() => {
-  const fakeHis = await fetchHistory()
+  const fakeHis = await fetchHistory({
+    'theme': '你好',
+    'other': []
+  })
   // console.log(convertFormat(fakeHis))
   dataSourceOut.value = convertFormat(fakeHis)
 })

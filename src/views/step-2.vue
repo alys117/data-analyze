@@ -2,7 +2,7 @@
 import MyStep from '@/components/my-step.vue'
 import SampleTree from '@/components/sample-tree.vue'
 import JsMind from '@/components/js-mind.vue'
-import { convertFormat, revertFormat, reverseConvertFormat } from '@/utils/util.js'
+import { convertFormat, revertFormat, reverseConvertFormat, generateID } from '@/utils/util.js'
 import { fetchOutline } from '@/api/request.js'
 import { useStepStore } from '@/stores/step.js'
 const step = useStepStore()
@@ -13,15 +13,25 @@ const select = ref('')
 const loading = ref(true)
 const outlineTree = ref()
 const sampleTreeRef = ref()
+function addProperties(activities) {
+  activities.forEach((activity) => {
+    activity.id = activity.id || generateID(8)
+    activity.content = activity.label || activity.content
+    if (activity.children && activity.children.length) {
+      addProperties(activity.children)
+    }
+  })
+}
 const toStep3 = () => {
   const treeData = sampleTreeRef.value.getOutline()
+  addProperties(treeData)
+  step.setTreeCache(treeData)
   let outline = revertFormat(treeData)
   outline = reverseConvertFormat(treeData)
-  console.log(outline, 'outline', treeData, 'treeData')
-  step.setStep2({ outline, treeData })
+  console.log(outline, 'outline--变化后', treeData, 'treeData')
   router.push({
     name: 'Step3',
-    state: { params: toRaw(step.step2) }
+    state: { params: { outline, treeData }}
   })
 }
 
@@ -30,14 +40,18 @@ onMounted(async() => {
 })
 onActivated(async() => {
   console.log('step-2 activated')
-  if (step.treeCache) {
-    outlineTree.value = step.treeCache
-    console.log('有缓存', outlineTree.value)
-    loading.value = false
+  loading.value = false
+  if (router.options.history.state.back === '/step3' && outlineTree.value) {
     return
   }
-  if (router.options.history.state.back === '/step3' && outlineTree.value) {
-    loading.value = false
+  if (step.treeCache) {
+    outlineTree.value = step.treeCache
+    console.log('treeCache 有缓存', step.treeCache)
+    return
+  }
+  if (step.outline) {
+    console.log('outline 有缓存', step.outline)
+    outlineTree.value = convertFormat(step.outline)
     return
   }
   loading.value = true
@@ -48,8 +62,8 @@ const init = async() => {
   const body = structuredClone(history.state.params || toRaw(step.step1))
   body['business_tree'] = 'aa->bb'
   body['other'] = []
-  console.log('step-2 init', body)
   const outline = await fetchOutline(body)
+  step.setOutline(outline)
   outlineTree.value = convertFormat(outline)
 }
 </script>

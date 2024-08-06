@@ -14,9 +14,19 @@
       :class="levelClass"
       :data-id="activity.id"
     >
-      <div style="margin-bottom: 20px" @click="checkPoint(activity)">
-        <span v-if="!activity.edit" @dblclick="activity.edit = true">{{ activity.content }}</span>
-        <el-input v-if="activity.edit" @blur="activity.edit = false" v-model="activity.content" @change="activity.label=activity.content" />
+      <div style="margin-bottom: 20px; width: 300px;">
+        <div style="display: flex;align-items: center">
+          <div style="flex: 1;">
+            <span v-if="!activity.edit">{{ activity.content }}</span>
+            <el-input v-if="activity.edit" @blur="activity.edit = false" v-model="activity.content" @change="activity.label=activity.content" />
+          </div>
+          <el-link v-if="!activity.children" style="margin-left: 20px" @click="activity.edit = !activity.edit"><Edit style="height: 1.2em"/></el-link>
+          <el-link v-if="!activity.children" style="margin-left: 5px" @click="activity.subtext = '重写接口返回'"><Comment style="height: 1.2em"/></el-link>
+        </div>
+        <div v-if="activity.subtext" style="margin-top: 10px;display: flex;align-items: flex-start;gap:5px">
+          <el-input style="flex:1;" type="textarea" v-model="activity.subtext" />
+          <el-link v-if="!activity.children" style="margin-left: 5px" @click="checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>
+        </div>
       </div>
       <div v-if="activity.children && activity.children.length">
         <time-line :key="activity.id" :activities="activity.children" :level="level + 1" @relation="changeByChild" style="padding: 0" />
@@ -28,6 +38,7 @@
 <script setup>
 import emitter from '@/utils/mitt.js'
 import { computed } from 'vue'
+import { Comment, Edit, PieChart } from '@element-plus/icons-vue'
 const { activities, level } = defineProps({
   activities: {
     type: Array,

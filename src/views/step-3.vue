@@ -63,9 +63,8 @@ const init = () => {
   // 这里想不通，why
   // 这里想不通，why 为什么要要加nextTick，step2 到本页就可以，但是 step4 回到本页就不加nextTick就会有显示问题
   nextTick(() => {
-    const tmp = structuredClone(toRaw(step.step2.treeData))
-    setId(tmp)
-    activities.push(...tmp)
+    activities.push(...step.treeCache)
+    addProperties(activities)
   })
 }
 const reset = () => {
@@ -77,15 +76,11 @@ const reset = () => {
 }
 const changedDataURLArr = ref([])
 onActivated(() => {
-  if (step.treeCache && step.treeCache.length) {
-    // reset()
-    // activities.push(...step.treeCache)
-    // console.log('使用cache')
-    return
-  }
   if (router.options.history.state.back === '/step4' && activities.length) return
-  reset()
-  init()
+  if (step.treeCache && step.treeCache.length) {
+    reset()
+    init()
+  }
 })
 onMounted(() => {
   console.log('step-3 mounted')
@@ -98,8 +93,14 @@ onMounted(() => {
     }
   })
   loading.value = false
+  emitter.on('changeData', (data) => {
+    chartRef.value.reDraw(data)
+    currentAct.value.chartData.draw_data = data.draw_data
+    invisibleRef.value.find((item) => item.id === currentAct.value.id).el.reDraw(data)
+  })
   emitter.on('load-advice', async(activity) => {
     chartRef.value.clear()
+    chartRef.value.setTip(false)
     currentAct.value = activity
     breadcrumbItems.value = findFamily(activities, activity.id)
     if (activity.status === 1) {
@@ -172,12 +173,12 @@ onMounted(() => {
   })
 })
 
-function setId(activities) {
+function addProperties(activities) {
   activities.forEach((activity) => {
     activity.id = activity.id || generateID(8)
     activity.content = activity.label || activity.content
     if (activity.children && activity.children.length) {
-      setId(activity.children)
+      addProperties(activity.children)
     } else {
       invisibleList.value.push({ id: activity.id, dataURL: '' })
     }
@@ -229,7 +230,7 @@ const showDOC = async() => {
     doc: 'doc',
     data: null
   }
-  setId(activities)
+  addProperties(activities)
   setDataURL(activities)
   obj.data = removePropertyFromTree(activities, 'id')
   obj.data = removePropertyFromTree(obj.data, 'hollow')
@@ -340,7 +341,7 @@ const allMission = (activities) => {
       <my-step :step="3" />
       <div class="step3-container">
         <div class="timeline-container">
-          <div style="display: flex;justify-content: flex-end;padding: 10px">
+          <div style="display: flex;justify-content: flex-end;padding-bottom: 10px">
             <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
             <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
             <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->

@@ -13,8 +13,7 @@ const loading = ref(true)
 const nodes = ref()
 onActivated(() => {
   console.log('step-4 activated')
-  nodes.value = toRaw(step.step3)
-  dealWith(nodes.value)
+  nodes.value = structuredClone(toRaw(step.treeCache))
 })
 const contentRef = ref()
 const scrollHanler = debounce(() => {
@@ -54,14 +53,6 @@ onMounted(() => {
   console.log('step-4 mounted')
   contentRef.value.addEventListener('scroll', scrollHanler)
 })
-function dealWith(activities) {
-  activities.forEach((activity) => {
-    activity.type = 'primary'
-    if (activity.children && activity.children.length) {
-      dealWith(activity.children)
-    }
-  })
-}
 function back2step3() {
   step.setStep3(null)
   router.push('/step3')

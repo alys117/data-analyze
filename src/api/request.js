@@ -82,14 +82,14 @@ const fakeFetchDrawChart = async() => {
   return await new Promise((resolve, reject) => {
     setTimeout(() => {
       console.log('%c' + '随机数' + n, 'color: orange; font-size: 14px;')
-      if (n < 0.1) {
+      if (n < 0.01) {
         reject({ error: '模拟错误' })
       }
       const data = structuredClone(drawData)
       // data.draw_data = n > 0.5 ? drawData.draw_data : drawData.draw_data_2 // 这里藏着一个大坑，不能直接赋值，否则会改变原始数据
       data.draw_data = n > 0.5 ? data.draw_data : data.draw_data_2
       delete data.draw_data_2
-      if (n > 0.9) data.draw_data = ''
+      if (n > 0.95) data.draw_data = ''
       if (data.draw_data) {
         Object.keys(data.draw_data.y).forEach((key, index) => {
           data.draw_data.y[key] = data.draw_data.y[key].map(item => Math.random().toFixed(4))
@@ -132,12 +132,24 @@ const fetchFile = async(body) => {
   return data
 }
 
-const fetchHistory = async(body) => {
+const fakeFetchHistory = async(body) => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(historyTree2)
     }, 50)
   })
+}
+
+const fetchHistory = async(body) => {
+  const data = await fetch('/api/get_history_report_outline', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }).then(res => res.json())
+  return data
 }
 
 let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription
