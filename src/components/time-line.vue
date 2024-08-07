@@ -17,15 +17,24 @@
       <div style="margin-bottom: 20px; width: 300px;">
         <div style="display: flex;align-items: center">
           <div style="flex: 1;">
-            <span v-if="!activity.edit">{{ activity.content }}</span>
+            <span v-if="!activity.edit" @dblclick="checkPoint(activity)">{{ activity.content }}</span>
             <el-input v-if="activity.edit" @blur="activity.edit = false" v-model="activity.content" @change="activity.label=activity.content" />
           </div>
-          <el-link v-if="!activity.children" style="margin-left: 20px" @click="activity.edit = !activity.edit"><Edit style="height: 1.2em"/></el-link>
-          <el-link v-if="!activity.children" style="margin-left: 5px" @click="activity.subtext = '重写接口返回'"><Comment style="height: 1.2em"/></el-link>
+          <div v-if="!activity.children">
+            <el-link style="margin-left: 20px" @click="activity.edit = !activity.edit"><Edit style="height: 1.2em"/></el-link>
+            <el-link style="margin-left: 5px" @click="rewriteOutline(activity)"><Comment style="height: 1.2em"/></el-link>
+            <el-link style="margin-left: 5px" @click="activity.showSubtext = !activity.showSubtext">
+              <Open style="height: 1.2em" v-if="activity.showSubtext" />
+              <TurnOff style="height: 1.2em" v-if="!activity.showSubtext" />
+            </el-link>
+          </div>
         </div>
-        <div v-if="activity.subtext" style="margin-top: 10px;display: flex;align-items: flex-start;gap:5px">
+        <div v-if="activity.subtext !== undefined && activity.showSubtext" style="margin-top: 10px;display: flex;align-items: flex-start;gap:5px">
           <el-input style="flex:1;" type="textarea" v-model="activity.subtext" />
-          <el-link v-if="!activity.children" style="margin-left: 5px" @click="checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>
+          <div style="display: flex;flex-direction: column;gap: 5px">
+<!--            <el-link v-if="!activity.children" style="margin-left: 5px" @click="checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>-->
+            <el-link v-if="!activity.children" style="margin-left: 5px" @click="activity.status = -1; checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>
+          </div>
         </div>
       </div>
       <div v-if="activity.children && activity.children.length">
@@ -38,7 +47,7 @@
 <script setup>
 import emitter from '@/utils/mitt.js'
 import { computed } from 'vue'
-import { Comment, Edit, PieChart } from '@element-plus/icons-vue'
+import { Comment, Edit, Open, PieChart, TurnOff } from '@element-plus/icons-vue'
 const { activities, level } = defineProps({
   activities: {
     type: Array,
@@ -65,13 +74,11 @@ const dynamicStyleTag = computed(() => {
 })
 const emit = defineEmits(['relation'])
 
-const checkPoint = (activity) => {
-  if (activity.children && activity.children.length) {
-    // do nothing
-  } else {
-    // 加载内容
-    emitter.emit('load-advice', activity)
-  }
+function checkPoint(activity) {
+  !activity.children && emitter.emit('load-advice', activity)
+}
+function rewriteOutline(activity) {
+  emitter.emit('rewrite-outline', activity)
 }
 
 emitter.on('change-point', ({ id, type }) => {

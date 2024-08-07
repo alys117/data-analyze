@@ -17,10 +17,22 @@
     <div v-if="isHasData" style="position: absolute;top: 0px;left: 0px;">
       <el-link @click="edit"><Edit style="height: 1em"/>编辑数据</el-link>
     </div>
-    <el-dialog title="编辑数据" v-model="dialogVisible" append-to-body>
-      <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
+    <el-dialog title=""  v-model="dialogVisible" style="width: 1400px;" append-to-body>
+      <template #title>
+        <!-- 这里可以放置任何自定义标题内容 -->
+        <span style="font-size: 14px" @click="editType = !editType">{{ editType ? '转到json编辑' : '转到表格编辑' }}</span>
+      </template>
+      <el-table :data="list" stripe v-if="editType">
+        <el-table-column v-for="item in columns" :key="item" :header-align="'center'">
+          <template #header>{{ item }}</template>
+          <template #default="scope">
+            <el-input v-model="scope.row[item]" />
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-input v-if="!editType" type="textarea" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
       <div style="display: flex;justify-content: flex-end;margin-top: 20px">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="dialogVisible = false; editType = true">取 消</el-button>
         <el-button type="primary" @click="render">确 定</el-button>
       </div>
     </el-dialog>
@@ -62,6 +74,18 @@ provide(THEME_KEY, 'light')
 const dialogVisible = ref(false)
 function edit() {
   dialogVisible.value = true
+  columns.value = ['指标', ...customDataObj.value.x.x_axis]
+  list.value = Object.keys(customDataObj.value.y).map((key, index) => {
+    return {
+      '指标': key
+    }
+  })
+  Object.values(customDataObj.value.y).forEach((val, index) => {
+    val.forEach((v, i) => {
+      list.value[index][customDataObj.value.x.x_axis[i]] = v
+    })
+  })
+  console.log(columns.value, list.value)
 }
 function render() {
   dialogVisible.value = false
@@ -97,7 +121,11 @@ const tip = ref(false)
 // 创建渐变色对象
 const rgbColors = ['84, 112, 198', '145, 204, 117', '250, 200, 88', '238, 102, 102', '115, 192, 222', '59, 162, 114']
 const customData = ref({})
-const isHasData = ref(false)
+const customDataObj = ref({})
+const editType = ref(false)
+const list = ref([])
+const columns = ref([])
+const isHasData = ref(true)
 const reDraw = (data, msg) => {
   clear()
   loading.value = true
@@ -105,6 +133,7 @@ const reDraw = (data, msg) => {
   if (!data.draw_data) return
   isHasData.value = true
   customData.value = JSON.stringify(data.draw_data, null, 2)
+  customDataObj.value = data.draw_data
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
@@ -251,7 +280,7 @@ onMounted(() => {
   //padding: 20px;
 
   .chart {
-    height: 500px;
+    height: 450px;
   }
 }
 </style>

@@ -56,7 +56,9 @@ const fetchRewriteReportOutline = async(body) => {
 const fakeFetchRewriteOutline = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(rewriteOutline)
+      const a = structuredClone(rewriteOutline)
+      a['问题'] = a['问题'] + Math.random()
+      resolve(a)
     }, 50)
   })
 }

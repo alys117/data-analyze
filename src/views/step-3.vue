@@ -98,6 +98,23 @@ onMounted(() => {
     currentAct.value.chartData.draw_data = data.draw_data
     invisibleRef.value.find((item) => item.id === currentAct.value.id).el.reDraw(data)
   })
+  emitter.on('rewrite-outline', async(activity) => {
+    const body = {
+      question: activity.content,
+      columns_name: step.step1.columns_name,
+      other: []
+    }
+    const [err, rewriteData] = await to(fetchRewriteOutline(body))
+    if (err) {
+      console.log('/api/rewrite_report_outline 接口报错', err)
+      loading.value = false
+      activity.status = -1
+      return
+    }
+    activity.drawDemond = rewriteData['绘图要求']
+    activity.subtext = rewriteData['问题']
+    activity.showSubtext = true
+  })
   emitter.on('load-advice', async(activity) => {
     chartRef.value.clear()
     chartRef.value.setTip(false)
@@ -124,20 +141,24 @@ onMounted(() => {
       columns_name: step.step1.columns_name,
       other: []
     }
-    const [err, rewriteData] = await to(fetchRewriteOutline(body))
-    if (err) {
-      console.log('/api/rewrite_report_outline 接口报错', err)
-      loading.value = false
-      activity.status = -1
-      return
+    const rewriteDataBody = {}
+    rewriteDataBody.table_name_list = step.step1.tables_name
+    rewriteDataBody.columns_name = step.step1.columns_name
+    rewriteDataBody.answer_plot = activity.drawDemond
+    rewriteDataBody.user_input = activity.subtext
+    if (!activity.subtext) {
+      const [err, rewriteData] = await to(fetchRewriteOutline(body))
+      if (err) {
+        console.log('/api/rewrite_report_outline 接口报错', err)
+        loading.value = false
+        activity.status = -1
+        return
+      }
+      rewriteDataBody.answer_plot = rewriteData['绘图要求']
+      rewriteDataBody.user_input = rewriteData['问题']
     }
-    rewriteData.answer_plot = rewriteData['绘图要求']
-    rewriteData.user_input = rewriteData['问题']
-    delete rewriteData['绘图要求']
-    delete rewriteData['问题']
-    rewriteData.table_name_list = step.step1.tables_name
-    rewriteData.columns_name = step.step1.columns_name
-    const [err2, drawData] = await to(fetchDrawData(rewriteData))
+
+    const [err2, drawData] = await to(fetchDrawData(rewriteDataBody))
     if (err2) {
       console.log('/api/draw_data 接口报错', err2)
       loading.value = false
@@ -155,7 +176,7 @@ onMounted(() => {
     chartRef.value.setTip(!drawData.draw_data)
     const descriptionBody = {
       sql: drawData.sql,
-      question: rewriteData.user_input
+      question: rewriteDataBody.user_input
     }
     const [err3, descp] = await to(fetchChartDescription(descriptionBody))
     if (err3) {
@@ -266,19 +287,20 @@ const pushTasks = (activity, tasks) => {
       columns_name: step.step1.columns_name,
       other: []
     }
+    const rewriteDataBody = {}
     const [err, rewriteData] = await to(fetchRewriteOutline(body))
     if (err) {
       console.log('/api/rewrite_report_outline 接口报错', err)
       activity.status = -1
       return '/api/rewrite_report_outline 接口报错， 终止该节点处理 ' + activity.content
     }
-    rewriteData.answer_plot = rewriteData['绘图要求']
-    rewriteData.user_input = rewriteData['问题']
-    delete rewriteData['绘图要求']
-    delete rewriteData['问题']
+    rewriteDataBody.answer_plot = rewriteData['绘图要求']
+    rewriteDataBody.user_input = rewriteData['问题']
+    activity.subtext = rewriteData['问题']
+    activity.drawDemond = rewriteData['绘图要求']
     rewriteData.table_name_list = step.step1.tables_name
     rewriteData.columns_name = step.step1.columns_name
-    const [err2, drawData] = await to(fetchDrawData(rewriteData))
+    const [err2, drawData] = await to(fetchDrawData(rewriteDataBody))
     if (err2) {
       console.log('/api/draw_data 接口报错, 终止该节点处理', err2)
       activity.status = -1
@@ -301,11 +323,8 @@ const pushTasks = (activity, tasks) => {
       return '/api/chart_description 接口报错, 终止该节点处理 ' + activity.content
     }
     activity.description = descp
-    // breadcrumbItems.value = findFamily(activities, activity.id)
-    // breadcrumbItems.value.at(-1).description = descp
     activity.status = 1
-    // currentAct.value = activity
-    return 'task =' + activity.content
+    return 'task = ' + activity.id
   }
   tasks.push(task())
 }
@@ -337,18 +356,20 @@ const allMission = (activities) => {
 
 <template>
   <div v-loading="loading">
-    <div style="width: fit-content">
-      <my-step :step="3" />
-      <div class="step3-container">
-        <div class="timeline-container">
-          <div style="display: flex;justify-content: flex-end;padding-bottom: 10px">
-            <el-button type="primary" @click="allMission(activities)">完成所有分析</el-button>
-            <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
-            <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
-            <!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
-          </div>
+    <my-step :step="3" />
+    <div class="view">
+      <div class="index">
+        <div style="display: flex;justify-content: flex-end;padding-bottom: 10px">
+          <el-button style="margin: 10px" type="primary" @click="allMission(activities)">完成所有分析</el-button>
+          <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
+          <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
+          <!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
+        </div>
+        <div style="margin-right: 10px">
           <time-line :activities="activities" :level="1" />
         </div>
+      </div>
+      <div class="content">
         <div class="step3-main">
           <el-breadcrumb :separator-icon="ArrowRight">
             <el-breadcrumb-item v-for="item in breadcrumbItems" :key="item.id">
@@ -375,12 +396,11 @@ const allMission = (activities) => {
           <!--          <el-button type="danger" @click="exportDataURL">export</el-button>-->
           <!--          <el-button type="danger" @click="mock">mock</el-button>-->
         </div>
-
-      </div>
-      <div class="step-forward">
-        <el-button size="default" type="primary" @click="showDOC">导出</el-button>
-        <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
-        <el-button size="default" type="primary" @click="preview">预览</el-button>
+        <div class="step-forward">
+          <el-button size="default" type="primary" @click="showDOC">导出</el-button>
+          <el-button size="default" type="primary" @click="router.push('/step2')">上一步</el-button>
+          <el-button size="default" type="primary" @click="preview">预览</el-button>
+        </div>
       </div>
     </div>
   </div>
@@ -388,27 +408,38 @@ const allMission = (activities) => {
 
 <style lang="scss" scoped>
 .step-forward{
-  padding: 20px;
   text-align: right;
+  padding-right: 20px;
 }
-.step3-container{
-  display: flex;
+ul{
+  padding-inline-start: 30px;
+}
+.view{
+  border-top: 1px solid #eee ;
   min-width: 1628px;
-  .timeline-container{
-    max-width: 500px;
-    border-right: 1px dashed #acacac ;
-    padding-right: 20px;
+  display: flex;
+  .index{
     flex-shrink: 0;
+    border-right: 1px dotted #eee;
+    overflow-y: auto;
+    height: calc(100vh - 113px);
+    background-color: #fcfcfc;
   }
-  .step3-main{
-    .description{
-      background: #fcfcfc;
-      padding: 10px;
-      margin: 20px 20px 20px 0;
-    }
-    padding-left: 20px;
-    width: 100%;
+  .content{
+    height: calc(100vh - 113px);
     overflow: auto;
   }
 }
+.step3-main{
+  padding: 20px;
+  min-width: calc(100vw - 441px);
+  .description{
+    background: #fcfcfc;
+    padding: 10px;
+    margin: 20px 20px 20px 0;
+  }
+  width: 100%;
+  overflow: auto;
+}
+
 </style>

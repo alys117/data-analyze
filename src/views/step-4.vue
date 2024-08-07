@@ -64,7 +64,7 @@ function back2step3() {
     <my-step :step="4" />
     <div class="view">
       <div class="index">
-        <h3 style="margin-bottom: 10px;">大纲目录</h3>
+        <h4 style="margin: 10px 0 10px 30px;">大纲目录</h4>
         <time-line-view :activities="step.step3" :level="1" />
       </div>
       <div ref="contentRef" class="content">
@@ -94,7 +94,6 @@ function back2step3() {
     max-width: 600px;
     border-right: 1px dotted #eee;
     overflow: auto;
-    padding: 20px;
     height: calc(100vh - 113px);
     background-color: #fcfcfc;
   }
