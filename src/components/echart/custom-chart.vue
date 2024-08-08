@@ -17,26 +17,25 @@
     <div v-if="isHasData" style="position: absolute;top: 0px;left: 0px;">
       <el-link @click="edit"><Edit style="height: 1em"/>编辑数据</el-link>
     </div>
-    <el-dialog title=""  v-model="dialogVisible" style="width: 1400px;" append-to-body>
+    <el-dialog title=""  v-model="dialogVisible" style="width: 1200px;" append-to-body>
       <template #header>
         <!-- 这里可以放置任何自定义标题内容 -->
         <span style="font-size: 14px" @click="editType = !editType">{{ editType ? '转到json编辑' : '转到表格编辑' }}</span>
       </template>
-      <contenteditable-table />
-<!--      <el-table :data="list" stripe v-if="editType">-->
-<!--        <el-table-column v-for="(item, index) in columns" :key="index" :header-align="'center'">-->
-<!--          <template #header>-->
-<!--            <span v-if="!index">{{ item.label }}</span>-->
-<!--            <el-input v-if="index" v-model="item.label"/>-->
-<!--          </template>-->
-<!--          <template #default="scope">-->
-<!--            <el-input v-model="scope.row[item.label]" />-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      </el-table>-->
+      <contenteditable-table ref="editTableRef" v-if="editType" :data="customDataObj" />
+      <!--      <el-table :data="list" stripe v-if="editType">-->
+      <!--        <el-table-column v-for="(item, index) in columns" :key="index" :header-align="'center'">-->
+      <!--          <template #header>-->
+      <!--            <span v-if="!index">{{ item.label }}</span>-->
+      <!--            <el-input v-if="index" v-model="item.label"/>-->
+      <!--          </template>-->
+      <!--          <template #default="scope">-->
+      <!--            <el-input v-model="scope.row[item.label]" />-->
+      <!--          </template>-->
+      <!--        </el-table-column>-->
+      <!--      </el-table>-->
       <el-input v-if="!editType" type="textarea" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
       <div style="display: flex;justify-content: flex-end;margin-top: 20px">
-        <el-button @click="console.log(columns, list)">check</el-button>
         <el-button @click="dialogVisible = false; editType = true">取 消</el-button>
         <el-button type="primary" @click="render">确 定</el-button>
       </div>
@@ -52,7 +51,6 @@ import 'echarts'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
-import { generateID } from '@/utils/util.js'
 import ContenteditableTable from '@/components/echart/contenteditable-table.vue'
 const router = useRouter()
 
@@ -60,6 +58,7 @@ provide(THEME_KEY, 'light')
 const dialogVisible = ref(false)
 function edit() {
   dialogVisible.value = true
+  console.log(customDataObj, 'obj')
   columns.value = ['指标', ...customDataObj.value.x.x_axis].map(i => { return { label: i } })
   list.value = Object.keys(customDataObj.value.y).map((key, index) => {
     return {
@@ -74,9 +73,15 @@ function edit() {
 }
 function render() {
   dialogVisible.value = false
-  console.log(list.value, columns.value)
+  if (editType.value) {
+    const obj = editTableRef.value.handleChange()
+    editType.value && emitter.emit('changeData', { draw_data: obj })
+    return
+  }
   emitter.emit('changeData', { draw_data: JSON.parse(customData.value) })
 }
+const editTableRef = ref()
+
 const dispose = () => {
   chartRef.value.dispose()
 }

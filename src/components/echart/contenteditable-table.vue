@@ -3,7 +3,7 @@ import { Delete } from '@element-plus/icons-vue'
 import { generateID } from '@/utils/util.js'
 
 const props = defineProps({
-  rows: {
+  data: {
     type: Object,
     required: false,
     default: () => {
@@ -11,60 +11,105 @@ const props = defineProps({
     }
   }
 })
-const { rows } = toRefs(props)
-function handleData(data) {
-  console.log(data)
+const th = ref([])
+const rows = ref([])
+function handleData() {
+  th.value = ['-', ...props.data.x.x_axis]
+  rows.value = Object.keys(props.data.y).map((key, index) => {
+    return [key]
+  })
+  Object.values(props.data.y).forEach((val, index) => {
+    val.forEach((v, i) => {
+      rows.value[index].push(v)
+    })
+  })
 }
-const fakeTR = ref([
-  ['2010', '01', '23', 'jun'],
-  ['shen', 'xiao', 'jun', 'jun'],
-  ['shen', 'xiao', 'jun', 'jun']
-])
-const fakeTH = ref(['www.dreamdu.com', 'www.dreamdu.com', 'biaotou', 'biaotou'])
+handleData()
+console.log(th.value, rows.value)
 function addRow() {
-  fakeTR.value.push(Array.from({ length: fakeTH.value.length }))
+  rows.value.push(Array.from({ length: th.value.length }))
 }
 function addColumn() {
-  fakeTH.value.push('新列' + generateID(4))
-  fakeTR.value.forEach(item => {
+  th.value.push('新列' + generateID(4))
+  rows.value.forEach(item => {
     item.push('')
   })
 }
 function deleteCol(idx) {
-  fakeTH.value.splice(idx, 1)
-  fakeTR.value.forEach(item => {
+  th.value.splice(idx, 1)
+  rows.value.forEach(item => {
     item.splice(idx, 1)
   })
 }
 function deleteRow(idx) {
-  fakeTR.value.splice(idx, 1)
+  rows.value.splice(idx, 1)
 }
+watch(() => props.data, (newVal, oldVal) => {
+  handleData()
+})
+function edit(val, idx, index, e) {
+  console.log(val, e.target.innerText, val === e.target.innerText)
+  rows.value[index][idx] = e.target.innerText
+}
+function editTH(val, idx, e) {
+  console.log(val, e.target.innerText, val === e.target.innerText)
+  th.value[idx] = e.target.innerText
+}
+function handleChange() {
+  const obj = {
+    x: {
+      x_axis: th.value.slice(1)
+    },
+    y: {}
+  }
+  rows.value.forEach((item, idx) => {
+    obj.y[item[0]] = item.slice(1)
+  })
+  return obj
+}
+defineExpose({
+  handleChange
+})
 </script>
 
 <template>
-  <el-link @click="addRow">添加行</el-link>
-  <el-link @click="addColumn">添加列</el-link>
-  <table>
-    <tr contenteditable>
-      <th v-for="(item, idx) in fakeTH" :key="item">
-        {{ item }}
-        <el-link @click="deleteCol(idx)">
-          <Delete style="height: 1em"/>
-        </el-link>
-      </th>
-      <th style="width: 40px">操作</th>
-    </tr>
-    <tr v-for="(item, index) in fakeTR" :key="index" contenteditable>
-      <td v-for="i in item" :key="i">
-        {{ i }}
-      </td>
-      <td style="width: 40px">
-        <el-link @click="deleteRow(index)">
-          <Delete style="height: 1em"/>
-        </el-link>
-      </td>
-    </tr>
-  </table>
+  <el-link @click="addRow" style="color: darkcyan">添加行</el-link>
+  <el-link @click="addColumn" style="color: #2a598a; margin-left: 20px">添加列</el-link>
+  <div style="overflow: auto">
+    <table>
+      <tr style="height: 10px">
+        <th v-for="(item, idx) in th" :key="item+idx" style="height: 10px">
+          <el-link v-if="idx" @click="deleteCol(idx)">
+            <Delete style="height: 1em"/>
+          </el-link>
+        </th>
+        <th style="width: 40px;min-width: 40px">操作</th>
+      </tr>
+      <tr>
+        <th v-for="(item, idx) in th" :key="item+idx">
+          <div style="display: flex;align-items: center">
+            <span :contenteditable="idx > 0" style="flex: 1" @blur="editTH(item, idx, $event)">{{ item }}</span>
+<!--            <el-link v-if="idx" @click="deleteCol(idx)">-->
+<!--              <Delete style="height: 1em"/>-->
+<!--            </el-link>-->
+          </div>
+        </th>
+        <th style="width: 40px;min-width: 40px"></th>
+      </tr>
+      <tr v-for="(item, index) in rows" :key="index">
+        <td v-for="(val, idx) in item" :key="val" @blur="edit(val, idx, index,$event)" contenteditable>
+          {{ val }}
+        </td>
+        <td style="width: 40px;min-width: 40px">
+          <el-link @click="deleteRow(index)">
+            <Delete style="height: 1em"/>
+          </el-link>
+        </td>
+      </tr>
+    </table>
+<!--    <el-button @click="console.log(th, rows)" type="success"/>-->
+<!--    <el-button @click="handleChange" type="warning"/>-->
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -76,12 +121,12 @@ table {
 }
 th,
 td {
-  line-height: 40px; /* 行高 */
+  line-height: 30px; /* 行高 */
   border: 1px solid #f1f1f1; /* 每行边框 */
   text-align: center;
-  font-size: 16px;
-  height: 40px;
-  min-width: 30px;
+  font-size: 14px;
+  height: 30px;
+  min-width: 90px;
 }
 th {
   background-color: #f1f1f1; /* 表头背景色 */
