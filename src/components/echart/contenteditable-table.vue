@@ -36,6 +36,9 @@ function deleteCol(idx) {
     item.splice(idx, 1)
   })
 }
+function deleteRow(idx) {
+  fakeTR.value.splice(idx, 1)
+}
 </script>
 
 <template>
@@ -49,10 +52,16 @@ function deleteCol(idx) {
           <Delete style="height: 1em"/>
         </el-link>
       </th>
+      <th style="width: 40px">操作</th>
     </tr>
     <tr v-for="(item, index) in fakeTR" :key="index" contenteditable>
       <td v-for="i in item" :key="i">
         {{ i }}
+      </td>
+      <td style="width: 40px">
+        <el-link @click="deleteRow(index)">
+          <Delete style="height: 1em"/>
+        </el-link>
       </td>
     </tr>
   </table>
