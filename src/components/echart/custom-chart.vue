@@ -18,20 +18,25 @@
       <el-link @click="edit"><Edit style="height: 1em"/>编辑数据</el-link>
     </div>
     <el-dialog title=""  v-model="dialogVisible" style="width: 1400px;" append-to-body>
-      <template #title>
+      <template #header>
         <!-- 这里可以放置任何自定义标题内容 -->
         <span style="font-size: 14px" @click="editType = !editType">{{ editType ? '转到json编辑' : '转到表格编辑' }}</span>
       </template>
-      <el-table :data="list" stripe v-if="editType">
-        <el-table-column v-for="item in columns" :key="item" :header-align="'center'">
-          <template #header>{{ item }}</template>
-          <template #default="scope">
-            <el-input v-model="scope.row[item]" />
-          </template>
-        </el-table-column>
-      </el-table>
+      <contenteditable-table />
+<!--      <el-table :data="list" stripe v-if="editType">-->
+<!--        <el-table-column v-for="(item, index) in columns" :key="index" :header-align="'center'">-->
+<!--          <template #header>-->
+<!--            <span v-if="!index">{{ item.label }}</span>-->
+<!--            <el-input v-if="index" v-model="item.label"/>-->
+<!--          </template>-->
+<!--          <template #default="scope">-->
+<!--            <el-input v-model="scope.row[item.label]" />-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
       <el-input v-if="!editType" type="textarea" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
       <div style="display: flex;justify-content: flex-end;margin-top: 20px">
+        <el-button @click="console.log(columns, list)">check</el-button>
         <el-button @click="dialogVisible = false; editType = true">取 消</el-button>
         <el-button type="primary" @click="render">确 定</el-button>
       </div>
@@ -41,40 +46,21 @@
 </template>
 
 <script setup>
-// import { use } from 'echarts/core'
-// import { CanvasRenderer } from 'echarts/renderers'
-// import { PieChart, LineChart, BarChart } from 'echarts/charts'
-// import {
-//   TitleComponent,
-//   TooltipComponent,
-//   LegendComponent,
-//   ToolboxComponent,
-//   GridComponent
-// } from 'echarts/components'
-// use([
-//   CanvasRenderer,
-//   PieChart,
-//   LineChart,
-//   BarChart,
-//   TitleComponent,
-//   TooltipComponent,
-//   LegendComponent,
-//   ToolboxComponent,
-//   GridComponent
-// ])
 import * as echarts from 'echarts'
 import emitter from '@/utils/mitt.js'
 import 'echarts'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
+import { generateID } from '@/utils/util.js'
+import ContenteditableTable from '@/components/echart/contenteditable-table.vue'
 const router = useRouter()
 
 provide(THEME_KEY, 'light')
 const dialogVisible = ref(false)
 function edit() {
   dialogVisible.value = true
-  columns.value = ['指标', ...customDataObj.value.x.x_axis]
+  columns.value = ['指标', ...customDataObj.value.x.x_axis].map(i => { return { label: i } })
   list.value = Object.keys(customDataObj.value.y).map((key, index) => {
     return {
       '指标': key
@@ -85,10 +71,10 @@ function edit() {
       list.value[index][customDataObj.value.x.x_axis[i]] = v
     })
   })
-  console.log(columns.value, list.value)
 }
 function render() {
   dialogVisible.value = false
+  console.log(list.value, columns.value)
   emitter.emit('changeData', { draw_data: JSON.parse(customData.value) })
 }
 const dispose = () => {
@@ -122,7 +108,7 @@ const tip = ref(false)
 const rgbColors = ['84, 112, 198', '145, 204, 117', '250, 200, 88', '238, 102, 102', '115, 192, 222', '59, 162, 114']
 const customData = ref({})
 const customDataObj = ref({})
-const editType = ref(false)
+const editType = ref(true)
 const list = ref([])
 const columns = ref([])
 const isHasData = ref(true)
@@ -280,7 +266,7 @@ onMounted(() => {
   //padding: 20px;
 
   .chart {
-    height: 450px;
+    height: 442px;
   }
 }
 </style>

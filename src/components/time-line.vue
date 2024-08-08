@@ -17,7 +17,7 @@
       <div style="margin-bottom: 20px; width: 300px;">
         <div style="display: flex;align-items: center">
           <div style="flex: 1;">
-            <span v-if="!activity.edit" @dblclick="checkPoint(activity)">{{ activity.content }}</span>
+            <span v-if="!activity.edit" @click="checkPoint(activity)">{{ activity.content }}</span>
             <el-input v-if="activity.edit" @blur="activity.edit = false" v-model="activity.content" @change="activity.label=activity.content" />
           </div>
           <div v-if="!activity.children">

@@ -355,20 +355,20 @@ const allMission = (activities) => {
 </script>
 
 <template>
-  <div v-loading="loading">
+  <div v-loading="loading" style="overflow: hidden">
     <my-step :step="3" />
     <div class="view">
-      <div class="index">
+      <el-scrollbar class="index">
         <div style="display: flex;justify-content: flex-end;padding-bottom: 10px">
           <el-button style="margin: 10px" type="primary" @click="allMission(activities)">完成所有分析</el-button>
           <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
           <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
           <!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
         </div>
-        <div style="margin-right: 10px">
+        <div style="margin-right: 20px">
           <time-line :activities="activities" :level="1" />
         </div>
-      </div>
+      </el-scrollbar>
       <div class="content">
         <div class="step3-main">
           <el-breadcrumb :separator-icon="ArrowRight">
@@ -409,7 +409,7 @@ const allMission = (activities) => {
 <style lang="scss" scoped>
 .step-forward{
   text-align: right;
-  padding-right: 20px;
+  margin: 0 20px 20px 20px;
 }
 ul{
   padding-inline-start: 30px;
@@ -428,18 +428,25 @@ ul{
   .content{
     height: calc(100vh - 113px);
     overflow: auto;
+    .step3-main{
+      padding: 20px;
+      min-width: calc(100vw - 424px);
+      .description{
+        background: #fcfcfc;
+        padding: 10px;
+        margin: 20px 20px 20px 0;
+      }
+      width: 100%;
+      overflow: auto;
+    }
+  }
+  @media screen and (max-width: 1628px) {
+    .content{
+      width: calc(100vw - 406px);
+    }
+    .step3-main{
+      min-width: calc(1628px - 406px);
+    }
   }
 }
-.step3-main{
-  padding: 20px;
-  min-width: calc(100vw - 441px);
-  .description{
-    background: #fcfcfc;
-    padding: 10px;
-    margin: 20px 20px 20px 0;
-  }
-  width: 100%;
-  overflow: auto;
-}
-
 </style>
