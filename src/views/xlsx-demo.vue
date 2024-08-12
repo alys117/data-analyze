@@ -42,7 +42,10 @@ const exportClick = () => {
   const wb = XLXS.utils.table_to_book(document.getElementById('table'), {
     raw: true
   })
+  const ws = XLXS.utils.json_to_sheet([{ a: 123, b: 456 }, { a: 789, b: 101112 }, { b: 123 }])
+  XLXS.utils.book_append_sheet(wb, ws, 'SheetJS')
   XLXS.writeFileXLSX(wb, name + '.xlsx')
+
   // const wbout = XLXS.write(wb, {
   //   bookType: 'xlsx',
   //   bookSST: true,

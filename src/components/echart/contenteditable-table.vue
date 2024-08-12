@@ -83,7 +83,7 @@ defineExpose({
             <Delete style="height: 1em"/>
           </el-link>
         </th>
-        <th style="width: 40px;min-width: 40px">操作</th>
+        <th rowspan="2" style="width: 40px;min-width: 40px">操作</th>
       </tr>
       <tr>
         <th v-for="(item, idx) in th" :key="item+idx">
@@ -94,7 +94,6 @@ defineExpose({
 <!--            </el-link>-->
           </div>
         </th>
-        <th style="width: 40px;min-width: 40px"></th>
       </tr>
       <tr v-for="(item, index) in rows" :key="index">
         <td v-for="(val, idx) in item" :key="val" @blur="edit(val, idx, index,$event)" contenteditable>

@@ -14,7 +14,7 @@
       <el-button @click="clear" type="primary">clear</el-button>
       <el-button @click="resize" type="primary">resize</el-button>
     </div>
-    <div v-if="isHasData" style="position: absolute;top: 0px;left: 0px;">
+    <div v-if="isHasData" style="position: absolute;top: -20px;left: 0px;">
       <el-link @click="edit"><Edit style="height: 1em"/>编辑数据</el-link>
     </div>
     <el-dialog title=""  v-model="dialogVisible" style="width: 1200px;" append-to-body>

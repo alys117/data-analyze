@@ -1,4 +1,5 @@
 import { fakeData2, outline, rewriteOutline, drawData, desciption, historyTree2 } from '@/api/fakeData.js'
+import { generateID } from '@/utils/util.js'
 
 const selectTables = async(body) => {
   const response = await fetch('/api/select_tables', {
@@ -117,7 +118,7 @@ const fetchDescrip = async(body) => {
 const fakeFetchDescp = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(desciption + Math.random())
+      resolve(desciption + generateID(6))
     }, Math.random() * 1000)
   })
 }

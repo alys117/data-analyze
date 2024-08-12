@@ -43,7 +43,8 @@ export default {
       const wb = XLXS.utils.table_to_book(document.getElementById('table1'), {
         raw: true
       })
-      XLXS.writeFileXLSX(wb, name + '.xlsx')
+      console.log(XLXS.utils.sheet_to_json(wb.Sheets['Sheet1'], { header: 2 }))
+      // XLXS.writeFileXLSX(wb, name + '.xlsx')
     },
     getSpanArr(data) {
       this.mergeArr.forEach((key, index1) => {

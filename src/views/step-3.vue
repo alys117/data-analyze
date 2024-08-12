@@ -430,7 +430,6 @@ ul{
     overflow: auto;
     .step3-main{
       padding: 20px;
-      min-width: calc(100vw - 424px);
       .description{
         background: #fcfcfc;
         padding: 10px;
@@ -442,10 +441,15 @@ ul{
   }
   @media screen and (max-width: 1628px) {
     .content{
-      width: calc(100vw - 406px);
+      width: calc(100vw - 407px);
     }
     .step3-main{
-      min-width: calc(1628px - 406px);
+      min-width: calc(1628px - 407px - 17px);
+    }
+  }
+  @media screen and (min-width: 1628px) {
+    .step3-main{
+      min-width: calc(100vw - 407px - 17px);
     }
   }
 }
