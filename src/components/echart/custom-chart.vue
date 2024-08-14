@@ -4,25 +4,62 @@
       <span style="margin: 10px;padding: 10px; background-color: #fdfdfd;font-size: 20px;font-family: 'Microsoft YaHei UI'">问题不能满足哟，麻烦修改后再分析</span>
       <el-button type="warning" @click="router.push('/step2')">返回</el-button>
     </div>
-    <v-chart ref="chartRef"
-             :option="option"
-             @legendselectchanged="legendselectchanged"
-             autoresize
-             class="chart" />
+    <div>
+      <v-chart ref="chartRef"
+               :option="option"
+               @legendselectchanged="legendselectchanged"
+               autoresize
+               v-show="!editVisible"
+               class="chart" />
+      <div v-if="editVisible" class="chart">
+        <div style="display: flex; gap:10px; align-items: center">
+          <el-switch
+            v-model="editType"
+            size="large"
+            inline-prompt
+            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+            active-text="转到json编辑"
+            inactive-text="转到表格编辑"
+          />
+          <div style="display: flex;justify-content: flex-end;margin: 20px">
+            <el-button size="small" @click="dialogVisible = false; editVisible = false; editType = true; rerender();">取 消</el-button>
+            <el-button size="small" type="primary" @click="render">确认修改</el-button>
+          </div>
+        </div>
+        <contenteditable-table ref="editTableRef" v-if="editType" :data="customDataObj" />
+        <el-input v-if="!editType" type="textarea" style="padding-right: 20px" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
+      </div>
+    </div>
+
     <div style="display: none">
       <el-button @click="exportPNG" type="primary">导出png</el-button>
       <el-button @click="clear" type="primary">clear</el-button>
       <el-button @click="resize" type="primary">resize</el-button>
+      <el-button @click="rerender" type="primary">重新渲染</el-button>
     </div>
-    <div v-if="isHasData" style="position: absolute;top: -20px;left: 0px;">
-      <el-link @click="edit"><Edit style="height: 1em"/>编辑数据</el-link>
+    <div v-if="isHasData" style="position: absolute;top: 0px;right: 40px;">
+      <el-link @click="edit" v-if="false"><Edit style="height: 1em"/>编辑数据</el-link>
+      <el-switch
+        v-model="editVisible"
+        @change="rerender"
+        size="large"
+        class="ml-2"
+        inline-prompt
+        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+        active-text="数据"
+        inactive-text="图表"
+      />
     </div>
-    <el-dialog title=""  v-model="dialogVisible" style="width: 1200px;" append-to-body>
+    <el-dialog title=""
+               tip="'不用dialog了'"
+               v-if="false"
+               v-model="dialogVisible"
+               style="width: 1200px;"
+               append-to-body>
       <template #header>
         <!-- 这里可以放置任何自定义标题内容 -->
         <span style="font-size: 14px" @click="editType = !editType">{{ editType ? '转到json编辑' : '转到表格编辑' }}</span>
       </template>
-      <contenteditable-table ref="editTableRef" v-if="editType" :data="customDataObj" />
       <!--      <el-table :data="list" stripe v-if="editType">-->
       <!--        <el-table-column v-for="(item, index) in columns" :key="index" :header-align="'center'">-->
       <!--          <template #header>-->
@@ -34,6 +71,7 @@
       <!--          </template>-->
       <!--        </el-table-column>-->
       <!--      </el-table>-->
+      <contenteditable-table ref="editTableRef" v-if="editType" :data="customDataObj" />
       <el-input v-if="!editType" type="textarea" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
       <div style="display: flex;justify-content: flex-end;margin-top: 20px">
         <el-button @click="dialogVisible = false; editType = true">取 消</el-button>
@@ -56,8 +94,10 @@ const router = useRouter()
 
 provide(THEME_KEY, 'light')
 const dialogVisible = ref(false)
+const editVisible = ref(false)
 function edit() {
   dialogVisible.value = true
+  editVisible.value = true
   console.log(customDataObj, 'obj')
   columns.value = ['指标', ...customDataObj.value.x.x_axis].map(i => { return { label: i } })
   list.value = Object.keys(customDataObj.value.y).map((key, index) => {
@@ -73,6 +113,7 @@ function edit() {
 }
 function render() {
   dialogVisible.value = false
+  editVisible.value = false
   if (editType.value) {
     const obj = editTableRef.value.handleChange()
     editType.value && emitter.emit('changeData', { draw_data: obj })
@@ -93,20 +134,15 @@ const resize = () => {
     chartRef.value.resize()
   })
 }
+const rerender = () => {
+  clear()
+  // nextTick(() => {})
+  setTimeout(() => {
+    chartRef.value.setOption(option.value)
+  }, 10)
+}
 const legendselectchanged = (legend) => {
   emitter.emit('legendselectchanged', legend)
-}
-function hexToRgb(hex, prefix = 'rgba(', suffix = ')') {
-  // 确保我们有一个有效的十六进制字符串
-  hex = hex.replace('#', '')
-  if (hex.length !== 6) {
-    throw new Error('Invalid HEX color')
-  }
-  // 将十六进制转换为十进制
-  var r = parseInt(hex.substring(0, 2), 16)
-  var g = parseInt(hex.substring(2, 4), 16)
-  var b = parseInt(hex.substring(4, 6), 16)
-  return r + ', ' + g + ', ' + b
 }
 const tip = ref(false)
 // 创建渐变色对象
@@ -155,9 +191,11 @@ const reDraw = (data, msg) => {
       }
     })
   }
+  rerender()
 }
 function setTip(flag) {
   tip.value = flag
+  editVisible.value = false
 }
 defineExpose({ setTip, reDraw, dispose, clear, resize, legendselectchanged, getDataURL: () => chartRef.value.getDataURL() })
 
@@ -272,6 +310,7 @@ onMounted(() => {
 
   .chart {
     height: 442px;
+    overflow: auto;
   }
 }
 </style>

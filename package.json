@@ -30,7 +30,7 @@
     "vxe-table": "^4.7.48",
     "vxe-table-plugin-element": "^4.0.3",
     "xe-utils": "^3.5.27",
-    "xlsx": "^0.18.5"
+    "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

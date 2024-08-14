@@ -75,7 +75,7 @@ defineExpose({
 <template>
   <el-link @click="addRow" style="color: darkcyan">添加行</el-link>
   <el-link @click="addColumn" style="color: #2a598a; margin-left: 20px">添加列</el-link>
-  <div style="overflow: auto">
+  <div style="overflow: auto;padding-right: 20px">
     <table>
       <tr style="height: 10px">
         <th v-for="(item, idx) in th" :key="item+idx" style="height: 10px">

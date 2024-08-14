@@ -94,7 +94,9 @@ onMounted(() => {
   })
   loading.value = false
   emitter.on('changeData', (data) => {
-    chartRef.value.reDraw(data)
+    setTimeout(() => {
+      chartRef.value.reDraw(data)
+    }, 10)
     currentAct.value.chartData.draw_data = data.draw_data
     invisibleRef.value.find((item) => item.id === currentAct.value.id).el.reDraw(data)
   })
@@ -407,10 +409,6 @@ const allMission = (activities) => {
 </template>
 
 <style lang="scss" scoped>
-.step-forward{
-  text-align: right;
-  margin: 0 20px 20px 20px;
-}
 ul{
   padding-inline-start: 30px;
 }
@@ -437,6 +435,10 @@ ul{
       }
       width: 100%;
       overflow: auto;
+    }
+    .step-forward{
+      text-align: right;
+      margin: 0 20px 20px 20px;
     }
   }
   @media screen and (max-width: 1628px) {

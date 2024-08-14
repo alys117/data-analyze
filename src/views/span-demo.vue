@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import * as XLXS from 'xlsx'
+import * as XLSX from 'xlsx-js-style'
 
 export default {
   name: 'TableDemo',
@@ -40,10 +40,10 @@ export default {
       const name = year + '' + month + '' + day
       // 导出文件名
       // 通过id，获取导出的表格数据
-      const wb = XLXS.utils.table_to_book(document.getElementById('table1'), {
+      const wb = XLSX.utils.table_to_book(document.getElementById('table1'), {
         raw: true
       })
-      console.log(XLXS.utils.sheet_to_json(wb.Sheets['Sheet1'], { header: 2 }))
+      console.log(XLSX.utils.sheet_to_json(wb.Sheets['Sheet1'], { header: 2 }))
       // XLXS.writeFileXLSX(wb, name + '.xlsx')
     },
     getSpanArr(data) {
