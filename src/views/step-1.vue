@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import { useStepStore } from '@/stores/step.js'
 import JsMind from '@/components/js-mind.vue'
 import emitter from '@/utils/mitt.js'
+import MindTest from '@/components/mind-test.vue'
 const router = useRouter()
 const step = useStepStore()
 const body = {
@@ -134,7 +135,7 @@ onMounted(async() => {
   <div v-loading="loading">
     <my-step :step="1"/>
     <div class="mind-container">
-      <js-mind />
+      <mind-test />
     </div>
     <div class="cus-table-container">
       <div class="cus-table-head">
