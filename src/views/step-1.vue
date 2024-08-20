@@ -1,12 +1,11 @@
 <script setup>
 import MyStep from '@/components/my-step.vue'
 import CusTable from '@/components/cus-table.vue'
-import { fetchTables } from '@/api/request.js'
+import { fetchTables, fetchTable } from '@/api/request.js'
 import { useRouter } from 'vue-router'
 import { useStepStore } from '@/stores/step.js'
-import JsMind from '@/components/js-mind.vue'
 import emitter from '@/utils/mitt.js'
-import MindTest from '@/components/mind-test.vue'
+import CustomMind from '@/components/custom-mind.vue'
 const router = useRouter()
 const step = useStepStore()
 const body = {
@@ -51,6 +50,7 @@ const next = () => {
     state: { params: result }
   })
 }
+const mindRef = ref()
 const init = async() => {
   body.question = step.aiConversation.question
   loading.value = true
@@ -60,63 +60,29 @@ const init = async() => {
   tableOptions.value.length = 0
   for (const tableName in data) {
     tableOptions.value.push({ label: tableName, value: tableName })
+    mindRef.value.hightlightNode(tableName)
   }
   console.log(body.question, 'init question')
 }
+const uniq = (ary) => {
+  const strings = ary.map((item) => JSON.stringify(item))
+  return Array.from(new Set(strings)).map((item) => JSON.parse(item))
+}
+
 onActivated(async() => {
   // 在history的state属性中获取对话中的问题
   body.question === step.aiConversation.question || await init()
-  const data = [
-    {
-      id: 'easy', // [必选] ID, 所有节点的ID不应有重复，否则ID重复的结节将被忽略
-      topic: 'Easy', // [必选] 节点上显示的内容
-      direction: 'right', // [可选] 节点的方向，此数据仅在第一层节点上有效，目前仅支持 left 和 right 两种，默认为 right
-      expanded: true, // [可选] 该节点是否是展开状态，默认为 true
-      children: [
-        { id: 'easy1', topic: '<span onclick="abc(\'easy1\')">点击</span>' },
-        { id: 'easy2', topic: 'Easy to edit' },
-        { id: 'easy3', topic: 'Easy to store' },
-        { id: 'easy4', topic: 'Easy to embed' }
-      ]
-    },
-    {
-      id: 'open',
-      topic: 'Open Source',
-      direction: 'right',
-      expanded: true,
-      children: [
-        { id: 'open1', topic: 'on GitHub' },
-        { id: 'open2', topic: 'BSD License' }
-      ]
-    },
-    {
-      id: 'powerful',
-      topic: 'Powerful',
-      direction: 'right',
-      children: [
-        { id: 'powerful1', topic: 'Base on Javascript' },
-        { id: 'powerful2', topic: 'Base on HTML5', children: [
-          { id: 'powerful21', topic: 'Base on HTML5' },
-          { id: 'powerful22', topic: 'Base on HTML5', children: [
-            { id: 'powerful221', topic: 'Base on HTML5' },
-            { id: 'powerful222', topic: 'Base on HTML5' }
-          ] }
-        ] },
-        { id: 'powerful3', topic: 'Depends on you' }
-      ]
-    },
-    {
-      id: 'other',
-      topic: 'test node',
-      direction: 'right',
-      children: [
-        { id: 'other1', topic: "I'm from local variable" },
-        { id: 'other2', topic: 'I can do everything' }
-      ]
-    }
-  ]
+  emitter.on('add-table', async tableName => {
+    console.log('add-table', tableName)
+    const tmp = await fetchTable({
+      'table_name': tableName,
+      'other': []
+    })
+    tableInfos.value[tableName] = tmp[tableName]
 
-  emitter.emit('data-js-mind', data)
+    tableOptions.value.push({ label: tableName, value: tableName })
+    tableOptions.value = uniq(tableOptions.value)
+  })
 })
 onMounted(async() => {
   console.log('step-1 mounted')
@@ -135,7 +101,7 @@ onMounted(async() => {
   <div v-loading="loading">
     <my-step :step="1"/>
     <div class="mind-container">
-      <mind-test />
+      <custom-mind ref="mindRef"/>
     </div>
     <div class="cus-table-container">
       <div class="cus-table-head">

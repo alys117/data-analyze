@@ -1504,6 +1504,276 @@ export const outline = {
   ]
 }
 
+export const outline2 = {
+  '家庭业务': {
+    '宽带': {
+      '家庭宽带': {
+        '发展': {
+          '受理': [
+            {
+              '表名': 'dw_mobilewire_user_statu_ds',
+              '中文名': '有线宽带统一用户视图表'
+            }
+          ],
+          '新增': [
+            {
+              '表名': 'dw_product_dt',
+              '中文名': '用户资料表'
+            },
+            {
+              '表名': 'dw_mobilewire_user_statu_ds',
+              '中文名': '有线宽带统一用户视图表'
+            }
+          ]
+        },
+        '净增': [
+          {
+            '表名': 'dw_mobilewire_user_statu_ds',
+            '中文名': '有线宽带统一用户视图表'
+          },
+          {
+            '表名': 'dw_mobilewire_user_statu_ds',
+            '中文名': '有线宽带统一用户视图表'
+          }
+        ],
+        '到达': [
+          {
+            '表名': 'dw_mobilewire_user_statu_ds',
+            '中文名': '有线宽带统一用户视图表'
+          }
+        ],
+        '流失（离网）': [
+          {
+            '表名': 'dw_mobilewire_user_statu_ds',
+            '中文名': '有线宽带统一用户视图表'
+          },
+          {
+            '表名': 'dw_mobilewire_user_statu_ds',
+            '中文名': '有线宽带统一用户视图表'
+          }
+        ]
+      }
+    },
+    '企业宽带': {},
+    '校园宽带': {},
+    '千兆宽带': {},
+    '群组宽带': {},
+    '第二条宽带': {}
+  },
+  '移动高清(机顶盒)': {
+    '家宽移动高清': {
+      '净增': {},
+      '发展': {
+        '受理': {},
+        '新增': {}
+      },
+      '到达': {},
+      '流失（离网）': {}
+    },
+    '企宽移动高清': {},
+    '大屏点播': {
+      '屏上(大屏)': {},
+      '屏下(小屏)': {},
+      '付费': {},
+      '免费': {}
+    },
+    '质差机顶盒': {}
+  }
+}
+
+export const outline3 = {
+  'meta': {
+    'name': '业务树',
+    'author': 'aspire',
+    'version': '0.2'
+  },
+  'format': 'node_tree',
+  'data': {
+    'id': 'root',
+    'topic': '全业务',
+    'children': [
+      {
+        'id': 'easy',
+        'topic': 'Easy',
+        'direction': 'left',
+        'expanded': false,
+        'children': [
+          {
+            'id': 'easy1',
+            'topic': 'Easy to show',
+            children: [
+              {
+                'id': 'easy11',
+                'topic': 'xxx表 dw_city_operation_indicator',
+                'table_ename': 'dw_city_operation_indicator'
+              }
+            ]
+          },
+          {
+            'id': 'easy2',
+            'topic': 'Easy to edit'
+          },
+          {
+            'id': 'easy3',
+            'topic': 'Easy to store'
+          },
+          {
+            'id': 'easy4',
+            'topic': 'Easy to embed',
+            expanded: false,
+            'children': [
+              {
+                'id': 'easy41',
+                'topic': 'Easy to show'
+              },
+              {
+                'id': 'easy42',
+                'topic': 'Easy to edit'
+              },
+              {
+                'id': 'easy43',
+                'topic': 'Easy to store'
+              },
+              {
+                'id': 'open44',
+                'topic': 'BSD License',
+                'children': [
+                  {
+                    'id': 'open441',
+                    'topic': 'on GitHub'
+                  },
+                  {
+                    'id': 'open442',
+                    'topic': 'BSD License'
+                  }
+                ]
+              },
+              {
+                'id': 'easy45',
+                'topic': 'Easy to embed'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        'id': 'open',
+        'topic': 'Open Source',
+        'direction': 'right',
+        'children': [
+          {
+            'id': 'open1',
+            'topic': 'on GitHub'
+          },
+          {
+            'id': 'open2',
+            'topic': 'BSD License',
+            'children': [
+              {
+                'id': 'open21',
+                'topic': 'on GitHub'
+              },
+              {
+                'id': 'open22',
+                'topic': 'BSD License',
+                expanded: false,
+                'children': [
+                  {
+                    'id': 'open221',
+                    'topic': 'on GitHub',
+                    'children': [
+                      {
+                        'id': 'open2211',
+                        'topic': 'band new world, band new day',
+                        children: [
+                          {
+                            'id': 'open22111',
+                            'topic': 'xxx表 dw_city_operation_indicator_bak',
+                            'table_ename': 'dw_city_operation_indicator_bak'
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    'id': 'open222',
+                    'topic': 'BSD License-222',
+                    'children': [
+                      {
+                        'id': 'open2221',
+                        'topic': 'xxx表 dim_pub_city',
+                        'table_ename': 'dim_pub_city'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        'id': 'powerful',
+        'topic': 'Powerful',
+        'direction': 'right',
+        'expanded': false,
+        'children': [
+          {
+            'id': 'powerful1',
+            'topic': 'Base on Javascript'
+          },
+          {
+            'id': 'powerful2',
+            'topic': 'Base on HTML5'
+          },
+          {
+            'id': 'powerful3',
+            'topic': 'Depends on you',
+            'expanded': false,
+            'children': [
+              {
+                'id': 'powerful31',
+                'topic': 'Base on Javascript',
+                children: [
+                  {
+                    'id': 'powerful311',
+                    'topic': 'xxx表 dw_mobilewire_user_statu_ds',
+                    'table_ename': 'dw_mobilewire_user_statu_ds'
+                  }
+                ]
+              },
+              {
+                'id': 'powerful32',
+                'topic': 'Base on HTML5',
+                'table': 'st_xfdfds_sdfdsf'
+              },
+              {
+                'id': 'powerful33',
+                'topic': 'Depends on you'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        'id': 'other',
+        'topic': 'test node',
+        'direction': 'left',
+        'children': [
+          {
+            'id': 'other1',
+            'topic': "I'm from remote"
+          },
+          {
+            'id': 'other2',
+            'topic': 'I can do everything'
+          }
+        ]
+      }
+    ]
+  }
+}
+
 export const historyTree = [
   {
     id: 100,

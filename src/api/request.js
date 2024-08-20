@@ -1,4 +1,4 @@
-import { fakeData2, outline, rewriteOutline, drawData, desciption, historyTree2 } from '@/api/fakeData.js'
+import { fakeData2, outline, rewriteOutline, drawData, desciption, historyTree2, outline3 } from '@/api/fakeData.js'
 import { generateID } from '@/utils/util.js'
 
 const selectTables = async(body) => {
@@ -154,19 +154,42 @@ const fetchHistory = async(body) => {
   }).then(res => res.json())
   return data
 }
-
-let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription
+const fateFetchBusiTree = async() => {
+  // return await fetch('https://hizzgdev.github.io/jsmind/example/data_example.json').then(res => res.json())
+  return await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(outline3)
+    }, 50)
+  })
+}
+const checkTable = async(body) => {
+  const response = await fetch('/api/check_table', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json'
+    },
+    body: JSON.stringify(body)
+  })
+  const json = await response.json()
+  return json
+}
+let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchBusiTree, fetchTable
 if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchTables = fakeSelectTables
   fetchOutline = fakeFetchOutline
   fetchRewriteOutline = fakeFetchRewriteOutline
   fetchDrawData = fakeFetchDrawChart
   fetchChartDescription = fakeFetchDescp
+  fetchBusiTree = fateFetchBusiTree
+  fetchTable = checkTable
 } else {
   fetchTables = selectTables
   fetchOutline = fetchReportOutline
   fetchRewriteOutline = fetchRewriteReportOutline
   fetchDrawData = fetchDrawChart
   fetchChartDescription = fetchDescrip
+  fetchBusiTree = fateFetchBusiTree
+  fetchTable = checkTable
 }
-export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistory }
+export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistory, fetchBusiTree, fetchTable }
