@@ -4,6 +4,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
+import { LoadingPlugin } from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/css/index.css'
+
 import App from './App.vue'
 import router from './router'
 import { loadVxeTable } from '@/plugins/vxe-table'
@@ -16,5 +19,7 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
 loadVxeTable(app)
+
+app.use(LoadingPlugin)
 
 app.mount('#app')

@@ -59,41 +59,53 @@ const init = async() => {
   tableInfos.value = data
   tableOptions.value.length = 0
   for (const tableName in data) {
-    tableOptions.value.push({ label: tableName, value: tableName })
-    mindRef.value.hightlightNode(tableName)
+    tableOptions.value.push({ label: data[tableName]['中文名'], value: tableName })
+    // mindRef.value.hightlightNode(tableName) // 这里还没有取到mind数据
   }
-  console.log(body.question, 'init question')
 }
 const uniq = (ary) => {
   const strings = ary.map((item) => JSON.stringify(item))
   return Array.from(new Set(strings)).map((item) => JSON.parse(item))
 }
+const ready = ref(false)
+const high = ref(false)
+watch(() => tableOptions.value, (val) => {
+  if (!ready.value) return
+  if (high.value) return
+  for (const item of tableOptions.value) {
+    mindRef.value.hightlightNode(item.value)
+  }
+  high.value = true
+}, { deep: true })
 
 onActivated(async() => {
   // 在history的state属性中获取对话中的问题
   body.question === step.aiConversation.question || await init()
-  emitter.on('add-table', async tableName => {
-    console.log('add-table', tableName)
+  emitter.on('add-table', async data => {
+    if (tableOptions.value.findIndex(item => item.value === data.table_ename) > -1) {
+      ElMessageBox.alert(`${data.table_cname}（${data.table_ename}） 已存在`, '提示', { type: 'warning' })
+      return
+    }
     const tmp = await fetchTable({
-      'table_name': tableName,
+      'table_name': data.table_ename,
       'other': []
     })
-    tableInfos.value[tableName] = tmp[tableName]
-
-    tableOptions.value.push({ label: tableName, value: tableName })
+    tableInfos.value[data.table_ename] = tmp[data.table_ename]
+    tableOptions.value.push({ label: data.table_cname, value: data.table_ename })
     tableOptions.value = uniq(tableOptions.value)
   })
 })
 onMounted(async() => {
   console.log('step-1 mounted')
-  window.abc = function(para) {
-    console.log('abc', para)
-  }
   step.setTreeCache(null)
   step.setOutline(null)
   step.setStep1(null)
   step.setStep2(null)
   step.setStep3(null)
+  emitter.on('highlight', async data => {
+    console.log(data, 'highlight')
+    ready.value = true
+  })
 })
 </script>
 

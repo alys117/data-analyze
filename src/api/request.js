@@ -18,7 +18,7 @@ const fakeSelectTables = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(fakeData2)
-    }, 50)
+    }, 3000)
   })
 }
 
@@ -156,11 +156,19 @@ const fetchHistory = async(body) => {
 }
 const fateFetchBusiTree = async() => {
   // return await fetch('https://hizzgdev.github.io/jsmind/example/data_example.json').then(res => res.json())
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(outline3)
-    }, 50)
-  })
+  return await fetch('/api/check_bussiness_tree', {
+    method: 'post'
+  }).then(res => res.json())
+  // return await new Promise((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(outline3)
+  //   }, 50)
+  // })
+}
+const selectBusiTree = async() => {
+  return await fetch('/api/check_bussiness_tree', {
+    method: 'post'
+  }).then(res => res.json())
 }
 const checkTable = async(body) => {
   const response = await fetch('/api/check_table', {
@@ -189,7 +197,7 @@ if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchRewriteOutline = fetchRewriteReportOutline
   fetchDrawData = fetchDrawChart
   fetchChartDescription = fetchDescrip
-  fetchBusiTree = fateFetchBusiTree
+  fetchBusiTree = selectBusiTree
   fetchTable = checkTable
 }
 export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistory, fetchBusiTree, fetchTable }

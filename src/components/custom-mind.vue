@@ -2,9 +2,9 @@
   <div style="padding: 20px">
     <el-scrollbar class="custom-mind-container">
       <div ref="customMindRef" id="customMind" :style="{'--innerHeight': h, '--innerWidth': w}" class="mind-ref"></div>
-  <!--    <div ref="customMindRef" id="customMind" style="height: 500px"></div>-->
+      <!--    <div ref="customMindRef" id="customMind" style="height: 500px"></div>-->
     </el-scrollbar>
-<!--    <el-button @click="jmResize">resize</el-button>-->
+    <!--    <el-button @click="jmResize">resize</el-button>-->
   </div>
 </template>
 
@@ -100,12 +100,14 @@ onMounted(async() => {
   const _jm = jm.value
   // customMindRef.value.addEventListener('click', handleClick)
   const remoteMind = await fetchBusiTree()
-  mind.value = remoteMind
+  mind.value.data = remoteMind
+  console.log(mind.value, '大纲数据到了')
   // const arr = findFamily(mind.value.data.children, 'table_ename', 'dw_mobilewire_user_statu_ds')
   // arr.forEach(item => { item.expanded = true })
   // arr.at(-1)['background-color'] = '#ff0122'
   _jm.add_event_listener(function(type, data) {
     // console.log(type, data)
+    _jm.disable_edit()
     if (type === 4) {
       const node = jm.value.get_node(data.node)
       handleNodeClick(node)
@@ -121,15 +123,22 @@ onMounted(async() => {
   // mind.data.children[3]['background-color'] = '#ff0122'
   // mind.data.children[3].expanded = false
   _jm.show(mind.value)
-  const node = _jm.get_node('easy')
-  _jm.set_node_color(node.id, 'pink', null)
+  // 可以用调用高亮函数了hightlightNode
+  emitter.emit('highlight', '可以高亮了')
+  // const node = _jm.get_node('easy')
+  // _jm.set_node_color(node.id, 'pink', null)
   _jm.resize()
 })
 function hightlightNode(prop) {
   const arr = findFamily(mind.value.data.children, 'table_ename', prop) || []
+  console.log(arr, 'arr', prop, mind.value.data.children)
+  if (!arr.length) return
   arr.forEach(item => { jm.value.expand_node(item.id) })
   const lastNode = arr.at(-1)
-  jm.value.set_node_color(lastNode.id, '#ff0122', null)
+  const _jm = jm.value
+  _jm.enable_edit()
+  _jm.set_node_color(lastNode.id, '#ff6b6b', null)
+  _jm.disable_edit()
 }
 defineExpose({
   hightlightNode
@@ -164,11 +173,21 @@ const handleClick = (event) => {
 }
 // 节点点击事件处理函数
 function handleNodeClick(node) {
-  console.log(node)
   if (node.data.table_ename) {
-    emitter.emit('add-table', node.data.table_ename)
+    ElMessageBox.confirm(`确认选择${node.data.table_cname}（${node.data.table_ename}）?`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      emitter.emit('add-table', node.data)
+      const _jm = jm.value
+      _jm.enable_edit()
+      _jm.set_node_color(node.id, '#ff6b6b', null)
+      _jm.disable_edit()
+    }).catch(() => {
+      console.log('取消')
+    })
   }
-  // 在这里处理节点点击事件，例如显示节点信息、跳转等
 }
 </script>
 
