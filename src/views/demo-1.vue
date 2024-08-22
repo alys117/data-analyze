@@ -4,58 +4,30 @@ import { ref, onMounted } from 'vue'
 import ColDemo from '@/views/col-demo.vue'
 import SortableDemo from '@/views/sortablejs-demo.vue'
 import PopoverDemo from '@/views/popover-demo.vue'
+import { hide, startLoading } from '@/components/loading.js'
 const router = useRouter()
-
+const { proxy } = getCurrentInstance()
 const loading = ref(true)
-const colRef = ref(null)
 onMounted(() => {
   loading.value = false
 })
 
-import { useLoading } from 'vue-loading-overlay'
-
-const $loading = useLoading({
-  // options
-})
-const tip = ref('step 1')
-const submit = () => {
-  const loader = $loading.show({
-    // Pass props by their camelCased names
-    container: colRef.value,
-    canCancel: false, // default false
-    onCancel: () => {
-      console.log('canceled')
-    },
-    isFullPage: false,
-    color: '#000000',
-    loader: 'spinner',
-    width: 64,
-    height: 64,
-    backgroundColor: '#ffffff',
-    opacity: 0.5,
-    zIndex: 999
-  },
-  {
-    // Pass slots by their names
-    default: h('h2', null, `loading...${tip.value}`)
-  }
-  )
-  setTimeout(() => {
-    tip.value = 'step 2'
-  }, 1000)
+const submit = async() => {
+  startLoading(proxy.$refs['loadingRef'], { content: '查询中...', timeConsuming: 11 })
   // simulate AJAX
-  setTimeout(() => {
-    loader.hide()
-  }, 3000)
+  await new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, 2000)
+  })
+  hide()
 }
 
 </script>
 
 <template>
   <div v-loading="loading">
-    <div style="position: relative">
-      <div ref="colRef" style="background-color: lightpink;height: 200px"></div>
-    </div>
+    <div ref="loadingRef" style="background-color: bisque;height: 500px;position: relative"></div>
     <el-button size="default" type="primary" @click="submit">vue-loading-overlay</el-button>
     <col-demo />
     <sortable-demo/>
