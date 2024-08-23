@@ -156,14 +156,14 @@ const fetchHistory = async(body) => {
 }
 const fateFetchBusiTree = async() => {
   // return await fetch('https://hizzgdev.github.io/jsmind/example/data_example.json').then(res => res.json())
-  return await fetch('/api/check_bussiness_tree', {
-    method: 'post'
-  }).then(res => res.json())
-  // return await new Promise((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(outline3)
-  //   }, 50)
-  // })
+  // return await fetch('/api/check_bussiness_tree', {
+  //   method: 'post'
+  // }).then(res => res.json())
+  return await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(outline3)
+    }, 5000)
+  })
 }
 const selectBusiTree = async() => {
   return await fetch('/api/check_bussiness_tree', {

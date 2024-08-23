@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import { useStepStore } from '@/stores/step.js'
 import emitter from '@/utils/mitt.js'
 import CustomMind from '@/components/custom-mind.vue'
+import { callLoading } from '@/components/loading.js'
 const router = useRouter()
 const step = useStepStore()
 const body = {
@@ -53,9 +54,10 @@ const next = () => {
 const mindRef = ref()
 const init = async() => {
   body.question = step.aiConversation.question
-  loading.value = true
-  const data = await fetchTables(body)
-  loading.value = false
+  // loading.value = true
+  // const data = await fetchTables(body)
+  const data = await callLoading(async() => fetchTables(body), [{ content: '挑表', timeConsuming: 10 }])
+  // loading.value = false
   tableInfos.value = data
   tableOptions.value.length = 0
   for (const tableName in data) {
@@ -77,6 +79,15 @@ watch(() => tableOptions.value, (val) => {
   }
   high.value = true
 }, { deep: true })
+
+watch(() => ready.value, (val) => {
+  if (!ready.value) return
+  if (high.value) return
+  for (const item of tableOptions.value) {
+    mindRef.value.hightlightNode(item.value)
+  }
+  high.value = true
+})
 
 onActivated(async() => {
   // 在history的state属性中获取对话中的问题

@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue'
 import ColDemo from '@/views/col-demo.vue'
 import SortableDemo from '@/views/sortablejs-demo.vue'
 import PopoverDemo from '@/views/popover-demo.vue'
-import { hide, startLoading } from '@/components/loading.js'
+import { callLoading, hide, startLoading } from '@/components/loading.js'
 const router = useRouter()
 const { proxy } = getCurrentInstance()
 const loading = ref(true)
@@ -13,14 +13,19 @@ onMounted(() => {
 })
 
 const submit = async() => {
-  startLoading(proxy.$refs['loadingRef'], { content: '查询中...', timeConsuming: 11 })
+  // startLoading([{ content: '挑表', timeConsuming: 3 }, { content: '画图', timeConsuming: 2 }, { content: '出结论', timeConsuming: 2 }], proxy.$refs['loadingRef'])
+  // startLoading([{ content: '挑表', timeConsuming: 3 }, { content: '画图', timeConsuming: 2 }, { content: '出结论', timeConsuming: 2 }])
+  // startLoading()
   // simulate AJAX
-  await new Promise(resolve => {
-    setTimeout(() => {
-      resolve()
-    }, 2000)
-  })
-  hide()
+  // hide()
+  const data = await callLoading(async() => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ data: '模拟发送请求' })
+      }, 9000)
+    })
+  }, [{ content: '挑表', timeConsuming: 3 }, { content: '画图', timeConsuming: 2 }, { content: '出结论', timeConsuming: 2 }])
+  console.log(data, 'data')
 }
 
 </script>
