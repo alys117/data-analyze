@@ -12,7 +12,6 @@ percentages.reduce((acc, cur) => {
   processPoints.push(acc + cur)
   return acc + cur
 }, 0)
-console.log(processPoints, 'processPoints')
 let count = 0
 let point = 0
 const dian = ref('')
@@ -42,21 +41,7 @@ function chuck() {
   }
   return 100 / arr.length
 }
-const PROCESSES = [
-  { content: '挑选', timeConsuming: 35 },
-  { content: '图表描述', timeConsuming: 10 },
-  { content: '写sql', timeConsuming: 35 },
-  { content: '绘图', timeConsuming: 5 },
-  { content: '二级标题重写', timeConsuming: 5 },
-  { content: '分析思路', timeConsuming: 12 },
-  { content: '分析中', timeConsuming: 5 }
-]
 onMounted(() => {
-  console.log(process, 'process')
-  if (process) {
-    const proc = PROCESSES.find(item => item.content === process.content)
-    console.log(proc, '[查找结果]')
-  }
   emitter.on('shutdown', (process) => {
     clearInterval(interval)
     percentage.value = 100

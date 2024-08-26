@@ -29,20 +29,19 @@ function startLoading(process = [{ content: '分析中...', timeConsuming: 5 }],
     default: h(LoadingStatus, { process })
   })
 }
-function hide() {
+async function hide() {
   emitter.emit('shutdown')
-  new Promise(resolve => {
+  await new Promise(resolve => {
     setTimeout(() => {
       resolve()
     }, 500)
-  }).then(() => {
-    loader.hide()
   })
+  loader.hide()
 }
 async function callLoading(call, process = [{ content: '分析中', timeConsuming: 5 }], el = null) {
   startLoading(process, el)
   const data = await call()
-  hide()
+  await hide()
   return data
 }
 

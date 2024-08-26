@@ -5,6 +5,7 @@ import JsMind from '@/components/js-mind.vue'
 import { convertFormat, revertFormat, reverseConvertFormat, generateID } from '@/utils/util.js'
 import { fetchOutline } from '@/api/request.js'
 import { useStepStore } from '@/stores/step.js'
+import { callLoading } from '@/components/loading.js'
 const step = useStepStore()
 const router = useRouter()
 
@@ -54,15 +55,18 @@ onActivated(async() => {
     outlineTree.value = convertFormat(step.outline)
     return
   }
-  loading.value = true
   await init()
-  loading.value = false
 })
 const init = async() => {
   const body = structuredClone(history.state.params || toRaw(step.step1))
   body['business_tree'] = 'aa->bb'
   body['other'] = []
+  /*
+  loading.value = true
   const outline = await fetchOutline(body)
+  loading.value = false
+  */
+  const outline = await callLoading(async() => fetchOutline(body), [{ content: '分析思路', timeConsuming: import.meta.env.VITE_OUT_LINE }])
   step.setOutline(outline)
   outlineTree.value = convertFormat(outline)
 }

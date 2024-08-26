@@ -18,7 +18,7 @@ const fakeSelectTables = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(fakeData2)
-    }, 3000)
+    }, 2000)
   })
 }
 
@@ -38,7 +38,7 @@ const fakeFetchOutline = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(outline)
-    }, 50)
+    }, 2000)
   })
 }
 
@@ -60,7 +60,7 @@ const fakeFetchRewriteOutline = async() => {
       const a = structuredClone(rewriteOutline)
       a['问题'] = a['问题'] + Math.random()
       resolve(a)
-    }, 50)
+    }, 2000)
   })
 }
 
@@ -162,7 +162,7 @@ const fateFetchBusiTree = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(outline3)
-    }, 5000)
+    }, 1000)
   })
 }
 const selectBusiTree = async() => {
@@ -182,7 +182,8 @@ const checkTable = async(body) => {
   const json = await response.json()
   return json
 }
-let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchBusiTree, fetchTable
+let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
+  fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline
 if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchTables = fakeSelectTables
   fetchOutline = fakeFetchOutline
@@ -191,6 +192,7 @@ if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchChartDescription = fakeFetchDescp
   fetchBusiTree = fateFetchBusiTree
   fetchTable = checkTable
+  fetchHistoryOutline = fakeFetchHistory
 } else {
   fetchTables = selectTables
   fetchOutline = fetchReportOutline
@@ -199,5 +201,6 @@ if (import.meta.env.VITE_USE_MOCK === 'true') {
   fetchChartDescription = fetchDescrip
   fetchBusiTree = selectBusiTree
   fetchTable = checkTable
+  fetchHistoryOutline = fetchHistory
 }
-export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistory, fetchBusiTree, fetchTable }
+export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable }

@@ -2,7 +2,7 @@
 import MyStep from '@/components/my-step.vue'
 import { saveAs } from 'file-saver'
 import { useRouter } from 'vue-router'
-import { ref, reactive, onMounted, toRaw } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
@@ -12,6 +12,7 @@ import CustomChart from '@/components/echart/custom-chart.vue'
 import { useStepStore } from '@/stores/step.js'
 import InvisibaleChart from '@/components/echart/invisibale-chart.vue'
 import to from 'await-to-js'
+import { callLoading } from '@/components/loading.js'
 const step = useStepStore()
 const router = useRouter()
 
@@ -106,7 +107,13 @@ onMounted(() => {
       columns_name: step.step1.columns_name,
       other: []
     }
-    const [err, rewriteData] = await to(fetchRewriteOutline(body))
+    // const [err, rewriteData] = await to(fetchRewriteOutline(body))
+    const [err, rewriteData] = await to(
+      callLoading(
+        async() => fetchRewriteOutline(body),
+        [{ content: '重写思路', timeConsuming: import.meta.env.VITE_REWRITE_TITLE }]
+      )
+    )
     if (err) {
       console.log('/api/rewrite_report_outline 接口报错', err)
       loading.value = false
@@ -137,7 +144,7 @@ onMounted(() => {
       console.log('结束')
       return
     }
-    loading.value = true
+    // loading.value = true
     const body = {
       question: activity.content,
       columns_name: step.step1.columns_name,
@@ -149,7 +156,12 @@ onMounted(() => {
     rewriteDataBody.answer_plot = activity.drawDemond
     rewriteDataBody.user_input = activity.subtext
     if (!activity.subtext) {
-      const [err, rewriteData] = await to(fetchRewriteOutline(body))
+      const [err, rewriteData] = await to(
+        callLoading(
+          async() => fetchRewriteOutline(body),
+          [{ content: '重写思路', timeConsuming: import.meta.env.VITE_REWRITE_TITLE }]
+        )
+      )
       if (err) {
         console.log('/api/rewrite_report_outline 接口报错', err)
         loading.value = false
@@ -160,7 +172,12 @@ onMounted(() => {
       rewriteDataBody.user_input = rewriteData['问题']
     }
 
-    const [err2, drawData] = await to(fetchDrawData(rewriteDataBody))
+    const [err2, drawData] = await to(
+      callLoading(
+        async() => fetchDrawData(rewriteDataBody),
+        [{ content: '画图', timeConsuming: import.meta.env.VITE_DRAW }]
+      )
+    )
     if (err2) {
       console.log('/api/draw_data 接口报错', err2)
       loading.value = false
@@ -180,7 +197,12 @@ onMounted(() => {
       sql: drawData.sql,
       question: rewriteDataBody.user_input
     }
-    const [err3, descp] = await to(fetchChartDescription(descriptionBody))
+    const [err3, descp] = await to(
+      callLoading(
+        async() => fetchChartDescription(descriptionBody),
+        [{ content: '描述', timeConsuming: import.meta.env.VITE_DESCRIPTION }]
+      )
+    )
     if (err3) {
       console.log('/api/chart_description 接口报错', err3)
       loading.value = false
@@ -192,7 +214,7 @@ onMounted(() => {
     step.setTreeCache(activities)
     emitter.emit('change-point', { id: activity.id, type: 'danger' })
 
-    loading.value = false
+    // loading.value = false
   })
 })
 
@@ -344,15 +366,23 @@ const requestAll = (activity, tasks) => {
   }
 }
 const analyzed = ref(false)
-const allMission = (activities) => {
-  loading.value = true
+const allMission = async(activities) => {
   const tasks = []
   requestAll(activities, tasks)
+  /*
+  loading.value = true
   Promise.allSettled(tasks).then((result) => {
     console.log('Mission all over', result)
     analyzed.value = true
     loading.value = false
   })
+*/
+  const result = await callLoading(
+    async() => { return Promise.allSettled(tasks) },
+    [{ content: '全部任务', timeConsuming: import.meta.env.VITE_ALL_MISSION }]
+  )
+  analyzed.value = true
+  console.log('Mission all over', result)
 }
 </script>
 
@@ -393,10 +423,10 @@ const allMission = (activities) => {
             </div>
           </div>
 
-          <!--          <el-button type="primary" @click="completePoint">complete</el-button>-->
-          <!--          <el-button type="danger" @click="resetPoint">uncomplete</el-button>-->
-          <!--          <el-button type="danger" @click="exportDataURL">export</el-button>-->
-          <!--          <el-button type="danger" @click="mock">mock</el-button>-->
+          <el-button v-if="false" type="primary" @click="completePoint">complete</el-button>
+          <el-button v-if="false" type="danger" @click="resetPoint">uncomplete</el-button>
+          <el-button v-if="false" type="danger" @click="exportDataURL">export</el-button>
+          <el-button v-if="false" type="danger" @click="mock">mock</el-button>
         </div>
         <div class="step-forward">
           <el-button size="default" type="primary" @click="showDOC">导出</el-button>

@@ -2,7 +2,6 @@
 import MyStep from '@/components/my-step.vue'
 import CusTable from '@/components/cus-table.vue'
 import { fetchTables, fetchTable } from '@/api/request.js'
-import { useRouter } from 'vue-router'
 import { useStepStore } from '@/stores/step.js'
 import emitter from '@/utils/mitt.js'
 import CustomMind from '@/components/custom-mind.vue'
@@ -54,10 +53,12 @@ const next = () => {
 const mindRef = ref()
 const init = async() => {
   body.question = step.aiConversation.question
-  // loading.value = true
-  // const data = await fetchTables(body)
-  const data = await callLoading(async() => fetchTables(body), [{ content: '挑表', timeConsuming: 10 }])
-  // loading.value = false
+  /*
+  loading.value = true
+  const data = await fetchTables(body)
+  loading.value = false
+  */
+  const data = await callLoading(async() => fetchTables(body), [{ content: '挑表', timeConsuming: import.meta.env.VITE_PICK_TABLE }])
   tableInfos.value = data
   tableOptions.value.length = 0
   for (const tableName in data) {
@@ -69,24 +70,16 @@ const uniq = (ary) => {
   const strings = ary.map((item) => JSON.stringify(item))
   return Array.from(new Set(strings)).map((item) => JSON.parse(item))
 }
-const ready = ref(false)
-const high = ref(false)
-watch(() => tableOptions.value, (val) => {
-  if (!ready.value) return
-  if (high.value) return
+const isBusiTreeReady = ref(false) // 业务树是否准备好
+const stopWatch = watchEffect(() => {
+  // console.log('变化了', isBusiTreeReady.value, tableOptions.value)
+  if (!isBusiTreeReady.value) return
+  if (tableOptions.value.length === 0) return
+  console.log('开始高亮')
   for (const item of tableOptions.value) {
     mindRef.value.hightlightNode(item.value)
   }
-  high.value = true
-}, { deep: true })
-
-watch(() => ready.value, (val) => {
-  if (!ready.value) return
-  if (high.value) return
-  for (const item of tableOptions.value) {
-    mindRef.value.hightlightNode(item.value)
-  }
-  high.value = true
+  stopWatch()
 })
 
 onActivated(async() => {
@@ -113,9 +106,8 @@ onMounted(async() => {
   step.setStep1(null)
   step.setStep2(null)
   step.setStep3(null)
-  emitter.on('highlight', async data => {
-    console.log(data, 'highlight')
-    ready.value = true
+  emitter.on('business-tree-ready', async data => {
+    isBusiTreeReady.value = true
   })
 })
 </script>

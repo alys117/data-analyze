@@ -4,7 +4,7 @@ import emitter from '@/utils/mitt.js'
 import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
 import { convertFormat, generateID } from '@/utils/util.js'
 import { historyTree } from '@/api/fakeData.js'
-import { fetchHistory } from '@/api/request.js'
+import { fetchHistoryOutline } from '@/api/request.js'
 const route = useRoute()
 const router = useRouter()
 const props = defineProps(['tree-data'])
@@ -116,7 +116,7 @@ onActivated(async() => {
   emitter.emit('data-js-mind', dataSourceIn.value)
 })
 onMounted(async() => {
-  const fakeHis = await fetchHistory({
+  const fakeHis = await fetchHistoryOutline({
     'theme': '你好',
     'other': []
   })

@@ -101,7 +101,6 @@ onMounted(async() => {
   // customMindRef.value.addEventListener('click', handleClick)
   const remoteMind = await fetchBusiTree()
   mind.value.data = remoteMind
-  console.log(mind.value, '大纲数据到了')
   // const arr = findFamily(mind.value.data.children, 'table_ename', 'dw_mobilewire_user_statu_ds')
   // arr.forEach(item => { item.expanded = true })
   // arr.at(-1)['background-color'] = '#ff0122'
@@ -124,14 +123,14 @@ onMounted(async() => {
   // mind.data.children[3].expanded = false
   _jm.show(mind.value)
   // 可以用调用高亮函数了hightlightNode
-  emitter.emit('highlight', '可以高亮了')
+  emitter.emit('business-tree-ready', 'business-tree ready')
   // const node = _jm.get_node('easy')
   // _jm.set_node_color(node.id, 'pink', null)
   _jm.resize()
 })
 function hightlightNode(prop) {
   const arr = findFamily(mind.value.data.children, 'table_ename', prop) || []
-  console.log(arr, 'arr', prop, mind.value.data.children)
+  // console.log(arr, 'arr', prop, mind.value.data.children)
   if (!arr.length) return
   arr.forEach(item => { jm.value.expand_node(item.id) })
   const lastNode = arr.at(-1)

@@ -18,8 +18,8 @@
             size="large"
             inline-prompt
             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-            active-text="转到json编辑"
-            inactive-text="转到表格编辑"
+            active-text="json|表格"
+            inactive-text="表格|json"
           />
           <div style="display: flex;justify-content: flex-end;margin: 20px">
             <el-button size="small" @click="dialogVisible = false; editVisible = false; editType = true; rerender();">取 消</el-button>
