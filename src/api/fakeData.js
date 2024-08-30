@@ -1304,7 +1304,8 @@ export const outline3 = {
                     {
                       'id': 'open2221',
                       'topic': 'xxx表 dim_pub_city',
-                      'table_ename': 'dim_pub_city'
+                      'table_ename': 'dim_pub_city',
+                      'table_cname': '城市维表'
                     }
                   ]
                 }
@@ -1519,6 +1520,7 @@ export const rewriteOutline = {
 
 export const drawData = {
   'draw_data': {
+    'plot': 'bar',
     'x': {
       'x_axis': [
         0, 1
@@ -1537,6 +1539,7 @@ export const drawData = {
     }
   },
   'draw_data_2': {
+    'plot': 'line',
     'x': {
       'x_axis': [
         '济南',
@@ -1574,6 +1577,35 @@ export const drawData = {
       ]
     }
   },
+  'draw_data_3': {
+    'x': {
+      'x_axis': [
+        '2023-08',
+        '2023-09',
+        '2023-10',
+        '2023-11',
+        '2023-12'
+      ]
+    },
+    'y': {
+      '重点KEI指标测评总分': [
+        92.06800000000001,
+        92.65599999999999,
+        92.118,
+        93.86000000000001,
+        92.526
+      ],
+      '非重点KEI指标测评总分': [
+        88.72999999999999,
+        87.80199999999999,
+        88.56,
+        88.6,
+        88.3
+      ]
+    },
+    'plot': 'line'
+  },
+  '耗时': 15.631957292556763,
   'sql': "SELECT `IMGC_pp` AS '增量市场增幅贡献pp', `HMGC_pp` AS '家庭市场增幅贡献pp', `EMGC_pp` AS '存量市场增幅贡献pp' FROM dw_city_operation_indicator WHERE `op_time` LIKE '2024%' AND `city_name` = '济南'"
 }
 

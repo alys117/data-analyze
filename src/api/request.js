@@ -18,7 +18,7 @@ const fakeSelectTables = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(fakeData2)
-    }, 2000)
+    }, 1000)
   })
 }
 
@@ -38,7 +38,7 @@ const fakeFetchOutline = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(outline)
-    }, 2000)
+    }, 1000)
   })
 }
 
@@ -60,7 +60,7 @@ const fakeFetchRewriteOutline = async() => {
       const a = structuredClone(rewriteOutline)
       a['问题'] = a['问题'] + Math.random()
       resolve(a)
-    }, 2000)
+    }, 1000)
   })
 }
 
@@ -90,8 +90,9 @@ const fakeFetchDrawChart = async() => {
       }
       const data = structuredClone(drawData)
       // data.draw_data = n > 0.5 ? drawData.draw_data : drawData.draw_data_2 // 这里藏着一个大坑，不能直接赋值，否则会改变原始数据
-      data.draw_data = n > 0.5 ? data.draw_data : data.draw_data_2
+      data.draw_data = n > 0.5 ? data.draw_data_3 : data.draw_data_2
       delete data.draw_data_2
+      delete data.draw_data_3
       if (n > 0.95) data.draw_data = ''
       if (data.draw_data) {
         Object.keys(data.draw_data.y).forEach((key, index) => {

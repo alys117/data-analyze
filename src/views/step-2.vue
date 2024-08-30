@@ -24,6 +24,13 @@ function addProperties(activities) {
   })
 }
 const toStep3 = () => {
+  if (step.treeCache && step.treeCache.length) {
+    router.push({
+      name: 'Step3',
+      state: { params: {}}
+    })
+    return
+  }
   const treeData = sampleTreeRef.value.getOutline()
   addProperties(treeData)
   step.setTreeCache(treeData)
@@ -43,6 +50,7 @@ onActivated(async() => {
   console.log('step-2 activated')
   loading.value = false
   if (router.options.history.state.back === '/step3' && outlineTree.value) {
+    console.log('step3 to step2 do nothing')
     return
   }
   if (step.treeCache) {

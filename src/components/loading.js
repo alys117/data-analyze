@@ -40,9 +40,14 @@ async function hide() {
 }
 async function callLoading(call, process = [{ content: '分析中', timeConsuming: 5 }], el = null) {
   startLoading(process, el)
-  const data = await call()
-  await hide()
-  return data
+  try {
+    const data = await call()
+    await hide()
+    return data
+  } catch (e) {
+    await hide()
+    return Promise.reject({ error: e, msg: '接口错误' })
+  }
 }
 
 export { hide, startLoading, callLoading }

@@ -13,21 +13,27 @@
                class="chart" />
       <div v-if="editVisible" class="chart">
         <div style="display: flex; gap:10px; align-items: center">
-          <el-switch
-            v-model="editType"
-            size="large"
-            inline-prompt
-            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-            active-text="json|表格"
-            inactive-text="表格|json"
-          />
-          <div style="display: flex;justify-content: flex-end;margin: 20px">
-            <el-button size="small" @click="dialogVisible = false; editVisible = false; editType = true; rerender();">取 消</el-button>
+          <div style="display: flex;justify-content: flex-end;">
+            <el-button v-if="false" size="small" @click="dialogVisible = false; editVisible = false; editType = true; rerender();">取消</el-button>
             <el-button size="small" type="primary" @click="render">确认修改</el-button>
           </div>
         </div>
+        <el-switch
+          v-model="editType"
+          size="large"
+          inline-prompt
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949; margin-right: 20px;"
+          active-text="json视图"
+          inactive-text="表格视图"
+          v-if="false"
+        />
         <contenteditable-table ref="editTableRef" v-if="editType" :data="customDataObj" />
-        <el-input v-if="!editType" type="textarea" style="padding-right: 20px" :autosize="{ minRows: 5, maxRows: 1000 }" v-model="customData" placeholder="请输入数据" />
+        <el-input v-if="!editType"
+                  type="textarea"
+                  style="padding-right: 20px"
+                  :autosize="{ minRows: 5, maxRows: 1000 }"
+                  v-model="customData"
+                  placeholder="请输入数据" />
       </div>
     </div>
 
@@ -41,6 +47,7 @@
       <el-link @click="edit" v-if="false"><Edit style="height: 1em"/>编辑数据</el-link>
       <el-switch
         v-model="editVisible"
+        v-if="route.path === '/step3'"
         @change="rerender"
         size="large"
         class="ml-2"
@@ -91,6 +98,7 @@ import { ref, provide } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
 import ContenteditableTable from '@/components/echart/contenteditable-table.vue'
 const router = useRouter()
+const route = useRoute()
 
 provide(THEME_KEY, 'light')
 const dialogVisible = ref(false)
@@ -116,10 +124,13 @@ function render() {
   editVisible.value = false
   if (editType.value) {
     const obj = editTableRef.value.handleChange()
+    obj.plot = customDataObj.value.plot
     editType.value && emitter.emit('changeData', { draw_data: obj })
     return
   }
-  emitter.emit('changeData', { draw_data: JSON.parse(customData.value) })
+  const obj = JSON.parse(customData.value)
+  obj.plot = customDataObj.value.plot
+  emitter.emit('changeData', { draw_data: obj })
 }
 const editTableRef = ref()
 
@@ -161,8 +172,26 @@ const reDraw = (data, msg) => {
   isHasData.value = true
   customData.value = JSON.stringify(data.draw_data, null, 2)
   customDataObj.value = data.draw_data
+  const plot = data.draw_data.plot || 'line'
+  console.log('图表类型', data.draw_data.plot)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
+  option.value.xAxis[0].axisLabel = {
+    interval: 0,
+    formatter: function(value) {
+      let text
+      const length = 8 // 文字显示长度
+      if (value.length > length) {
+        text = value.slice(0, length) + '…'
+      } else {
+        text = value
+      }
+      if (data.draw_data.x.x_axis.length < 10) {
+        return text
+      }
+      return text.split('').join('\n') // 垂直显示
+    }
+  }
   option.value.series = []
   let count = 0
   for (const datum in data.draw_data.y) {
@@ -177,7 +206,7 @@ const reDraw = (data, msg) => {
     option.value.series.push({
       name: datum,
       // type: Math.random() > 0.5 ? 'bar' : 'line',
-      type: 'bar',
+      type: plot === 'pie' ? 'bar' : plot,
       // stack: 'Total',
       emphasis: {
         focus: 'series'
@@ -231,6 +260,19 @@ const option = ref({
   xAxis: [
     {
       type: 'category',
+      axisLabel: {
+        interval: 0,
+        formatter: function(value) {
+          let text
+          const length = 8 // 文字显示长度
+          if (value.length > length) {
+            text = value.slice(0, length) + '…'
+          } else {
+            text = value
+          }
+          return text.split('').join('\n') // 垂直显示
+        }
+      },
       // boundaryGap: false,
       data: []
     }

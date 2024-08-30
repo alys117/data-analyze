@@ -11,8 +11,8 @@ import 'jsmind/draggable-node'
 import { onMounted, toRaw } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { renameObjectProperties } from '@/utils/util.js'
-const w = ref('100px')
-const h = ref('100px')
+const w = ref('0px')
+const h = ref('00px')
 const mind = {
   /* 元数据，定义思维导图的名称、作者、版本等信息 */
   meta: {

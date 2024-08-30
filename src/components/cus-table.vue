@@ -130,6 +130,7 @@ const gridEvents = {
           <vxe-button size="mini" status="success" icon="vxe-icon-square-checked-fill" @click="crudStore.onSubmit()">使用</vxe-button>
           <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('表的所有字段')">全部字段</vxe-button>
           <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('所需字段')">推荐字段</vxe-button>
+          <span style="margin-left: 10px;font-weight: 900;font-size: 18px">{{ tableInfo['中文名'] +'~'+ tableInfo['表名'] }}</span>
         </div>
       </template>
     </vxe-grid>
@@ -142,6 +143,6 @@ const gridEvents = {
 }
 .toolbar{
   display: flex;
-  gap: 10px;
+  align-items: center;
 }
 </style>

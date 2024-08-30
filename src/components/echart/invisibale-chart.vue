@@ -61,6 +61,7 @@ const reDraw = (data, msg) => {
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.series = []
+  const plot = data.draw_data.plot
   let count = 0
   for (const datum in data.draw_data.y) {
     const gradient = new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
@@ -73,7 +74,7 @@ const reDraw = (data, msg) => {
     count++
     option.value.series.push({
       name: datum,
-      type: 'bar',
+      type: plot === 'pie' ? 'bar' : plot,
       // stack: 'Total',
       emphasis: {
         focus: 'series'

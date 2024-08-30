@@ -64,12 +64,15 @@ const init = () => {
   // 这里想不通，why
   // 这里想不通，why 为什么要要加nextTick，step2 到本页就可以，但是 step4 回到本页就不加nextTick就会有显示问题
   nextTick(() => {
+    if (activities.length) {
+      addProperties(activities)
+      return
+    }
     activities.push(...step.treeCache)
     addProperties(activities)
   })
 }
 const reset = () => {
-  activities.length = 0
   breadcrumbItems.value.length = 0
   currentAct.value = {}
   chartRef.value.clear()
@@ -78,9 +81,11 @@ const reset = () => {
 const changedDataURLArr = ref([])
 onActivated(() => {
   if (router.options.history.state.back === '/step4' && activities.length) return
+  console.log('step-3 activated', step.treeCache)
   if (step.treeCache && step.treeCache.length) {
     reset()
     init()
+    console.log('初始化。。。', activities)
   }
 })
 onMounted(() => {
@@ -97,6 +102,7 @@ onMounted(() => {
   emitter.on('changeData', (data) => {
     setTimeout(() => {
       chartRef.value.reDraw(data)
+      console.log(data, 'reDraw')
     }, 10)
     currentAct.value.chartData.draw_data = data.draw_data
     invisibleRef.value.find((item) => item.id === currentAct.value.id).el.reDraw(data)
@@ -301,7 +307,6 @@ const preview = () => {
   obj.data = removePropertyFromTree(obj.data, 'type')
   // obj.data = removePropertyFromTree(obj.data, 'content')
   obj.data = removePropertyFromTree(obj.data, 'dataURL')
-  step.setStep3(obj.data)
   router.push('/step4')
 }
 const pushTasks = (activity, tasks) => {
@@ -338,7 +343,7 @@ const pushTasks = (activity, tasks) => {
     activity.chartData = drawData
     const descriptionBody = {
       sql: drawData.sql,
-      question: rewriteData.user_input
+      question: rewriteDataBody.user_input
     }
     const [err3, descp] = await to(fetchChartDescription(descriptionBody))
     if (err3) {

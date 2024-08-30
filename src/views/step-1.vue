@@ -86,6 +86,11 @@ onActivated(async() => {
   // 在history的state属性中获取对话中的问题
   body.question === step.aiConversation.question || await init()
   emitter.on('add-table', async data => {
+    if (data.operation === 'delete') {
+      tableOptions.value = tableOptions.value.filter(item => item.value !== data.table_ename)
+      delete tableInfos.value[data.table_ename]
+      return
+    }
     if (tableOptions.value.findIndex(item => item.value === data.table_ename) > -1) {
       ElMessageBox.alert(`${data.table_cname}（${data.table_ename}） 已存在`, '提示', { type: 'warning' })
       return
@@ -100,12 +105,10 @@ onActivated(async() => {
   })
 })
 onMounted(async() => {
-  console.log('step-1 mounted')
+  console.log('step-1 mounted, clear pinia state')
   step.setTreeCache(null)
   step.setOutline(null)
   step.setStep1(null)
-  step.setStep2(null)
-  step.setStep3(null)
   emitter.on('business-tree-ready', async data => {
     isBusiTreeReady.value = true
   })

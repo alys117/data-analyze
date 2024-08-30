@@ -20,7 +20,11 @@ const interval = setInterval(() => {
   //   clearInterval(interval)
   //   return
   // }
-  percentage.value >= 100 - chuck() || (percentage.value = percentage.value + chuck())
+  if (percentage.value >= 100 - chuck() * 1.01) {
+    console.log('waiting....', percentage.value)
+  } else {
+    percentage.value += chuck()
+  }
   tip.value = percentage.value < processPoints[count] ? process[count].content : process[count++].content
   dian.value = '.'.repeat(point++ % 6)
 }, INTERVAL)
@@ -56,7 +60,7 @@ onUnmounted(() => {
   <div style="display: flex; flex-direction: column; align-items: center">
     <el-progress type="dashboard" :percentage="percentage" :color="colors">
       <template #default="{ percentage }">
-        <span class="percentage-value">{{ percentage.toFixed(1) }}%</span>
+        <span class="percentage-value">{{ percentage === 100? 100 :percentage.toFixed(1) }}%</span>
         <span class="percentage-label">Progressing</span>
       </template>
     </el-progress>

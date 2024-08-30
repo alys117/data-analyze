@@ -54,7 +54,6 @@ onMounted(() => {
   contentRef.value.addEventListener('scroll', scrollHanler)
 })
 function back2step3() {
-  step.setStep3(null)
   router.push('/step3')
 }
 </script>

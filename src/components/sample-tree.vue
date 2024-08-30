@@ -103,6 +103,7 @@ watch(() => dataSourceIn.value, (newVal, oldVal) => {
   // console.log('jsmind', router, route, newVal)
   if (route.fullPath === '/step2') {
     emitter.emit('data-js-mind', dataSourceIn.value)
+    console.log('dataSourceIn', dataSourceIn.value)
   }
 }, { deep: true })
 watch(() => props.treeData, (val) => {

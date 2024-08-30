@@ -173,8 +173,8 @@ const handleClick = (event) => {
 // 节点点击事件处理函数
 function handleNodeClick(node) {
   if (node.data.table_ename) {
-    ElMessageBox.confirm(`确认选择${node.data.table_cname}（${node.data.table_ename}）?`, '提示', {
-      confirmButtonText: '确定',
+    ElMessageBox.confirm(`${node.data.table_cname}（${node.data.table_ename}）添加到推荐列表？`, '提示', {
+      confirmButtonText: '添加',
       cancelButtonText: '取消',
       type: 'warning'
     }).then(() => {
@@ -184,7 +184,9 @@ function handleNodeClick(node) {
       _jm.set_node_color(node.id, '#ff6b6b', null)
       _jm.disable_edit()
     }).catch(() => {
-      console.log('取消')
+      console.log('cancel')
+      // node.data.operation = 'delete'
+      // emitter.emit('add-table', node.data)
     })
   }
 }
