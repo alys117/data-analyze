@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import VxeUIExport from 'vxe-pc-ui'
+import emitter from '@/utils/mitt.js'
 const { tableInfo } = defineProps({
   tableInfo: {
     type: Object,
@@ -100,6 +101,9 @@ const crudStore = reactive({
     }
     // delete gridOptions.columns.at(-1).width
   },
+  onDelete: () => {
+    emitter.emit('add-table', { operation: 'delete', table_ename: tableInfo['表名'] })
+  },
   /** 更多自定义方法 */
   moreFn: () => {
     console.log('moreFn')
@@ -130,7 +134,8 @@ const gridEvents = {
           <vxe-button size="mini" status="success" icon="vxe-icon-square-checked-fill" @click="crudStore.onSubmit()">使用</vxe-button>
           <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('表的所有字段')">全部字段</vxe-button>
           <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('所需字段')">推荐字段</vxe-button>
-          <span style="margin-left: 10px;font-weight: 900;font-size: 18px">{{ tableInfo['中文名'] +'~'+ tableInfo['表名'] }}</span>
+          <vxe-button size="mini" circle status="primary" icon="vxe-icon-delete" @click="crudStore.onDelete('删除')" />
+          <span style="margin:0 10px;font-weight: 900;font-size: 18px">{{ tableInfo['中文名'] +'~'+ tableInfo['表名'] }}</span>
         </div>
       </template>
     </vxe-grid>

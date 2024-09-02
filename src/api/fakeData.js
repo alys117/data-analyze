@@ -1366,7 +1366,9 @@ export const outline3 = {
       'children': [
         {
           'id': 'other1',
-          'topic': "I'm from remote"
+          'topic': "I'm from 咪咕点播表",
+          'table_ename': 'tmp_0408_migu_dialing',
+          'table_cname': '咪咕点播表'
         },
         {
           'id': 'other2',

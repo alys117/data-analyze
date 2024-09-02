@@ -2,7 +2,7 @@
 import MyStep from '@/components/my-step.vue'
 import { saveAs } from 'file-saver'
 import { useRouter } from 'vue-router'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import emitter from '@/utils/mitt.js'
 import { generateID, findFamily } from '@/utils/util.js'
 import TimeLine from '@/components/time-line.vue'
@@ -18,7 +18,7 @@ const router = useRouter()
 
 const loading = ref(true)
 const currentAct = ref({})
-const activities = reactive([])
+const activities = step.treeCache
 const breadcrumbItems = ref([])
 const chartRef = ref()
 const invisibleList = ref([])
@@ -64,13 +64,11 @@ const init = () => {
   // 这里想不通，why
   // 这里想不通，why 为什么要要加nextTick，step2 到本页就可以，但是 step4 回到本页就不加nextTick就会有显示问题
   nextTick(() => {
-    if (activities.length) {
-      addProperties(activities)
-      return
-    }
-    activities.push(...step.treeCache)
-    addProperties(activities)
+    // const tmp = toRaw(step.treeCache)
+    // activities.length = 0
+    // activities.push(...tmp) //  有bug，先不调了
   })
+  addProperties(activities) // invisibleList 赋值 赋值content和label，一个用于树的显示，一个用于timeline的显示
 }
 const reset = () => {
   breadcrumbItems.value.length = 0
@@ -81,13 +79,19 @@ const reset = () => {
 const changedDataURLArr = ref([])
 onActivated(() => {
   if (router.options.history.state.back === '/step4' && activities.length) return
-  console.log('step-3 activated', step.treeCache)
+  console.log('step-3 activated')
   if (step.treeCache && step.treeCache.length) {
     reset()
     init()
-    console.log('初始化。。。', activities)
   }
 })
+watch(() => step.treeCache, (val) => {
+  if (val && val.length) {
+    // const tmp = toRaw(step.treeCache)
+    // activities.length = 0
+    // activities.push(...tmp) //  有bug，先不调了
+  }
+}, { deep: true })
 onMounted(() => {
   console.log('step-3 mounted')
   emitter.on('legendselectchanged', (legend) => {
@@ -397,7 +401,7 @@ const allMission = async(activities) => {
     <div class="view">
       <el-scrollbar class="index">
         <div style="display: flex;justify-content: flex-end;padding-bottom: 10px">
-          <el-button style="margin: 10px" type="primary" @click="allMission(activities)">完成所有分析</el-button>
+          <el-button style="margin: 10px" type="primary" @click="allMission(activities)">执行所有分析思路</el-button>
           <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
           <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
           <!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->

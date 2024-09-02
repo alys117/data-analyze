@@ -21,6 +21,7 @@ const childRefs = ref([]) // 用于存储子组件引用的数组
 const setChildRef = (el, table) => {
   if (!el) return
   // console.log(table, el, 'setChildRef', selectTables.value)
+  if (childRefs.value.findIndex(item => item.tableName === table) > -1) return
   childRefs.value.push({ tableName: table, el: el })
 }
 
@@ -58,12 +59,13 @@ const init = async() => {
   const data = await fetchTables(body)
   loading.value = false
   */
-  const data = await callLoading(async() => fetchTables(body), [{ content: '挑表', timeConsuming: import.meta.env.VITE_PICK_TABLE }])
+  const data = await callLoading(async() => fetchTables(body), [{ content: '查找数据源', timeConsuming: import.meta.env.VITE_PICK_TABLE }])
   tableInfos.value = data
   tableOptions.value.length = 0
   for (const tableName in data) {
     tableOptions.value.push({ label: data[tableName]['中文名'], value: tableName })
     // mindRef.value.hightlightNode(tableName) // 这里还没有取到mind数据
+    selectTables.value.push(tableName)
   }
 }
 const uniq = (ary) => {
@@ -87,21 +89,25 @@ onActivated(async() => {
   body.question === step.aiConversation.question || await init()
   emitter.on('add-table', async data => {
     if (data.operation === 'delete') {
-      tableOptions.value = tableOptions.value.filter(item => item.value !== data.table_ename)
-      delete tableInfos.value[data.table_ename]
+      selectTables.value = selectTables.value.filter(item => item !== data.table_ename)
+      // tableOptions.value = tableOptions.value.filter(item => item.value !== data.table_ename)
+      // delete tableInfos.value[data.table_ename]
       return
     }
     if (tableOptions.value.findIndex(item => item.value === data.table_ename) > -1) {
-      ElMessageBox.alert(`${data.table_cname}（${data.table_ename}） 已存在`, '提示', { type: 'warning' })
+      // ElMessageBox.alert(`${data.table_cname}（${data.table_ename}） 已存在`, '提示', { type: 'warning' })
+      selectTables.value = [...new Set([...selectTables.value, data.table_ename])]
       return
     }
     const tmp = await fetchTable({
       'table_name': data.table_ename,
       'other': []
     })
+    tmp[data.table_ename]['中文名'] = tmp[data.table_ename]['中文名'] || '未知'
     tableInfos.value[data.table_ename] = tmp[data.table_ename]
     tableOptions.value.push({ label: data.table_cname, value: data.table_ename })
     tableOptions.value = uniq(tableOptions.value)
+    selectTables.value = [...new Set([...selectTables.value, data.table_ename])]
   })
 })
 onMounted(async() => {
@@ -122,7 +128,7 @@ onMounted(async() => {
       <custom-mind ref="mindRef"/>
     </div>
     <div class="cus-table-container">
-      <div class="cus-table-head">
+      <div class="cus-table-head" v-if="false">
         <div class="left-label">请选择</div>
         <el-select v-model="selectTables"
                    placeholder="请选择"
@@ -139,6 +145,8 @@ onMounted(async() => {
           />
         </el-select>
       </div>
+<!--      <el-button @click="console.log(tableInfos)">tableInfos</el-button>-->
+<!--      <el-button @click="console.log(childRefs)">childRefs</el-button>-->
       <transition-group
         name="custom-classes-transition"
         enter-active-class="animate__animated animate__fadeInLeft"

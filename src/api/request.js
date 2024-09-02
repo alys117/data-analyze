@@ -163,7 +163,7 @@ const fateFetchBusiTree = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       resolve(outline3)
-    }, 1000)
+    }, 100)
   })
 }
 const selectBusiTree = async() => {

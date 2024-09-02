@@ -1,7 +1,7 @@
 <script setup>
 // import { ref, toRaw, onMounted, watch } from 'vue'
 import emitter from '@/utils/mitt.js'
-import { DArrowRight, DArrowLeft, RefreshLeft, Check, Platform } from '@element-plus/icons-vue'
+import { DArrowRight, DArrowLeft, RefreshLeft, Check, Medal } from '@element-plus/icons-vue'
 import { convertFormat, generateID } from '@/utils/util.js'
 import { historyTree } from '@/api/fakeData.js'
 import { fetchHistoryOutline } from '@/api/request.js'
@@ -24,7 +24,6 @@ const saveCurrentInp = (data) => {
   // console.log('保存')
   data.label = currentInput.value
   data.isInput = false
-  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 const append = (data) => {
   const newChild = { id: generateID(8), label: '新节点', children: [] }
@@ -32,7 +31,6 @@ const append = (data) => {
     data.children = []
   }
   data.children.push(newChild)
-  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 const remove = (node, data) => {
   const parent = node.parent
@@ -40,7 +38,6 @@ const remove = (node, data) => {
   const index = children.findIndex((d) => d.id === data.id)
   children.splice(index, 1)
   // dataSourceIn.value = [...dataSourceIn.value] // 这个地方不太明白
-  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 
 const handleMouseenter = (data) => {
@@ -89,11 +86,9 @@ function drop_handler(ev, data) {
   changeNodeId(copy)
   // console.log(copy, 'copy', inId)
   treeIn.value.append(copy, inId)
-  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 function handleDrop(draggingNode, dropNode, dropType, ev) {
   // console.log('tree drop:', dropNode.label, dropType)
-  // emitter.emit('data-js-mind', dataSourceIn.value) // 使用watch监听dataSourceIn
 }
 
 defineExpose({
@@ -103,15 +98,15 @@ watch(() => dataSourceIn.value, (newVal, oldVal) => {
   // console.log('jsmind', router, route, newVal)
   if (route.fullPath === '/step2') {
     emitter.emit('data-js-mind', dataSourceIn.value)
-    console.log('dataSourceIn', dataSourceIn.value)
+    console.log('dataSourceIn 变化了', dataSourceIn.value)
   }
 }, { deep: true })
 watch(() => props.treeData, (val) => {
   if (val) {
     dataSourceIn.value = props.treeData.dsIn
-    console.log('变化了', dataSourceIn.value)
+    console.log('props.treeData 变化了', dataSourceIn.value)
   }
-})
+}, { deep: true })
 onActivated(async() => {
   if (router.options.history.state.back === '/step1') return
   emitter.emit('data-js-mind', dataSourceIn.value)
@@ -173,7 +168,7 @@ onMounted(async() => {
                 :style="{background: data.css?'lightgreen':''}">
             <span style="display: flex; align-items: center;">
               <span v-if="data.children && data.children.length"></span>
-              <span v-else style="color: #7c7c7c;display: flex;margin-right: 5px;"><el-icon><Platform /></el-icon></span>
+              <span v-else style="color: #7c7c7c;display: flex;margin-right: 5px;"><el-icon><Medal /></el-icon></span>
               <span v-if="!data.isInput">{{ node.label }}</span>
               <span v-else><el-input size="small" :ref="(el)=>setRef(el, data)" v-model="currentInput" placeholder="请输入分类名称" @blur="saveCurrentInp(data)"/></span>
             </span>

@@ -175,18 +175,23 @@ function handleNodeClick(node) {
   if (node.data.table_ename) {
     ElMessageBox.confirm(`${node.data.table_cname}（${node.data.table_ename}）添加到推荐列表？`, '提示', {
       confirmButtonText: '添加',
-      cancelButtonText: '取消',
+      cancelButtonText: '撤销',
       type: 'warning'
     }).then(() => {
+      node.data.operation = 'add'
       emitter.emit('add-table', node.data)
       const _jm = jm.value
       _jm.enable_edit()
       _jm.set_node_color(node.id, '#ff6b6b', null)
       _jm.disable_edit()
     }).catch(() => {
-      console.log('cancel')
-      // node.data.operation = 'delete'
-      // emitter.emit('add-table', node.data)
+      // console.log('cancel')
+      node.data.operation = 'delete'
+      emitter.emit('add-table', node.data)
+      const _jm = jm.value
+      _jm.enable_edit()
+      _jm.set_node_color(node.id, '#428bca', null)
+      _jm.disable_edit()
     })
   }
 }

@@ -64,9 +64,9 @@ onUnmounted(() => {
         <span class="percentage-label">Progressing</span>
       </template>
     </el-progress>
-    <h3>
-      <span style="display: inline-block;width: 100px;text-align: right">{{ tip }}</span>
-      <span style="display: inline-block;width: 60px;text-align: left">{{ dian }}</span>
+    <h3 style="display: flex;justify-content: center">
+      <span style="text-align: right">{{ tip }}</span>
+      <span style="width: 25px;text-align: left">{{ dian }}</span>
       <!--      <span style="display: inline-block;width: 50px;text-align: end">{{ percentage.toFixed(0) + '%' }}</span>-->
     </h3>
   </div>

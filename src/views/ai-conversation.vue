@@ -1,5 +1,5 @@
 <script setup>
-import AI_HEAD_IMG_URL from '@/assets/chatgpt.jpg'
+import AI_HEAD_IMG_URL from '@/assets/aspire-logo.gif'
 import ChatWindow from '@/components/chatHome/chat-window.vue'
 import { useRouter } from 'vue-router'
 import { useStepStore } from '@/stores/step.js'

@@ -20,7 +20,7 @@
             <span v-if="!activity.edit" @click="checkPoint(activity)">{{ activity.content }}</span>
             <el-input v-if="activity.edit" @blur="activity.edit = false" v-model="activity.content" @change="activity.label=activity.content" />
           </div>
-          <div v-if="!activity.children">
+          <div v-if="!activity.children || !activity.children.length">
             <el-link style="margin-left: 20px" @click="activity.edit = !activity.edit"><Edit style="height: 1.2em"/></el-link>
             <el-link style="margin-left: 5px" @click="rewriteOutline(activity)"><Comment style="height: 1.2em"/></el-link>
             <el-link style="margin-left: 5px" @click="activity.showSubtext = !activity.showSubtext">
@@ -32,7 +32,7 @@
         <div v-if="activity.subtext !== undefined && activity.showSubtext" style="margin-top: 10px;display: flex;align-items: flex-start;gap:5px">
           <el-input style="flex:1;" type="textarea" v-model="activity.subtext" />
           <div style="display: flex;flex-direction: column;gap: 5px">
-<!--            <el-link v-if="!activity.children" style="margin-left: 5px" @click="checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>-->
+            <!--            <el-link v-if="!activity.children" style="margin-left: 5px" @click="checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>-->
             <el-link v-if="!activity.children" style="margin-left: 5px" @click="activity.status = -1; checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>
           </div>
         </div>
@@ -75,7 +75,10 @@ const dynamicStyleTag = computed(() => {
 const emit = defineEmits(['relation'])
 
 function checkPoint(activity) {
-  !activity.children && emitter.emit('load-advice', activity)
+  if (activity.children && activity.children.length) {
+    return
+  }
+  emitter.emit('load-advice', activity)
 }
 function rewriteOutline(activity) {
   emitter.emit('rewrite-outline', activity)

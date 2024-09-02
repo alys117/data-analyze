@@ -74,7 +74,7 @@ const init = async() => {
   const outline = await fetchOutline(body)
   loading.value = false
   */
-  const outline = await callLoading(async() => fetchOutline(body), [{ content: '分析思路', timeConsuming: import.meta.env.VITE_OUT_LINE }])
+  const outline = await callLoading(async() => fetchOutline(body), [{ content: '正在生成分析大纲', timeConsuming: import.meta.env.VITE_OUT_LINE }])
   step.setOutline(outline)
   outlineTree.value = convertFormat(outline)
 }

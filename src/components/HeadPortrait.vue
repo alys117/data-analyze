@@ -1,6 +1,6 @@
 <template>
   <div class="head-portrait">
-    <img :src="imgUrl" alt="">
+    <img :src="imgUrl" alt=""/>
   </div>
 </template>
 
@@ -15,7 +15,7 @@ export default {
 
 <style lang="scss" scoped>
 .head-portrait {
-    width: 50px;
+    width: 120px;
     height: 50px;
     border-radius: 50%;
     // border: 2px solid rgb(137,140,151);
@@ -28,12 +28,12 @@ export default {
         z-index: 1;
         display: block;
         border-radius: 50%;
-        background-color: rgb(144,225,80);
+        //background-color: rgb(144,225,80);
         position: absolute;
         right: 0;
     }
     img {
-        width: 45px;
+        width: 110px;
         height: 45px;
         border-radius: 50%;
         // padding: 2px;

@@ -143,7 +143,7 @@
           id="textareaMsg"
           v-model="inputMsg"
           v-autoheight
-          placeholder="请输入问题"
+          placeholder="请输入分析报告主题..."
           class="inputs"
           style="z-index: 1;min-height: 50px;max-height:400px;max-width: 100%;min-width: 45%;"
           maxlength="2048"
@@ -180,6 +180,8 @@
 <script>
 import { animation, getNowTime, JCMFormatDate, copyToClipboard } from '@/utils/util'
 import HeadPortrait from '@/components/HeadPortrait.vue'
+import robot from '@/assets/transforms/transformers-06.png'
+import dayjs from 'dayjs'
 // import Emoji from '@/components/Emoji.vue'
 // import FileCard from '@/components/FileCard.vue'
 import Markdown from 'vue3-markdown-it'
@@ -255,7 +257,7 @@ export default {
       contentBackImageUrl: 'https://bpic.51yuansu.com/backgd/cover/00/31/39/5bc8088deeedd.jpg?x-oss-process=image/resize,w_780',
       updateImage: null,
       // 是否隐藏对话框上方介绍（空间局促时隐藏）
-      personInfoSpan: [1, 17, 6]
+      personInfoSpan: [2, 16, 6]
     }
   },
   watch: {
@@ -264,6 +266,24 @@ export default {
   created() {
     window.addEventListener('resize', this.handleResize)
     this.handleResize()
+    this.chatList.push({
+      'headImg': robot,
+      'name': 'Robot', 'time': dayjs().format('YYYY/M/d HH:mm:ss'),
+      'msg': `您好，我是卓望公司开发的智慧分析报告平台，
+      我可以根据您的分析主题，自动生成分析报告思路，并通过智能SQL编写功能，
+      精准提取所需数据，利用内置的数据可视化工具，自动绘制出直观易懂的图表，并结合图表内容，提供分析结论，助力运营分析。
+        开始之前，需要您提供一些基本信息
+
+        例如：
+        1、分析报告的主题，例如：咪咕视频产品分析
+        2、汇报对象，例如：运营经理
+        3、行业，例如：通信行业
+        4、本职工作，例如：运营经理助理
+        5、时间范围，例如：2024年6月至2024年12月`,
+      'chatType': 0,
+      'uid': 'gpt-3.5-turbo',
+      'reminder': ''
+    })
   },
 
   destoryed() {
@@ -378,7 +398,7 @@ export default {
         this.$nextTick(() => {
           document.querySelectorAll('.chat-content')[0].style.height = '88%'
           this.buttonStatus = true
-          this.personInfoSpan = [1, 17, 6]
+          this.personInfoSpan = [2, 16, 6]
         })
       }
     },

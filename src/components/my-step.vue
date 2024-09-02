@@ -7,7 +7,7 @@
         <config-link style="width: 22px; height: 22px;"/>
       </div>
       <div class="title">确定主题</div>
-      <div class="title subtitle">按提示补充信息</div>
+      <div :class="{'title': true, 'subtitle': true, 'subtitle-complete': 1 <= step -1, 'subtitle-active': 1 === step }">按提示补充信息</div>
     </div>
     <div class="arrow-default" :class="{'arrow-complete': step >= 2 }"><arrow2 /></div>
     <div :class="{'step': true, 'step-complete': 2 <= step -1, 'step-active': 2 === step }">
@@ -15,7 +15,7 @@
         <config-link style="width: 22px; height: 22px;"/>
       </div>
       <div class="title">生成大纲</div>
-      <div class="title subtitle">按提示补充信息</div>
+      <div :class="{'title': true, 'subtitle': true, 'subtitle-complete': 2 <= step -1, 'subtitle-active': 2 === step }">按提示补充信息</div>
     </div>
     <div class="arrow-default" :class="{'arrow-complete': step >= 3 }"><arrow3 /></div>
     <div :class="{'step': true, 'step-complete': 3 <= step -1, 'step-active': 3 === step }">
@@ -23,7 +23,7 @@
         <config-link style="width: 22px; height: 22px;"/>
       </div>
       <div class="title">生成分析报告</div>
-      <div class="title subtitle">按提示补充信息</div>
+      <div :class="{'title': true, 'subtitle': true, 'subtitle-complete': 3 <= step -1, 'subtitle-active': 3 === step }">按提示补充信息</div>
     </div>
     <div class="arrow-default" :class="{ 'arrow-complete': step >= 4 }"><arrow4 /></div>
     <div :class="{'step': true, 'step-complete': 4 <= step -1, 'step-active': 4 === step }">
@@ -31,7 +31,7 @@
         <config-link style="width: 22px; height: 22px;"/>
       </div>
       <div class="title">浏览</div>
-      <div class="title subtitle">按提示补充信息</div>
+      <div :class="{'title': true, 'subtitle': true, 'subtitle-complete': 4 <= step -1, 'subtitle-active': 4 === step }">按提示补充信息</div>
     </div>
     <div class="arrow-default arrow-last" :class="{'arrow-complete': step >= 5, 'arrow-active': step === 4  }"><arrow5 /></div>
     <div class="step-info end" :class="{'finish': step ===4 }">结束</div>
@@ -58,7 +58,7 @@ const { step } = defineProps({
 
 <style lang="scss" scoped>
 $default: #7c7c7c;
-$active: #db6b26;
+$active: #67c23a;
 $complete: #2667db;
 .arrow-default{
   color: $default;
@@ -141,6 +141,12 @@ $complete: #2667db;
   .subtitle{
     border-top: 1px dashed #ccc;
     font-size: 14px;
+  }
+  .subtitle-complete{
+    border-top: 1px dashed $complete;
+  }
+  .subtitle-active{
+    border-top: 1px dashed $active;
   }
 }
 .step-complete{

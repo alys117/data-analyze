@@ -24,7 +24,7 @@ const submit = async() => {
         resolve({ data: '模拟发送请求' })
       }, 9000)
     })
-  }, [{ content: '挑表', timeConsuming: 3 }, { content: '画图', timeConsuming: 2 }, { content: '出结论', timeConsuming: 2 }])
+  }, [{ content: '查找数据源', timeConsuming: 3 }, { content: '画图', timeConsuming: 2 }, { content: '出结论', timeConsuming: 2 }])
   console.log(data, 'data')
 }
 
