@@ -60,6 +60,7 @@ const reDraw = (data, msg) => {
   clear()
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
+  option.value.xAxis[0].name = data.draw_data.x.name || ''
   option.value.series = []
   const plot = data.draw_data.plot
   let count = 0
@@ -122,6 +123,20 @@ const option = ref({
   xAxis: [
     {
       type: 'category',
+      name: '',
+      axisLabel: {
+        interval: 0,
+        formatter: function(value) {
+          let text
+          const length = 8 // 文字显示长度
+          if (value.length > length) {
+            text = value.slice(0, length) + '…'
+          } else {
+            text = value
+          }
+          return text.split('').join('\n') // 垂直显示
+        }
+      },
       // boundaryGap: false,
       data: []
     }

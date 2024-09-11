@@ -142,7 +142,7 @@ const init = async() => {
 <style scoped lang="scss">
 .main-container{
   display: flex;
-  padding: 20px;
+  //padding: 20px;
   //width: fit-content;
   //background-color: #f5f8fb;
 }
@@ -166,6 +166,7 @@ const init = async() => {
 }
 .right {
   display: flex;
+  flex: 1;
   flex-direction: column;
   .mind-title{
     padding-left: 20px;

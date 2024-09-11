@@ -150,7 +150,7 @@ onMounted(() => {
         }
       }
       chartRef.value.setTip(!activity.chartData.draw_data)
-      activity.type || emitter.emit('change-point', { id: activity.id, type: 'danger' })
+      activity.type || emitter.emit('change-point', { id: activity.id, type: 'primary' })
       console.log('结束')
       return
     }
@@ -222,7 +222,7 @@ onMounted(() => {
     breadcrumbItems.value.at(-1).description = descp
     activity.status = 1
     step.setTreeCache(activities)
-    emitter.emit('change-point', { id: activity.id, type: 'danger' })
+    emitter.emit('change-point', { id: activity.id, type: 'primary' })
 
     // loading.value = false
   })
@@ -240,11 +240,11 @@ function addProperties(activities) {
   })
 }
 const completePoint = () => {
-  emitter.emit('change-point', { id: currentAct.value.id, type: 'primary' })
+  emitter.emit('change-point', { id: currentAct.value.id, type: 'success' })
   currentAct.value.dataURL = chartRef.value.getDataURL()
 }
 const resetPoint = () => {
-  emitter.emit('change-point', { id: currentAct.value.id, type: 'danger' })
+  emitter.emit('change-point', { id: currentAct.value.id, type: 'primary' })
 }
 const description = computed(() => {
   return currentAct.value.description.replace(/\n/g, '<br>')
@@ -401,7 +401,7 @@ const allMission = async(activities) => {
     <div class="view">
       <el-scrollbar class="index">
         <div style="display: flex;justify-content: flex-end;padding-bottom: 10px">
-          <el-button style="margin: 10px" type="primary" @click="allMission(activities)">执行所有分析思路</el-button>
+          <el-button style="margin: 10px" type="default" @click="allMission(activities)">执行所有分析思路</el-button>
           <!--            <el-button type="primary" @click="console.log(changedDataURLArr)">changeDataURL</el-button>-->
           <!--            <el-button type="primary" @click="console.log(toRaw(activities))">check</el-button>-->
           <!--            <el-button type="primary" @click="console.log(toRaw(invisibleRef))">check2</el-button>-->
@@ -452,7 +452,7 @@ ul{
   padding-inline-start: 30px;
 }
 .view{
-  border-top: 1px solid #eee ;
+  border-top: 1px solid #fcfcfc ;
   min-width: 1628px;
   display: flex;
   .index{

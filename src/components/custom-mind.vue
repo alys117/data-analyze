@@ -1,10 +1,12 @@
 <template>
   <div style="padding: 20px">
-    <el-scrollbar class="custom-mind-container">
+    <el-scrollbar class="custom-mind-container" :style="{'--height': height + 'px'}">
       <div ref="customMindRef" id="customMind" :style="{'--innerHeight': h, '--innerWidth': w}" class="mind-ref"></div>
       <!--    <div ref="customMindRef" id="customMind" style="height: 500px"></div>-->
     </el-scrollbar>
-    <!--    <el-button @click="jmResize">resize</el-button>-->
+<!--    <el-button @click="jmResize">resize</el-button>-->
+<!--    <el-button @click="height = height + 5 ">long</el-button>-->
+<!--    <el-button @click="height = height - 5 ">short</el-button>-->
   </div>
 </template>
 
@@ -17,6 +19,7 @@ import { fetchBusiTree } from '@/api/request.js'
 import emitter from '@/utils/mitt.js'
 const h = ref('500px')
 const w = ref('100%')
+const height = ref(600)
 const mind = ref({
   /* 元数据，定义思维导图的名称、作者、版本等信息 */
   meta: {
@@ -79,7 +82,7 @@ const mind = ref({
 const options = {
   container: 'customMind', // [必选] 容器的ID
   editable: true, // [可选] 是否启用编辑
-  theme: 'primary', // [可选] 主题
+  theme: 'clouds', // [可选] 主题
   context_menu: {
     enable: true
   },
@@ -135,8 +138,10 @@ function hightlightNode(prop) {
   arr.forEach(item => { jm.value.expand_node(item.id) })
   const lastNode = arr.at(-1)
   const _jm = jm.value
+  const aaa = _jm.get_node(lastNode.id)
+  console.log(aaa, 'aaa')
   _jm.enable_edit()
-  _jm.set_node_color(lastNode.id, '#ff6b6b', null)
+  _jm.set_node_color(lastNode.id, '#2667db', '#f1f1f1')
   _jm.disable_edit()
 }
 defineExpose({
@@ -182,7 +187,7 @@ function handleNodeClick(node) {
       emitter.emit('add-table', node.data)
       const _jm = jm.value
       _jm.enable_edit()
-      _jm.set_node_color(node.id, '#ff6b6b', null)
+      _jm.set_node_color(node.id, '#2667db', '#f1f1f1')
       _jm.disable_edit()
     }).catch(() => {
       // console.log('cancel')
@@ -190,7 +195,7 @@ function handleNodeClick(node) {
       emitter.emit('add-table', node.data)
       const _jm = jm.value
       _jm.enable_edit()
-      _jm.set_node_color(node.id, '#428bca', null)
+      _jm.set_node_color(node.id, '#ecf0f1', '#333333')
       _jm.disable_edit()
     })
   }
@@ -199,9 +204,11 @@ function handleNodeClick(node) {
 
 <style lang="scss" scoped>
 .custom-mind-container {
-  background-color: #fafafa;
+  --height: 500px;
+  background-color: #fcfcfc;
   padding-bottom: 8px; // 否则el-scrollbar的滚动条会被遮挡
-  height: 500px;
+  padding-right: 8px;
+  height: var(--height);
   width: 100%;
   overflow: auto;
 }

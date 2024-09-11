@@ -154,23 +154,28 @@
           spellcheck="false"
           autocapitalize="off"
           autocomplete="off"
-          @keyup.enter="handleKeyDown"
         ></textarea>
         <!--发送-->
         <div>
-          <div class="send boxinput" @click="sendText">
-            <img src="@/assets/emoji/rocket.png" alt=""/>
-          </div>
+          <el-tooltip content="发送" placement="top">
+            <div class="send boxinput" @click="sendText">
+              <img src="@/assets/emoji/rocket.png" alt=""/>
+            </div>
+          </el-tooltip>
         </div>
         <div>
-          <div class="send boxinput" style="margin-left: 10px" @click="clearHis">
-            <img src="@/assets/emoji/clear.png" alt=""/>
-          </div>
+          <el-tooltip content="清空会话" placement="top">
+            <div class="send boxinput" style="margin-left: 10px" @click="clearHis">
+              <img src="@/assets/emoji/clear.png" alt=""/>
+            </div>
+          </el-tooltip>
         </div>
         <div>
-          <div class="send boxinput" style="margin-left: 10px" @click="endTalk">
-            <img src="@/assets/emoji/end.png" alt=""/>
-          </div>
+          <el-tooltip content="结束对话" placement="top">
+            <div class="send boxinput" style="margin-left: 10px" @click="endTalk">
+              <img src="@/assets/emoji/end.png" alt=""/>
+            </div>
+          </el-tooltip>
         </div>
       </div>
     </div>
@@ -179,6 +184,7 @@
 
 <script>
 import { animation, getNowTime, JCMFormatDate, copyToClipboard } from '@/utils/util'
+import { useDebounceFn } from '@vueuse/core'
 import HeadPortrait from '@/components/HeadPortrait.vue'
 import robot from '@/assets/transforms/transformers-06.png'
 import dayjs from 'dayjs'
@@ -279,10 +285,21 @@ export default {
         2、汇报对象，例如：运营经理
         3、行业，例如：通信行业
         4、本职工作，例如：运营经理助理
-        5、时间范围，例如：2024年6月至2024年12月`,
+        5、时间范围，例如：2023年6月至2024年6月`,
       'chatType': 0,
       'uid': 'gpt-3.5-turbo',
       'reminder': ''
+    })
+    const changeHeight = useDebounceFn((entry) => {
+      document.querySelectorAll('.chat-content')[0].style.height = 'calc(88% + 50px - ' + entry.borderBoxSize[0].blockSize + 'px)'
+    }, 200)
+    const observer = new ResizeObserver(enntires => {
+      for (const entry of enntires) {
+        changeHeight(entry)
+      }
+    })
+    nextTick(() => {
+      observer.observe(document.getElementById('textareaMsg'))
     })
   },
 
@@ -305,7 +322,7 @@ export default {
     },
     clearHis() {
       this.conversation_id = ''
-      this.chatList = []
+      this.chatList.length = 1
     },
     endTalk() {
       // 结束会话
@@ -1136,7 +1153,7 @@ textarea::-webkit-scrollbar-thumb {
           float: left;
           max-width: 90%;
           padding: 15px;
-          max-width: 650px;
+          //max-width: 650px;
           border-radius: 20px 20px 20px 5px;
           background-color: #fff;
         }

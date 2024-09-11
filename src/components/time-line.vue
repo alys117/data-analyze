@@ -33,7 +33,7 @@
           <el-input style="flex:1;" type="textarea" v-model="activity.subtext" />
           <div style="display: flex;flex-direction: column;gap: 5px">
             <!--            <el-link v-if="!activity.children" style="margin-left: 5px" @click="checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>-->
-            <el-link v-if="!activity.children" style="margin-left: 5px" @click="activity.status = -1; checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>
+            <el-link v-if="!activity.children || !activity.children.length" style="margin-left: 5px;" @click="activity.status = -1; checkPoint(activity)"><PieChart style="height: 1.2em"/></el-link>
           </div>
         </div>
       </div>
@@ -103,7 +103,7 @@ const changeByChild = (id) => {
       let flag = false
       const result = []
       activity.children.forEach((child) => {
-        result.push(child.type === 'primary' ? (child.hollow ? 0.5 : 1) : 0)
+        result.push(child.type === 'success' ? (child.hollow ? 0.5 : 1) : 0)
         child.id === id && (flag = true)
       })
       if (flag) {
@@ -111,15 +111,15 @@ const changeByChild = (id) => {
         const sum = result.reduce((a, b) => a + b)
         switch (sum) {
           case 0:
-            activity.type = 'danger'
+            activity.type = 'primary'
             activity.hollow = true
             break
           case activity.children.length:
-            activity.type = 'primary'
+            activity.type = 'success'
             activity.hollow = false
             break
           default:
-            activity.type = 'primary'
+            activity.type = 'success'
             activity.hollow = true
         }
         emit('relation', activity.id)

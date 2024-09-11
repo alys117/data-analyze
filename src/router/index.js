@@ -5,6 +5,7 @@ import Step3 from '../views/step-3.vue'
 import Step4 from '../views/step-4.vue'
 import Demo1 from '../views/demo-1.vue'
 import Demo2 from '../views/demo-2.vue'
+import Demo3 from '../views/demo-3.vue'
 import AiConversation from '../views/ai-conversation.vue'
 import BaseDemo from '@/views/base-demo.vue'
 const routes = [
@@ -16,7 +17,8 @@ const routes = [
   { path: '/step4', name: 'Step4', component: Step4 },
   { path: '/base', name: 'BaseDemo', component: BaseDemo },
   { path: '/demo1', name: 'Demo1', component: Demo1 },
-  { path: '/demo2', name: 'Demo2', component: Demo2 }
+  { path: '/demo2', name: 'Demo2', component: Demo2 },
+  { path: '/demo3', name: 'Demo3', component: Demo3 }
 ]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

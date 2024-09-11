@@ -63,13 +63,12 @@ function back2step3() {
     <my-step :step="4" />
     <div class="view">
       <div class="index">
-        <h4 style="margin: 10px 0 10px 30px;">大纲目录</h4>
-        <time-line-view :activities="step.step3" :level="1" />
+        <time-line-view :activities="step.treeCache" :level="1" />
       </div>
       <div ref="contentRef" class="content">
         <node-preview :nodes="nodes" />
         <div class="step-forward">
-          <el-button size="default" type="primary" @click="back2step3">上一步</el-button>
+          <el-button size="default" type="default" @click="back2step3" style="color: #13ce66">返回</el-button>
           <!--          <el-button size="default" type="primary" @click="router.push('/demo1')">demo</el-button>-->
         </div>
       </div>
@@ -82,6 +81,9 @@ function back2step3() {
 .step-forward{
   padding: 20px;
   text-align: right;
+  position: absolute;
+  top: 110px;
+  right: 20px;
 }
 .view{
   border-top: 1px solid #eee ;
@@ -89,6 +91,7 @@ function back2step3() {
   display: flex;
   .index{
     flex-shrink: 0;
+    padding-top: 20px;
     min-width: 400px;
     max-width: 600px;
     border-right: 1px dotted #eee;

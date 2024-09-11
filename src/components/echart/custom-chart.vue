@@ -52,7 +52,7 @@
         size="large"
         class="ml-2"
         inline-prompt
-        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+        style="--el-switch-on-color: #7c7c7c; --el-switch-off-color: #2667db"
         active-text="数据"
         inactive-text="图表"
       />
@@ -176,6 +176,7 @@ const reDraw = (data, msg) => {
   console.log('图表类型', data.draw_data.plot)
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
+  option.value.xAxis[0].name = data.draw_data.x.name || ''
   option.value.xAxis[0].axisLabel = {
     interval: 0,
     formatter: function(value) {
@@ -260,6 +261,7 @@ const option = ref({
   xAxis: [
     {
       type: 'category',
+      name: '',
       axisLabel: {
         interval: 0,
         formatter: function(value) {

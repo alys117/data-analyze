@@ -73,9 +73,9 @@ defineExpose({
 </script>
 
 <template>
-  <el-link @click="addRow" style="color: darkcyan">添加行</el-link>
-  <el-link @click="addColumn" style="color: #2a598a; margin-left: 20px">添加列</el-link>
-  <div style="overflow: auto;padding-right: 20px">
+  <el-link @click="addRow" style="user-select: none;color: darkcyan">添加行</el-link>
+  <el-link @click="addColumn" style="user-select: none;color: #2a598a; margin-left: 20px">添加列</el-link>
+  <div style="overflow: auto;padding-right: 20px; user-select: none">
     <table>
       <tr style="height: 10px">
         <th v-for="(item, idx) in th" :key="item+idx" style="height: 10px">
@@ -83,7 +83,7 @@ defineExpose({
             <Delete style="height: 1em"/>
           </el-link>
         </th>
-        <th rowspan="2" style="width: 40px;min-width: 40px">操作</th>
+        <th rowspan="2" style="width: 40px;min-width: 40px;">操作</th>
       </tr>
       <tr>
         <th v-for="(item, idx) in th" :key="item+idx">
@@ -112,23 +112,24 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+$gray: #fcfcfc;
 table {
   width: 100%;
   margin: 10px auto; /* 让表格居中 */
   border-collapse: collapse;
-  border: 2px solid #f1f1f1; /* 整体边框颜色 */
+  border: 2px solid $gray; /* 整体边框颜色 */
 }
 th,
 td {
   line-height: 30px; /* 行高 */
-  border: 1px solid #f1f1f1; /* 每行边框 */
+  border: 1px solid $gray; /* 每行边框 */
   text-align: center;
   font-size: 14px;
   height: 30px;
   min-width: 90px;
 }
 th {
-  background-color: #f1f1f1; /* 表头背景色 */
+  background-color: $gray; /* 表头背景色 */
   color: #000;
 }
 /* 这次奇偶行用 class 来写 */
@@ -136,7 +137,7 @@ tr.even {
   background-color: #eee; /* 偶数行浅灰色 */
 }
 tr:hover {
-  background-color: #f1f1f1; /* 鼠标悬停时的背景色:蓝色 */
+  background-color: $gray; /* 鼠标悬停时的背景色:蓝色 */
 }
 /* 把90分以上的要特殊标识绿色 */
 td.perfect {

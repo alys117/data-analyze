@@ -8,6 +8,7 @@ import CustomMind from '@/components/custom-mind.vue'
 import { callLoading } from '@/components/loading.js'
 const router = useRouter()
 const step = useStepStore()
+const activeNames = ref(['1'])
 const body = {
   question: '',
   other: []
@@ -19,25 +20,30 @@ const loading = ref(false)
 const childRefs = ref([]) // 用于存储子组件引用的数组
 // 回调函数，用于设置子组件的引用
 const setChildRef = (el, table) => {
-  if (!el) return
-  // console.log(table, el, 'setChildRef', selectTables.value)
+  if (!el) {
+    childRefs.value = childRefs.value.filter(item => item.tableName !== table)
+    return
+  }
+  // console.log(table, 'setChildRef 2', selectTables.value)
   if (childRefs.value.findIndex(item => item.tableName === table) > -1) return
+  // console.log('add table')
   childRefs.value.push({ tableName: table, el: el })
 }
 
 const next = () => {
-  const n = childRefs.value.length - selectTables.value.length
   if (!selectTables.value.length) {
     ElMessage.error('请先挑选表！')
     return
   }
-  childRefs.value.splice(0, n)
+  // const n = childRefs.value.length - selectTables.value.length
+  // childRefs.value.splice(0, n)
   // console.log(childRefs.value, 'childRefs.value', n)
   const result = {
     question: step.aiConversation.question,
     tables_name: [],
     columns_name: {}
   }
+  console.log(childRefs.value, 'childRefs.value')
   childRefs.value.forEach((item) => {
     // console.log(item.el.getUseFields, 'item.el')
     const fields = item.el.getUseFields()
@@ -124,9 +130,16 @@ onMounted(async() => {
 <template>
   <div v-loading="loading">
     <my-step :step="1"/>
-    <div class="mind-container">
-      <custom-mind ref="mindRef"/>
-    </div>
+    <el-collapse v-model="activeNames" style="border: none;">
+      <el-collapse-item name="1">
+        <template #title>
+          <div style="display: flex;justify-content: flex-end;width: 100%">
+            <el-link type="primary">业务脑图</el-link>
+          </div>
+        </template>
+        <custom-mind ref="mindRef"/>
+      </el-collapse-item>
+    </el-collapse>
     <div class="cus-table-container">
       <div class="cus-table-head" v-if="false">
         <div class="left-label">请选择</div>
@@ -145,8 +158,8 @@ onMounted(async() => {
           />
         </el-select>
       </div>
-<!--      <el-button @click="console.log(tableInfos)">tableInfos</el-button>-->
-<!--      <el-button @click="console.log(childRefs)">childRefs</el-button>-->
+      <!--      <el-button @click="console.log(tableInfos)">tableInfos</el-button>-->
+      <!--      <el-button @click="console.log(childRefs)">childRefs</el-button>-->
       <transition-group
         name="custom-classes-transition"
         enter-active-class="animate__animated animate__fadeInLeft"
@@ -158,6 +171,8 @@ onMounted(async() => {
       </transition-group>
     </div>
     <div class="step-forward">
+<!--      <el-button size="default" type="success" @click="console.log(childRefs)">childRefs</el-button>-->
+<!--      <el-button size="default" type="success" @click="console.log(selectTables)">selectTables</el-button>-->
       <el-button size="default" type="success" @click="router.push('/talk')">返回会话</el-button>
       <el-button size="default" type="primary" @click="next">下一步</el-button>
       <!--      <el-button size="small" type="primary" @click="console.log(childRefs)">childRefs</el-button>-->
@@ -165,8 +180,6 @@ onMounted(async() => {
   </div>
 </template>
 <style lang="scss" scoped>
-.mind-container{
-}
 .cus-table-container{
   padding: 20px 20px 0 20px;
   //width: fit-content;
@@ -184,5 +197,17 @@ onMounted(async() => {
   .left-label{
     margin-right: 20px;
   }
+}
+:deep(.el-collapse-item__arrow) {
+  margin: 0 50% 0 0;
+}
+:deep(.el-collapse-item__header) {
+  height: 0;
+}
+:deep(.el-collapse-item__wrap) {
+  border: none;
+}
+:deep(.el-collapse-item__content) {
+  padding-bottom: 0;
 }
 </style>
