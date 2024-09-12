@@ -12,7 +12,9 @@ import router from './router'
 import { loadVxeTable } from '@/plugins/vxe-table'
 import 'vxe-table/lib/style.css'
 import 'vxe-table-plugin-element/dist/style.css'
+import registerDetec from './utils/detectives'
 const app = createApp(App)
+registerDetec(app)
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)

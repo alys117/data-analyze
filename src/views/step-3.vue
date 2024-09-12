@@ -13,11 +13,13 @@ import { useStepStore } from '@/stores/step.js'
 import InvisibaleChart from '@/components/echart/invisibale-chart.vue'
 import to from 'await-to-js'
 import { callLoading } from '@/components/loading.js'
+import DemoTinymce from '@/components/tinymce/demo-tinymce.vue'
 const step = useStepStore()
 const router = useRouter()
 
 const loading = ref(true)
 const currentAct = ref({})
+const show = ref(false)
 const activities = step.treeCache
 const breadcrumbItems = ref([])
 const chartRef = ref()
@@ -135,6 +137,7 @@ onMounted(() => {
     activity.showSubtext = true
   })
   emitter.on('load-advice', async(activity) => {
+    show.value = false
     chartRef.value.clear()
     chartRef.value.setTip(false)
     currentAct.value = activity
@@ -246,9 +249,6 @@ const completePoint = () => {
 const resetPoint = () => {
   emitter.emit('change-point', { id: currentAct.value.id, type: 'primary' })
 }
-const description = computed(() => {
-  return currentAct.value.description.replace(/\n/g, '<br>')
-})
 
 function removePropertyFromTree(tree, propName) {
   if (Array.isArray(tree)) {
@@ -357,6 +357,8 @@ const pushTasks = (activity, tasks) => {
     }
     activity.description = descp
     activity.status = 1
+    activity.type = 'primary'
+    emitter.emit('change-point', { id: activity.id, type: 'primary' })
     return 'task = ' + activity.id
   }
   tasks.push(task())
@@ -422,7 +424,8 @@ const allMission = async(activities) => {
           </el-breadcrumb>
           <div class="description">
             <div v-if="!currentAct.description"></div>
-            <div v-else v-html="description"></div>
+<!--            <div v-else v-html="currentAct.description.replace(/\n/g, '<br>')"></div>-->
+            <demo-tinymce v-else v-model:description="currentAct.description" v-model:show="show" />
           </div>
           <custom-chart ref="chartRef" />
           <div v-for="item of invisibleList" :key="item.id">

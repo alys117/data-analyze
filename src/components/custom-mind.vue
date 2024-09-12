@@ -1,12 +1,13 @@
 <template>
-  <div style="padding: 20px">
-    <el-scrollbar class="custom-mind-container" :style="{'--height': height + 'px'}">
-      <div ref="customMindRef" id="customMind" :style="{'--innerHeight': h, '--innerWidth': w}" class="mind-ref"></div>
-      <!--    <div ref="customMindRef" id="customMind" style="height: 500px"></div>-->
-    </el-scrollbar>
-<!--    <el-button @click="jmResize">resize</el-button>-->
-<!--    <el-button @click="height = height + 5 ">long</el-button>-->
-<!--    <el-button @click="height = height - 5 ">short</el-button>-->
+  <div v-drag="resetH" :style="{height: (height + 10) + 'px'}">
+    <div style="padding: 0 20px">
+      <el-scrollbar class="custom-mind-container" :style="{'--height': height + 'px'}">
+        <div ref="customMindRef" id="customMind" :style="{'--innerHeight': h, '--innerWidth': w}" class="mind-ref"></div>
+      </el-scrollbar>
+<!--      <el-button @click="jmResize">resize</el-button>-->
+<!--      <el-button @click="height = height + 5 ">long</el-button>-->
+<!--      <el-button @click="height = height - 5 ">short</el-button>-->
+    </div>
   </div>
 </template>
 
@@ -19,7 +20,7 @@ import { fetchBusiTree } from '@/api/request.js'
 import emitter from '@/utils/mitt.js'
 const h = ref('500px')
 const w = ref('100%')
-const height = ref(600)
+const height = ref(500)
 const mind = ref({
   /* 元数据，定义思维导图的名称、作者、版本等信息 */
   meta: {
@@ -96,6 +97,11 @@ const options = {
 }
 const customMindRef = ref(null)
 const jm = ref(null)
+function resetH(aa, bb) {
+  console.log(height.value, aa, bb)
+  if (bb) { height.value = bb.substring(0, bb.length - 2) - 10 }
+}
+height.value = height.value - 10
 onMounted(async() => {
   // 初始化
   // const jm = jsMind.show(options, mind)
@@ -138,8 +144,8 @@ function hightlightNode(prop) {
   arr.forEach(item => { jm.value.expand_node(item.id) })
   const lastNode = arr.at(-1)
   const _jm = jm.value
-  const aaa = _jm.get_node(lastNode.id)
-  console.log(aaa, 'aaa')
+  // const aaa = _jm.get_node(lastNode.id)
+  // console.log(aaa, 'aaa')
   _jm.enable_edit()
   _jm.set_node_color(lastNode.id, '#2667db', '#f1f1f1')
   _jm.disable_edit()

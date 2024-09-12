@@ -83,15 +83,23 @@
       </el-menu>
     </el-col>
   </el-row>
+  <div style="min-width: 1000px;width: 80vw">
+    <demo-tinymce v-model:description="description" />
+    <index-bak v-if="false" />
+  </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import {
   Document,
   Menu as IconMenu,
   Location,
   Setting
 } from '@element-plus/icons-vue'
+import DemoTinymce from '@/components/tinymce/demo-tinymce.vue'
+import IndexBak from '@/components/tinymce/index-bak.vue'
+
+const description = ref('tip<br>this is a message')
 const handleOpen = (key, keyPath) => {
   console.log(key, keyPath)
 }

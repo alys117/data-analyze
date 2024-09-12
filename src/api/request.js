@@ -113,13 +113,13 @@ const fetchDescrip = async(body) => {
     },
     body: JSON.stringify(body)
   }).then(res => res.json())
-  return data
+  return data.replace(/\n/g, '<br>')
 }
 
 const fakeFetchDescp = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(desciption + generateID(6))
+      resolve(desciption.replace(/\n/g, '<br>') + generateID(6))
     }, Math.random() * 1000)
   })
 }

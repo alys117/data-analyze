@@ -134,7 +134,7 @@ onMounted(async() => {
       <el-collapse-item name="1">
         <template #title>
           <div style="display: flex;justify-content: flex-end;width: 100%">
-            <el-link type="primary">业务脑图</el-link>
+            <el-link type="primary" style="height: 30px">业务脑图</el-link>
           </div>
         </template>
         <custom-mind ref="mindRef"/>
@@ -202,7 +202,7 @@ onMounted(async() => {
   margin: 0 50% 0 0;
 }
 :deep(.el-collapse-item__header) {
-  height: 0;
+  height: 30px;
 }
 :deep(.el-collapse-item__wrap) {
   border: none;
