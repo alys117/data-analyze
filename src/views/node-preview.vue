@@ -1,5 +1,6 @@
 <script setup>
 import CustomChart from '@/components/echart/custom-chart.vue'
+import { numToWords } from '@/utils/util.js'
 import { useStepStore } from '@/stores/step.js'
 const step = useStepStore()
 
@@ -24,8 +25,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-for="node in nodes" :key="node.id" class="node">
-    <span :data-node-id="node.id" :class="['title-' + level]">{{ node.label }}</span>
+  <div v-for="(node, index) in nodes" :key="node.id" class="node">
+    <span :data-node-id="node.id" :class="['title-' + level]">{{ `${ level === 1 ? numToWords(index+1): (index+1)}、${node.label}` }}</span>
     <div v-if="node.description" style="background: #fcfcfc;padding: 10px;margin: 20px 0;">
       <div v-html="descp(node.description)"></div>
     </div>

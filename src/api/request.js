@@ -1,4 +1,4 @@
-import { fakeData2, outline, rewriteOutline, drawData, desciption, historyTree2, outline3 } from '@/api/fakeData.js'
+import { fakeData2, fakeData3, outline, rewriteOutline, drawData, desciption, historyTree2, outline3, outline4 } from '@/api/fakeData.js'
 import { generateID } from '@/utils/util.js'
 
 const selectTables = async(body) => {
@@ -17,7 +17,8 @@ const selectTables = async(body) => {
 const fakeSelectTables = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(fakeData2)
+      // resolve(fakeData2)
+      resolve(fakeData3)
     }, 1000)
   })
 }
@@ -162,9 +163,26 @@ const fateFetchBusiTree = async() => {
   // }).then(res => res.json())
   return await new Promise((resolve) => {
     setTimeout(() => {
-      resolve(outline3)
+      // resolve(outline3)
+      setOrder(outline4)
+      resolve(outline4)
     }, 100)
   })
+}
+function setOrder(data, parentOrder = '0') {
+  if (Array.isArray(data)) {
+    data.forEach((item, index) => {
+      item.order = parentOrder + '-' + (index + 1)
+      if (item.children) {
+        setOrder(item.children, item.order)
+      }
+    })
+  } else {
+    data.order = parentOrder + '-1'
+    if (data.children) {
+      setOrder(data.children, data.order)
+    }
+  }
 }
 const selectBusiTree = async() => {
   return await fetch('/api/check_bussiness_tree', {

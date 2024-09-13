@@ -87,8 +87,8 @@ const init = async() => {
       <div class="left">
         <div class="head">
           <div class="history-head">
-            <span style="padding-left: 10px">历史大纲栏</span>
-            <div class="history-head-child">
+            <span style="padding-left: 10px;">历史大纲栏</span>
+            <div v-if="false" class="history-head-child">
               <el-input
                 v-model="input3"
                 style="max-width: 400px;"
@@ -107,10 +107,8 @@ const init = async() => {
               </el-input>
             </div>
           </div>
-          <div>
-            <div>
-              <span style="padding-left: 10px">大纲栏</span>
-            </div>
+          <div class="model-created-head">
+            <span style="padding-left: 10px">大纲栏</span>
           </div>
         </div>
         <div class="content">
@@ -158,6 +156,11 @@ const init = async() => {
       display: flex;
       align-items: center;
       gap:20px;
+      line-height: 32px;
+      flex: 1;
+    }
+    .model-created-head{
+      flex: 1;
     }
   }
   .content{

@@ -77,15 +77,15 @@ const crudStore = reactive({
   /** 表单类型，true 表示修改，false 表示新增 */
   isUpdate: true,
   /** 点击显示弹窗 */
-  onSubmit: (n) => {
+  onSubmit: (obj = { n: 0, show: true }) => {
     const $grid = xGrid.value
     const useField = []
     $grid.getColumns().forEach((column) => {
-      console.log(column)
+      // console.log(column)
       column.field && useField.push(column.field)
     })
     // VxeUIExport.modal.message('使用的字段：' + $grid.getTableColumn().tableColumn.map(i => i.title).join(', '))
-    VxeUIExport.modal.message('使用的字段：\n' + $grid.getColumns().map(i => i.title + '--' + i.field).join(n ? '\n' : ', '))
+    obj.show && VxeUIExport.modal.message('使用的字段：\n' + $grid.getColumns().map(i => i.title + '--' + i.field).join(obj.n ? '\n' : ', '))
     return useField
   },
   getWidth: (type) => {
@@ -132,7 +132,7 @@ const gridEvents = {
       <!-- 左侧按钮列表 -->
       <template #toolbar-btns>
         <div class="toolbar">
-          <vxe-button size="mini" status="success" icon="vxe-icon-square-checked-fill" @click="crudStore.onSubmit(1)">中英文对照</vxe-button>
+          <vxe-button size="mini" status="success" icon="vxe-icon-square-checked-fill" @click="crudStore.onSubmit({ n: 1, show: true })">中英文对照</vxe-button>
           <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('表的所有字段')">全部字段</vxe-button>
           <vxe-button size="mini" status="primary" icon="vxe-icon-lightning" @click="crudStore.onLoadData('所需字段')">推荐字段</vxe-button>
           <vxe-button size="mini" circle status="primary" icon="vxe-icon-delete" @click="crudStore.onDelete('删除')" />

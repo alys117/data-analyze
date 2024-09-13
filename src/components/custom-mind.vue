@@ -4,9 +4,9 @@
       <el-scrollbar class="custom-mind-container" :style="{'--height': height + 'px'}">
         <div ref="customMindRef" id="customMind" :style="{'--innerHeight': h, '--innerWidth': w}" class="mind-ref"></div>
       </el-scrollbar>
-<!--      <el-button @click="jmResize">resize</el-button>-->
-<!--      <el-button @click="height = height + 5 ">long</el-button>-->
-<!--      <el-button @click="height = height - 5 ">short</el-button>-->
+      <!--      <el-button @click="jmResize">resize</el-button>-->
+      <!--      <el-button @click="height = height + 5 ">long</el-button>-->
+      <!--      <el-button @click="height = height - 5 ">short</el-button>-->
     </div>
   </div>
 </template>
@@ -41,10 +41,10 @@ const mind = ref({
         direction: 'right', // [可选] 节点的方向，此数据仅在第一层节点上有效，目前仅支持 left 和 right 两种，默认为 right
         expanded: true, // [可选] 该节点是否是展开状态，默认为 true
         children: [
-          { id: 'easy1', topic: 'Easy to show' },
-          { id: 'easy2', topic: 'Easy to edit' },
-          { id: 'easy3', topic: 'Easy to store' },
-          { id: 'easy4', topic: 'Easy to embed' }
+          { id: 'easy1', topic: 'Easy to show1' },
+          { id: 'easy2', topic: 'Easy to edit1' },
+          { id: 'easy3', topic: 'Easy to store1' },
+          { id: 'easy4', topic: 'Easy to embed1' }
         ]
       },
       {
@@ -137,12 +137,18 @@ onMounted(async() => {
   // _jm.set_node_color(node.id, 'pink', null)
   _jm.resize()
 })
-function hightlightNode(prop) {
+const tableOrder = defineModel('tableOrder', { type: Array })
+function hightlightNode(prop, label) {
   const arr = findFamily(mind.value.data.children, 'table_ename', prop) || []
   // console.log(arr, 'arr', prop, mind.value.data.children)
-  if (!arr.length) return
+  if (!arr.length) {
+    ElMessage.error(`未找到该表 ${label} -- ${prop}`)
+    tableOrder.value.push({ tableName: prop, order: null })
+    return
+  }
   arr.forEach(item => { jm.value.expand_node(item.id) })
   const lastNode = arr.at(-1)
+  tableOrder.value.push({ tableName: lastNode.table_ename, order: lastNode.order })
   const _jm = jm.value
   // const aaa = _jm.get_node(lastNode.id)
   // console.log(aaa, 'aaa')

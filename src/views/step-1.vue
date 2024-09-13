@@ -15,6 +15,7 @@ const body = {
 }
 const selectTables = ref([]) // 选择的表，多选
 const tableOptions = ref([]) // 选择的表，多选
+const tableOrder = ref([]) // 选择的表，多选
 const tableInfos = ref({})
 const loading = ref(false)
 const childRefs = ref([]) // 用于存储子组件引用的数组
@@ -29,7 +30,6 @@ const setChildRef = (el, table) => {
   // console.log('add table')
   childRefs.value.push({ tableName: table, el: el })
 }
-
 const next = () => {
   if (!selectTables.value.length) {
     ElMessage.error('请先挑选表！')
@@ -43,19 +43,41 @@ const next = () => {
     tables_name: [],
     columns_name: {}
   }
-  console.log(childRefs.value, 'childRefs.value')
   childRefs.value.forEach((item) => {
     // console.log(item.el.getUseFields, 'item.el')
-    const fields = item.el.getUseFields()
+    const fields = item.el.getUseFields({ n: 0, show: false })
     result.tables_name.push(item.tableName)
     result.columns_name[item.tableName] = fields
   })
-
-  step.setStep1(result) // 设置step1的pinia状态
-  router.push({
-    name: 'Step2',
-    state: { params: result }
-  })
+  const flag = JSON.stringify(step.step1) === JSON.stringify(result)
+  console.log(flag, 'flag', step.step1)
+  if (step.step1 && !flag) {
+    ElMessageBox.confirm(`确定重新生成思路？`, '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '放弃',
+      type: 'warning'
+    }).then(() => {
+      step.setOutline(null)
+      step.setTreeCache(null)
+      step.setStep1(result) // 设置step1的pinia状态
+      router.push({
+        name: 'Step2',
+        state: { params: result }
+      })
+    }).catch(() => {
+      step.setStep1(result) // 设置step1的pinia状态
+      router.push({
+        name: 'Step2',
+        state: { params: result }
+      })
+    })
+  } else {
+    step.setStep1(result) // 设置step1的pinia状态
+    router.push({
+      name: 'Step2',
+      state: { params: result }
+    })
+  }
 }
 const mindRef = ref()
 const init = async() => {
@@ -70,10 +92,26 @@ const init = async() => {
   tableOptions.value.length = 0
   for (const tableName in data) {
     tableOptions.value.push({ label: data[tableName]['中文名'], value: tableName })
-    // mindRef.value.hightlightNode(tableName) // 这里还没有取到mind数据
     selectTables.value.push(tableName)
   }
 }
+watch(() => tableOrder.value, (newVal, oldVal) => {
+  if (selectTables.value.length === newVal.length) {
+    tableOrder.value.sort((a, b) => {
+      if (a.order === null || b.order === null) {
+        return a.order === null ? 1 : -1
+      }
+      const _a = a.order.split('-')
+      const _b = b.order.split('-')
+      for (let i = 0; i < _a.length; i++) {
+        if (_a[i] !== _b[i]) {
+          return _a[i] - _b[i]
+        }
+      }
+    })
+    selectTables.value = tableOrder.value.map(item => item.tableName)
+  }
+}, { deep: true })
 const uniq = (ary) => {
   const strings = ary.map((item) => JSON.stringify(item))
   return Array.from(new Set(strings)).map((item) => JSON.parse(item))
@@ -85,7 +123,7 @@ const stopWatch = watchEffect(() => {
   if (tableOptions.value.length === 0) return
   console.log('开始高亮')
   for (const item of tableOptions.value) {
-    mindRef.value.hightlightNode(item.value)
+    mindRef.value.hightlightNode(item.value, item.label)
   }
   stopWatch()
 })
@@ -137,7 +175,7 @@ onMounted(async() => {
             <el-link type="primary" style="height: 30px">业务脑图</el-link>
           </div>
         </template>
-        <custom-mind ref="mindRef"/>
+        <custom-mind ref="mindRef" v-model:tableOrder="tableOrder"/>
       </el-collapse-item>
     </el-collapse>
     <div class="cus-table-container">
@@ -171,8 +209,8 @@ onMounted(async() => {
       </transition-group>
     </div>
     <div class="step-forward">
-<!--      <el-button size="default" type="success" @click="console.log(childRefs)">childRefs</el-button>-->
-<!--      <el-button size="default" type="success" @click="console.log(selectTables)">selectTables</el-button>-->
+      <!--      <el-button size="default" type="success" @click="console.log(childRefs)">childRefs</el-button>-->
+      <!--      <el-button size="default" type="success" @click="console.log(selectTables)">selectTables</el-button>-->
       <el-button size="default" type="success" @click="router.push('/talk')">返回会话</el-button>
       <el-button size="default" type="primary" @click="next">下一步</el-button>
       <!--      <el-button size="small" type="primary" @click="console.log(childRefs)">childRefs</el-button>-->

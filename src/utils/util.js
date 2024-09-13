@@ -302,3 +302,52 @@ export function reverseConvertFormat(arr) {
   })
   return obj
 }
+
+function numToWords(num) {
+  // 四位进行分割
+  const numStr = num.toString().replace(/(?=(\d{4})+$)/g, ',')
+    .split(',')
+    .filter(Boolean)
+
+  const bigUnits = ['', '万', '亿']
+  let result = ''
+  for (let i = 0; i < numStr.length; i++) {
+    const part = numStr[i]
+    const c = _transform(part)
+    let u = bigUnits[numStr.length - i - 1]
+    // 也是需要考虑当四位为0的情况不需要添加单位
+    if (c === chars[0]) {
+      u = ''
+    }
+    result += c + u
+  }
+  result = _handleZero(result)
+  return result
+}
+const chars = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+const units = ['', '十', '百', '千']
+function _handleZero(str) {
+  return str.replace(/零{2,}/g, '零').replace(/零+$/, '')
+}
+function _transform(n) {
+// 处理四位全部为0
+  if (n === '0000') {
+    return chars[0]
+  }
+  let result = ''
+  for (let i = 0; i < n.length; i++) {
+    // 转换汉字
+    const c = chars[+n[i]]
+    // 加单位 得到单位
+    let u = units[n.length - 1 - i]
+    // 处理0不加单位
+    if (c === chars[0]) {
+      u = ''
+    }
+    result += c + u
+  }
+  // 处理重复零，末尾零情况
+  return _handleZero(result)
+}
+
+export { numToWords }

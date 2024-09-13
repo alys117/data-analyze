@@ -61,6 +61,22 @@ const reDraw = (data, msg) => {
   option.value.legend.data = Object.keys(data.draw_data.y)
   option.value.xAxis[0].data = data.draw_data.x.x_axis
   option.value.xAxis[0].name = data.draw_data.x.name || ''
+  option.value.xAxis[0].axisLabel = {
+    interval: 0,
+    formatter: function(value) {
+      let text
+      const length = 8 // 文字显示长度
+      if (value.length > length) {
+        text = value.slice(0, length) + '…'
+      } else {
+        text = value
+      }
+      if (data.draw_data.x.x_axis.length < 10) {
+        return text
+      }
+      return text.split('').join('\n') // 垂直显示
+    }
+  }
   option.value.series = []
   const plot = data.draw_data.plot
   let count = 0
