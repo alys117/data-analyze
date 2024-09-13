@@ -125,8 +125,8 @@ onMounted(async() => {
     console.log(height, 'height', '|', width, 'width')
     // h.value = (+height.substring(0, height.length - 2) + 17) + 'px'
     // w.value = (+width.substring(0, width.length - 2) + 17) + 'px'
-    h.value = height
-    w.value = width
+    h.value = `calc(${height} - 0px)`
+    w.value = `calc(${width} - 0px)`
   })
   // mind.data.children[3]['background-color'] = '#ff0122'
   // mind.data.children[3].expanded = false
@@ -223,6 +223,7 @@ function handleNodeClick(node) {
   height: var(--height);
   width: 100%;
   overflow: auto;
+  border: 1px solid rgba(0, 0, 0, .1);
 }
 .mind-ref{
   height: var(--innerHeight);
