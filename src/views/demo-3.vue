@@ -86,6 +86,11 @@
   <div style="min-width: 1000px;width: 80vw">
     <demo-tinymce v-model:description="description" />
     <index-bak v-if="false" />
+    <el-button @click="mock(1)">mock1</el-button>
+    <el-button @click="mock(2)">mock2</el-button>
+    <el-button @click="mock(3)">mock3</el-button>
+    <el-button @click="mock(4)">mock4</el-button>
+    <el-button @click="mock(10)">mock10</el-button>
   </div>
 </template>
 
@@ -98,6 +103,17 @@ import {
 } from '@element-plus/icons-vue'
 import DemoTinymce from '@/components/tinymce/demo-tinymce.vue'
 import IndexBak from '@/components/tinymce/index-bak.vue'
+function mock(n = 1) {
+  fetch(`/api/test${n}?_t=${new Date().getTime()}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ a: n })
+  }).then(res => res.json()).then(res => {
+    console.log(res)
+  })
+}
 
 const description = ref('tip<br>this is a message')
 const handleOpen = (key, keyPath) => {

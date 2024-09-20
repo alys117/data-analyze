@@ -9,6 +9,8 @@ import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import svgLoader from 'vite-svg-loader'
+
+import mockDevServerPlugin from 'vite-plugin-mock-dev-server'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -42,7 +44,8 @@ export default defineConfig({
         // 自动导入 Element Plus 组件
         ElementPlusResolver()
       ]
-    })
+    }),
+    mockDevServerPlugin()
   ],
   server: {
     // port: 5173,
@@ -72,7 +75,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/fallback/, '')
       },
       // 使用 proxy 实例
-      '/mock': {
+      '/abc': {
         target: 'http://localhost:8000',
         changeOrigin: true,
         configure: (proxy, options) => {

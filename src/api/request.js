@@ -1,4 +1,4 @@
-import { fakeData2, fakeData3, outline, rewriteOutline, drawData, desciption, historyTree2, outline3, outline4 } from '@/api/fakeData.js'
+import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline, drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
 import { generateID } from '@/utils/util.js'
 
 const selectTables = async(body) => {
@@ -18,7 +18,8 @@ const fakeSelectTables = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       // resolve(fakeData2)
-      resolve(fakeData3)
+      // resolve(fakeData3)
+      resolve(fakeData4)
     }, 1000)
   })
 }
@@ -164,9 +165,10 @@ const fateFetchBusiTree = async() => {
   return await new Promise((resolve) => {
     setTimeout(() => {
       // resolve(outline3)
-      setOrder(outline4)
-      resolve(outline4)
-    }, 100)
+      // setOrder(outline4)
+      setOrder(outline5)
+      resolve(outline5)
+    }, 2000)
   })
 }
 function setOrder(data, parentOrder = '0') {
@@ -188,6 +190,10 @@ const selectBusiTree = async() => {
   return await fetch('/api/check_bussiness_tree', {
     method: 'post'
   }).then(res => res.json())
+    .then(data => {
+      setOrder(data)
+      return data
+    })
 }
 const checkTable = async(body) => {
   const response = await fetch('/api/check_table', {
