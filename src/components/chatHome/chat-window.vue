@@ -158,21 +158,21 @@
         <!--发送-->
         <div>
           <el-tooltip content="发送" placement="top">
-            <div class="send boxinput" @click="sendText">
+            <div :class="{'send': true, 'boxinput': true, 'not-operate': !canOperate}" @click="sendText">
               <img src="@/assets/emoji/rocket.png" alt=""/>
             </div>
           </el-tooltip>
         </div>
         <div>
           <el-tooltip content="清空会话" placement="top">
-            <div class="send boxinput" style="margin-left: 10px" @click="clearHis">
+            <div :class="{'send': true, 'boxinput': true, 'not-operate': !canOperate}" style="margin-left: 10px" @click="clearHis">
               <img src="@/assets/emoji/clear.png" alt=""/>
             </div>
           </el-tooltip>
         </div>
         <div>
           <el-tooltip content="结束对话" placement="top">
-            <div class="send boxinput" style="margin-left: 10px" @click="endTalk">
+            <div :class="{'send': true, 'boxinput': true, 'not-operate': !canOperate}" style="margin-left: 10px" @click="endTalk">
               <img src="@/assets/emoji/end.png" alt=""/>
             </div>
           </el-tooltip>
@@ -243,6 +243,7 @@ export default {
   },
   data() {
     return {
+      canOperate: true,
       conversation_id: '',
       isAutoScroll: true,
       fileArrays: [],
@@ -321,10 +322,16 @@ export default {
       }
     },
     clearHis() {
+      if (!this.canOperate) {
+        return
+      }
       this.conversation_id = ''
       this.chatList.length = 1
     },
     endTalk() {
+      if (!this.canOperate) {
+        return
+      }
       // 结束会话
       // console.log(this.$parent)
       this.$emit('endTalk', '暂未使用')
@@ -348,7 +355,9 @@ export default {
     readStreamChat(reader, _this, currentResLocation, type) {
       return reader.read().then(({ done, value }) => {
         if (done) {
-          console.log(this.chatList, 'done')
+          // console.log(this.chatList, 'done')
+          // 按钮置为可用
+          this.canOperate = true
           return
         }
         if (!_this.chatList[currentResLocation].reminder) {
@@ -504,6 +513,9 @@ export default {
 
       //   return
       // }
+      if (!this.canOperate) {
+        return
+      }
       this.rows = 1
       this.$nextTick(() => {
         this.acqStatus = false
@@ -573,6 +585,7 @@ export default {
             uid: this.frinedInfo.id // uid
           }
           if (this.frinedInfo.id === 'gpt-3.5-turbo' || this.frinedInfo.id === 'gpt-3.5-turbo-0301') {
+            this.canOperate = false
             this.chatCompletion(params, chatBeforResMsg)
           } else {
             if (this.settingInfo.cutSetting === 0) {
@@ -1325,6 +1338,17 @@ textarea::-webkit-scrollbar-thumb {
 
         &:hover {
           box-shadow: 0px 0px 10px 0px rgba(0, 136, 255);
+        }
+      }
+      .not-operate {
+        background-color: rgb(221, 226, 231);
+        border: 0;
+        transition: 0.3s;
+        box-shadow: 0px 0px 5px 0px rgb(186, 193, 200, 0);
+        cursor: unset;
+
+        &:hover {
+          box-shadow: 0px 0px 10px 0px rgba(186, 193, 200, 0);
         }
       }
     }

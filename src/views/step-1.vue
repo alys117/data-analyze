@@ -88,6 +88,10 @@ const init = async() => {
   loading.value = false
   */
   const data = await callLoading(async() => fetchTables(body), [{ content: '查找数据源', timeConsuming: import.meta.env.VITE_PICK_TABLE }])
+  if (data.desc) {
+    ElMessageBox.alert(data.desc, '提示', { type: 'warning' })
+    return
+  }
   tableInfos.value = data
   tableOptions.value.length = 0
   for (const tableName in data) {

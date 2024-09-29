@@ -1,5 +1,6 @@
-import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline, drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
-import { generateID } from '@/utils/util.js'
+import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline,
+  drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
+import { generateID, setOrder } from '@/utils/util.js'
 
 const selectTables = async(body) => {
   const response = await fetch('/api/select_tables', {
@@ -171,21 +172,7 @@ const fateFetchBusiTree = async() => {
     }, 2000)
   })
 }
-function setOrder(data, parentOrder = '0') {
-  if (Array.isArray(data)) {
-    data.forEach((item, index) => {
-      item.order = parentOrder + '-' + (index + 1)
-      if (item.children) {
-        setOrder(item.children, item.order)
-      }
-    })
-  } else {
-    data.order = parentOrder + '-1'
-    if (data.children) {
-      setOrder(data.children, data.order)
-    }
-  }
-}
+
 const selectBusiTree = async() => {
   return await fetch('/api/check_bussiness_tree', {
     method: 'post'
@@ -207,25 +194,38 @@ const checkTable = async(body) => {
   const json = await response.json()
   return json
 }
-let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
-  fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline
-if (import.meta.env.VITE_USE_MOCK === 'true') {
-  fetchTables = fakeSelectTables
-  fetchOutline = fakeFetchOutline
-  fetchRewriteOutline = fakeFetchRewriteOutline
-  fetchDrawData = fakeFetchDrawChart
-  fetchChartDescription = fakeFetchDescp
-  fetchBusiTree = fateFetchBusiTree
-  fetchTable = checkTable
-  fetchHistoryOutline = fakeFetchHistory
-} else {
-  fetchTables = selectTables
-  fetchOutline = fetchReportOutline
-  fetchRewriteOutline = fetchRewriteReportOutline
-  fetchDrawData = fetchDrawChart
-  fetchChartDescription = fetchDescrip
-  fetchBusiTree = selectBusiTree
-  fetchTable = checkTable
-  fetchHistoryOutline = fetchHistory
+
+const checkInputRewrite = async(body) => {
+  const response = await fetch('/api/check_input_rewrite', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json'
+    },
+    body: JSON.stringify(body)
+  })
+  const json = await response.json()
+  return json
 }
-export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable }
+let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
+  fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline, fetchCheckInputRewrite
+fetchTables = selectTables
+fetchTable = checkTable
+fetchBusiTree = selectBusiTree
+fetchOutline = fetchReportOutline
+fetchHistoryOutline = fetchHistory
+fetchRewriteOutline = fetchRewriteReportOutline
+fetchDrawData = fetchDrawChart
+fetchChartDescription = fetchDescrip
+fetchCheckInputRewrite = checkInputRewrite
+if (import.meta.env.VITE_USE_MOCK === 'true') {
+  // fetchTables = fakeSelectTables
+  // fetchOutline = fakeFetchOutline
+  // fetchRewriteOutline = fakeFetchRewriteOutline
+  // fetchDrawData = fakeFetchDrawChart
+  // fetchChartDescription = fakeFetchDescp
+  // fetchBusiTree = fateFetchBusiTree
+  // fetchTable = checkTable
+  // fetchHistoryOutline = fakeFetchHistory
+}
+export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable, fetchCheckInputRewrite }

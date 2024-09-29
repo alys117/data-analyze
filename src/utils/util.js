@@ -303,7 +303,7 @@ export function reverseConvertFormat(arr) {
   return obj
 }
 
-function numToWords(num) {
+export function numToWords(num) {
   // 四位进行分割
   const numStr = num.toString().replace(/(?=(\d{4})+$)/g, ',')
     .split(',')
@@ -350,4 +350,18 @@ function _transform(n) {
   return _handleZero(result)
 }
 
-export { numToWords }
+export function setOrder(data, parentOrder = '0') {
+  if (Array.isArray(data)) {
+    data.forEach((item, index) => {
+      item.order = parentOrder + '-' + (index + 1)
+      if (item.children) {
+        setOrder(item.children, item.order)
+      }
+    })
+  } else {
+    data.order = parentOrder + '-1'
+    if (data.children) {
+      setOrder(data.children, data.order)
+    }
+  }
+}

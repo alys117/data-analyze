@@ -10,16 +10,3 @@ export default defineMock([...routes, {
   }
 }])
 
-// import { posts, users } from './data'
-// export default defineMock([
-//   {
-//     url: '/api/test1',
-//     body: () => {
-//       return users
-//     }
-//   },
-//   { url: '/api/test2',
-//     body: () => posts.value
-//   }
-// ])
-

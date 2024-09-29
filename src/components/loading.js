@@ -45,6 +45,7 @@ async function callLoading(call, process = [{ content: '分析中', timeConsumin
     await hide()
     return data
   } catch (e) {
+    console.log(e)
     await hide()
     return Promise.reject({ error: e, msg: '接口错误' })
   }
