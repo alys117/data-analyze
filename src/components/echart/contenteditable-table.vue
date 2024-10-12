@@ -77,37 +77,40 @@ defineExpose({
   <el-link @click="addColumn" style="user-select: none;color: #2a598a; margin-left: 20px">添加列</el-link>
   <div style="overflow: auto;padding-right: 20px; user-select: none">
     <table>
-      <tr style="height: 10px">
-        <th v-for="(item, idx) in th" :key="item+idx" style="height: 10px">
-          <el-link v-if="idx" @click="deleteCol(idx)">
-            <Delete style="height: 1em"/>
-          </el-link>
-        </th>
-        <th rowspan="2" style="width: 40px;min-width: 40px;">操作</th>
-      </tr>
-      <tr>
-        <th v-for="(item, idx) in th" :key="item+idx">
-          <div style="display: flex;align-items: center">
-            <span :contenteditable="idx > 0" style="flex: 1" @blur="editTH(item, idx, $event)">{{ item }}</span>
-<!--            <el-link v-if="idx" @click="deleteCol(idx)">-->
-<!--              <Delete style="height: 1em"/>-->
-<!--            </el-link>-->
-          </div>
-        </th>
-      </tr>
-      <tr v-for="(item, index) in rows" :key="index">
-        <td v-for="(val, idx) in item" :key="val" @blur="edit(val, idx, index,$event)" contenteditable>
-          {{ val }}
-        </td>
-        <td style="width: 40px;min-width: 40px">
-          <el-link @click="deleteRow(index)">
-            <Delete style="height: 1em"/>
-          </el-link>
-        </td>
-      </tr>
+      <tbody>
+        <tr style="height: 10px">
+          <th v-for="(item, idx) in th" :key="item+idx" style="height: 10px">
+            <el-link v-if="idx" @click="deleteCol(idx)">
+              <Delete style="height: 1em"/>
+            </el-link>
+          </th>
+          <th rowspan="2" style="width: 40px;min-width: 40px;">操作</th>
+        </tr>
+        <tr>
+          <th v-for="(item, idx) in th" :key="item+idx">
+            <div style="display: flex;align-items: center">
+              <span :contenteditable="idx > 0" style="flex: 1" @blur="editTH(item, idx, $event)">{{ item }}</span>
+            <!--            <el-link v-if="idx" @click="deleteCol(idx)">-->
+            <!--              <Delete style="height: 1em"/>-->
+            <!--            </el-link>-->
+            </div>
+          </th>
+        </tr>
+        <tr v-for="(item, index) in rows" :key="index">
+          <td v-for="(val, idx) in item" :key="val" @blur="edit(val, idx, index,$event)" contenteditable>
+            {{ val }}
+          </td>
+          <td style="width: 40px;min-width: 40px">
+            <el-link @click="deleteRow(index)">
+              <Delete style="height: 1em"/>
+            </el-link>
+          </td>
+        </tr>
+      </tbody>
+
     </table>
-<!--    <el-button @click="console.log(th, rows)" type="success"/>-->
-<!--    <el-button @click="handleChange" type="warning"/>-->
+    <!--    <el-button @click="console.log(th, rows)" type="success"/>-->
+    <!--    <el-button @click="handleChange" type="warning"/>-->
   </div>
 </template>
 

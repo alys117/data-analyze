@@ -93,6 +93,10 @@
     <el-button @click="mock('/api/test10')">mock10</el-button>
     <el-button @click="mock('/api/select_tables')">/api/select_tables</el-button>
   </div>
+  <span>{{form1}}</span>
+  <span>{{form2}}</span>
+  <el-divider/>
+  <my-form v-model:abc="form1" v-model:bcd="form2" />
 </template>
 
 <script setup>
@@ -104,6 +108,26 @@ import {
 } from '@element-plus/icons-vue'
 import DemoTinymce from '@/components/tinymce/demo-tinymce.vue'
 import IndexBak from '@/components/tinymce/index-bak.vue'
+import MyForm from '@/views/my-form.vue'
+
+const form1 = reactive({
+  user: '11',
+  region: '123',
+  date: '2024-09-09',
+  options: [{
+    label: '123',
+    value: '123'
+  }, {
+    label: '456',
+    value: '456'
+  }]
+})
+
+const form2 = reactive({
+  user: 'a',
+  region: 'b',
+  date: 'c'
+})
 function mock(n = '/api/select_tables') {
   fetch(`${n}?_t=${new Date().getTime()}`, {
     method: 'POST',
