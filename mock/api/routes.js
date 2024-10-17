@@ -31,7 +31,7 @@ export const routes = [
     }
   },
   {
-    url: '/api/login',
+    url: '/api/login1',
     enabled: true,
     headers({ query, params, body, headers, getCookie }) {
       // query 是 请求链接上的 queryString, 并经过了解析为对象
@@ -53,19 +53,61 @@ export const routes = [
     }
   },
   {
+    url: '/api/login',
+    enabled: true,
+    response(req, res) {
+      const token = generateID(8)
+      map.set(token, { username: req.body.username, role: 'admin' })
+      res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly`)
+      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      res.end(JSON.stringify({
+        status: 200,
+        msg: '登录成功',
+        token
+      }))
+    }
+  },
+  {
+    url: '/api/logout',
+    enabled: true,
+    response(req, res) {
+      map.delete(req.getCookie('token'))
+      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      res.end(JSON.stringify({
+        status: 200,
+        msg: '登出成功'
+      }))
+    }
+  },
+  // {
+  //   url: '/api/getUserinfo',
+  //   enabled: true,
+  //   status: 401,
+  //   body(req) {
+  //     return {
+  //       status: 401,
+  //       msg: '未登录'
+  //     }
+  //   }
+  // },
+  {
     url: '/api/getUserinfo',
-    body(req) {
+    response(req, res) {
       const cookie = req.getCookie('token')
       console.log(cookie, 'cookie', map)
       const token = req.headers['authorization']
       console.log(token, 'token')
-      if (!map.has(cookie)) {
-        return {
+      if (map.has(cookie)) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8')
+        res.end(JSON.stringify(map.get(cookie)))
+      } else {
+        res.statusCode = 401
+        res.statusMessage = 'Unauthorized'
+        res.end(JSON.stringify({
           status: 401,
-          msg: '请先登录'
-        }
+          msg: '未登录'
+        }))
       }
-      return map.get(cookie)
     }
   },
   {
@@ -82,7 +124,7 @@ export const routes = [
     enabled, // 是否启用
     body(req) {
       const n = Math.random()
-      if (n > 0.1) return { 'desc': '数据库中库表无法满足主题需求，请对报告主题进行补充或修改。' }
+      if (n > 0.9) return { 'desc': '数据库中库表无法满足主题需求，请对报告主题进行补充或修改。' }
       return tables
     }
   },

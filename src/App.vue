@@ -5,12 +5,16 @@ import { useUserStore } from '@/stores/user.js'
 import HandleButton from '@/components/handle-button.vue'
 import Login from '@/views/login.vue'
 import request from '@/utils/http.js'
+import { logout, fetchUserinfo } from '@/api/request.js'
+import Cookies from 'js-cookie'
 const router = useRouter()
 const drawer = ref(false)
 const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
-const logout = async() => {
+const logout1 = async() => {
+  const res = await logout()
+  console.log(res, 'logout')
   const userStore = useUserStore()
   await userStore.resetUserinfo()
   await userStore.resetToken()
@@ -26,9 +30,17 @@ const api = async() => {
       console.log(data)
     })
 }
-const code = async() => {
+const test3 = async() => {
   const res = await request('/api/test3')
   console.log(res)
+}
+const getUserinfo = async() => {
+  const res = await fetchUserinfo()
+  console.log(res)
+}
+const getCookie = () => {
+  Cookies.remove('token')
+  console.log(document.cookie)
 }
 </script>
 
@@ -50,9 +62,12 @@ const code = async() => {
       size="min(50%, 400px)"
       title="Basic Info">
       <div>
-        <el-button type="danger" @click="logout">登出</el-button>
+        <el-button type="danger" @click="logout1">登出</el-button>
+        <el-button type="success" @click="getCookie">cookie</el-button>
         <el-button type="primary" @click="api">api</el-button>
-        <el-button type="primary" @click="code">code</el-button>
+        <el-divider/>
+        <el-button type="primary" @click="test3">test3</el-button>
+        <el-button type="primary" @click="getUserinfo">getUserinfo</el-button>
         <Login v-if="!useUserStore().token"/>
       </div>
     </el-drawer>

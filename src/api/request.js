@@ -3,7 +3,7 @@ import { useUserStore } from '@/stores/user'
 import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline,
   drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
 import { generateID, setOrder } from '@/utils/util.js'
-import request from 'umi-request'
+import request from '@/utils/http'
 const headers = {
   'Content-Type': 'application/json',
   'accept': 'application/json'
@@ -214,6 +214,10 @@ const login2 = async(body) => {
   userStore.setToken(token)
   return rs
 }
+const logout1 = async(body) => {
+  const rs = await request.post('/api/logout', {})
+  return rs
+}
 // const getUserinfo = async(body) => {
 //   const response = await fetch('/api/getUserinfo', {
 //     method: 'post',
@@ -224,13 +228,13 @@ const login2 = async(body) => {
 //   return json
 // }
 
-const getUserinfo = async(body) => {
-  return await request.post('/api/getUserinfo', body)
+const getUserinfo = async() => {
+  return await request('/api/getUserinfo')
 }
 let [fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
   fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline, fetchCheckInputRewrite,
-  login, fetchUserinfo] =
-  [null, null, null, null, null, null, null, null, null, null, null]
+  login, fetchUserinfo, logout] =
+  [null, null, null, null, null, null, null, null, null, null, null, null]
 fetchTables = selectTables
 fetchTable = checkTable
 fetchBusiTree = selectBusiTree
@@ -242,6 +246,7 @@ fetchChartDescription = fetchDescrip
 fetchCheckInputRewrite = checkInputRewrite
 login = login2
 fetchUserinfo = getUserinfo
+logout = logout1
 if (import.meta.env.VITE_USE_MOCK === 'true') {
   // fetchTables = fakeSelectTables
   // fetchOutline = fakeFetchOutline
@@ -252,4 +257,4 @@ if (import.meta.env.VITE_USE_MOCK === 'true') {
   // fetchTable = checkTable
   // fetchHistoryOutline = fakeFetchHistory
 }
-export { login, fetchUserinfo, fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable, fetchCheckInputRewrite }
+export { login, fetchUserinfo, logout, fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable, fetchCheckInputRewrite }

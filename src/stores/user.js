@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { fetchUserinfo } from '@/api/request.js'
 
 export const useUserStore = defineStore('user', () => {
   const userinfo = ref({})
@@ -17,8 +18,13 @@ export const useUserStore = defineStore('user', () => {
     token.value = value
   }
 
-  function getUserinfo() {
-    if (userinfo.value && userinfo.value.username) { return userinfo }
+  async function getUserinfo() {
+    if (userinfo.value && userinfo.value.username) {
+      console.log(userinfo.value, 'userinfo11')
+      return userinfo
+    }
+    const res = await fetchUserinfo()
+    if (res.username) { setUserinfo(res) }
     return userinfo
   }
 
@@ -26,4 +32,4 @@ export const useUserStore = defineStore('user', () => {
     userinfo.value = null
   }
   return { userinfo, token, setUserinfo, resetUserinfo, getUserinfo, resetToken, setToken, getToken }
-}, { persist: true })
+}, { persist: { storage: sessionStorage }})

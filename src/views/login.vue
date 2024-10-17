@@ -44,7 +44,7 @@ const handleLogin = () => {
       const res = await login({ username: form.value.username, password: form.value.password })
       if (res.status === 200) {
         const userStore = useUserStore()
-        // userStore.setToken(res.token)
+        userStore.setToken(res.token)
         const userinfo = await fetchUserinfo()
         userStore.setUserinfo(userinfo)
         await router.push('/')
