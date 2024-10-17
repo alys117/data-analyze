@@ -5,6 +5,7 @@ const headers = {
   'accept': 'application/json'
 }
 const enabled = true
+const map = new Map()
 export const routes = [
   {
     url: '/api/test1',
@@ -14,8 +15,10 @@ export const routes = [
     body: () => posts.value
   },
   { url: '/api/test3',
-    headers,
-    body: () => msg
+    status: 401,
+    body: (req, res) => {
+      return msg
+    }
   },
   { url: '/api/test4',
     delay: 3000,
@@ -25,6 +28,44 @@ export const routes = [
     body(req) {
       console.log(req.headers, 'req')
       return 'this is a plain text'
+    }
+  },
+  {
+    url: '/api/login',
+    enabled: true,
+    headers({ query, params, body, headers, getCookie }) {
+      // query 是 请求链接上的 queryString, 并经过了解析为对象
+      // params 请求链接中 动态匹配参数
+      // body  POST 请求体
+      // headers 请求头
+      // getCookie(name, option) 可以通过此方法获取请求头中携带的 cookie 信息
+      const token = generateID(8)
+      map.set(token, { username: body.username, role: 'admin' })
+      return {
+        'Set-Cookie': `token=${token}; Path=/; HttpOnly`
+      }
+    },
+    body(req) {
+      return {
+        status: 200,
+        msg: '登录成功'
+      }
+    }
+  },
+  {
+    url: '/api/getUserinfo',
+    body(req) {
+      const cookie = req.getCookie('token')
+      console.log(cookie, 'cookie', map)
+      const token = req.headers['authorization']
+      console.log(token, 'token')
+      if (!map.has(cookie)) {
+        return {
+          status: 401,
+          msg: '请先登录'
+        }
+      }
+      return map.get(cookie)
     }
   },
   {
@@ -54,7 +95,7 @@ export const routes = [
   },
   {
     url: '/api/check_bussiness_tree',
-    enabled,
+    enabled: true,
     body: (req) => {
       setOrder(busitree)
       return busitree

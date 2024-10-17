@@ -14,18 +14,18 @@ const openDrawer = () => {
       moveStart.value.t
     )
   ) {
-    console.log('点击事件')
+    // console.log('点击事件')
     zIndex.value++
     triggerDrawer()
   } else {
-    console.log('拖拽事件')
+    // console.log('拖拽事件')
   }
 }
 // 判断是否拖动了，这里我设置了5px，
 const isdrag = (x1, y1, x2, y2) => {
-  console.log(
-    Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
-  )
+  // console.log(
+  //   Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+  // )
   if (Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) <= 5) {
     return false
   }
@@ -98,8 +98,8 @@ const vDrag = {
   z-index: var(--zIndex);
   position: fixed;
   cursor: pointer;
-  bottom: 90px;
-  left: 90px;
+  bottom: 180px;
+  right: 30px;
   width: 40px;
   height: 40px;
   background: #409eff;

@@ -1,6 +1,13 @@
+import Cookies from 'js-cookie'
+import { useUserStore } from '@/stores/user'
 import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline,
   drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
 import { generateID, setOrder } from '@/utils/util.js'
+import request from 'umi-request'
+const headers = {
+  'Content-Type': 'application/json',
+  'accept': 'application/json'
+}
 
 const selectTables = async(body) => {
   const response = await fetch('/api/select_tables', {
@@ -28,10 +35,7 @@ const fakeSelectTables = async() => {
 const fetchReportOutline = async(body) => {
   const data = await fetch('/api/report_outline', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   }).then(res => res.json())
   return data
@@ -48,10 +52,7 @@ const fakeFetchOutline = async() => {
 const fetchRewriteReportOutline = async(body) => {
   const data = await fetch('/api/rewrite_report_outline', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   }).then(res => res.json())
   return data
@@ -71,10 +72,7 @@ const fetchDrawChart = async(body) => {
   return new Promise((resolve, reject) => {
     fetch('/api/draw_chart', {
       method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-        'accept': 'application/json'
-      },
+      headers: headers,
       body: JSON.stringify(body)
     }).then(res => res.json()).then((data) => {
       resolve(data)
@@ -110,10 +108,7 @@ const fakeFetchDrawChart = async() => {
 const fetchDescrip = async(body) => {
   const data = await fetch('/api/chart_description', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   }).then(res => res.json())
   return data.replace(/\n/g, '<br>')
@@ -130,10 +125,7 @@ const fakeFetchDescp = async() => {
 const fetchFile = async(body) => {
   const data = await fetch('/api/write_to_word', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   }).then(res => res.json())
   return data
@@ -150,10 +142,7 @@ const fakeFetchHistory = async(body) => {
 const fetchHistory = async(body) => {
   const data = await fetch('/api/get_history_report_outline', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   }).then(res => res.json())
   return data
@@ -185,10 +174,7 @@ const selectBusiTree = async() => {
 const checkTable = async(body) => {
   const response = await fetch('/api/check_table', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   })
   const json = await response.json()
@@ -198,17 +184,53 @@ const checkTable = async(body) => {
 const checkInputRewrite = async(body) => {
   const response = await fetch('/api/check_input_rewrite', {
     method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
+    headers: headers,
     body: JSON.stringify(body)
   })
   const json = await response.json()
   return json
 }
-let fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
-  fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline, fetchCheckInputRewrite
+const login1 = async(body) => {
+  const response = await fetch('/api/login', {
+    method: 'post',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: `username=${body.username}&password=${body.password}`
+  })
+  const json = await response.json()
+  return json
+}
+const login2 = async(body) => {
+  const rs = await request.post('/api/login', {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    // transformRequest: [data => {
+    //   // 将数据转换为查询字符串
+    //   return new URLSearchParams(data).toString()
+    // }], // 没有transformRequest这个函数，axios有的
+    data: new URLSearchParams(body).toString()
+  })
+  const token = Cookies.get('token')
+  console.log(token, 'js-cookie')
+  const userStore = useUserStore()
+  userStore.setToken(token)
+  return rs
+}
+// const getUserinfo = async(body) => {
+//   const response = await fetch('/api/getUserinfo', {
+//     method: 'post',
+//     headers: Object.assign(headers, { 'Authorization': 'Bearer random-token' }),
+//     body: JSON.stringify(body)
+//   })
+//   const json = await response.json()
+//   return json
+// }
+
+const getUserinfo = async(body) => {
+  return await request.post('/api/getUserinfo', body)
+}
+let [fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
+  fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline, fetchCheckInputRewrite,
+  login, fetchUserinfo] =
+  [null, null, null, null, null, null, null, null, null, null, null]
 fetchTables = selectTables
 fetchTable = checkTable
 fetchBusiTree = selectBusiTree
@@ -218,6 +240,8 @@ fetchRewriteOutline = fetchRewriteReportOutline
 fetchDrawData = fetchDrawChart
 fetchChartDescription = fetchDescrip
 fetchCheckInputRewrite = checkInputRewrite
+login = login2
+fetchUserinfo = getUserinfo
 if (import.meta.env.VITE_USE_MOCK === 'true') {
   // fetchTables = fakeSelectTables
   // fetchOutline = fakeFetchOutline
@@ -228,4 +252,4 @@ if (import.meta.env.VITE_USE_MOCK === 'true') {
   // fetchTable = checkTable
   // fetchHistoryOutline = fakeFetchHistory
 }
-export { fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable, fetchCheckInputRewrite }
+export { login, fetchUserinfo, fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable, fetchCheckInputRewrite }

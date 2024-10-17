@@ -9,6 +9,7 @@ import 'vue-loading-overlay/dist/css/index.css'
 
 import App from './App.vue'
 import router from './router'
+import './permission'
 import { loadVxeTable } from '@/plugins/vxe-table'
 import 'vxe-table/lib/style.css'
 import 'vxe-table-plugin-element/dist/style.css'

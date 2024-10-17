@@ -1,9 +1,34 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user.js'
 import HandleButton from '@/components/handle-button.vue'
+import Login from '@/views/login.vue'
+import request from '@/utils/http.js'
+const router = useRouter()
 const drawer = ref(false)
 const toggleDrawer = () => {
   drawer.value = !drawer.value
+}
+const logout = async() => {
+  const userStore = useUserStore()
+  await userStore.resetUserinfo()
+  await userStore.resetToken()
+  await router.push('/403')
+  drawer.value = false
+}
+const api = async() => {
+  await fetch('/api/check_bussiness_tree', {
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' }
+  }).then(res => res.json())
+    .then(data => {
+      console.log(data)
+    })
+}
+const code = async() => {
+  const res = await request('/api/test3')
+  console.log(res)
 }
 </script>
 
@@ -17,19 +42,22 @@ const toggleDrawer = () => {
       </transition>
     </router-view>
   </main>
-  <div style="display: none">
+  <div style="display: block">
     <el-drawer
       v-model="drawer"
       :close-on-click-modal="false"
       direction="rtl"
-      size="30%"
-      title="Basic Drawer 抽屉标题">
+      size="min(50%, 400px)"
+      title="Basic Info">
       <div>
-        抽屉内容
+        <el-button type="danger" @click="logout">登出</el-button>
+        <el-button type="primary" @click="api">api</el-button>
+        <el-button type="primary" @click="code">code</el-button>
+        <Login v-if="!useUserStore().token"/>
       </div>
     </el-drawer>
   </div>
-  <handle-button :trigger-drawer="toggleDrawer" style="display: none"/>
+  <handle-button :trigger-drawer="toggleDrawer" style="display: block"/>
 </template>
 
 <style lang="scss" scoped>
