@@ -32,8 +32,11 @@ const errorHandler = async error => {
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText
     const { status, url } = response
-
-    if (status === 401) {
+    if (status === 400) {
+      ElMessageBox.alert('用户名密码错误！', { type: 'error' }).then(r => {
+        console.log(r, errorText)
+      })
+    } else if (status === 401 || status === 403) {
       ElMessageBox.alert('登录信息已过期，请重新登录!', { type: 'error' }).then(r => {
         console.log(r)
       })

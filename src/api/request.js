@@ -1,260 +1,94 @@
-import Cookies from 'js-cookie'
-import { useUserStore } from '@/stores/user'
-import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline,
-  drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
-import { generateID, setOrder } from '@/utils/util.js'
+import { setOrder } from '@/utils/util.js'
 import request from '@/utils/http'
-const headers = {
-  'Content-Type': 'application/json',
-  'accept': 'application/json'
+
+const selectTables = async(data) => {
+  return await request.post('/api/select_tables', { data })
 }
 
-const selectTables = async(body) => {
-  const response = await fetch('/api/select_tables', {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-    },
-    body: JSON.stringify(body)
-  })
-  const json = await response.json()
-  return json
+const fetchReportOutline = async(data) => {
+  return await request.post('/api/report_outline', { data })
 }
 
-const fakeSelectTables = async() => {
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      // resolve(fakeData2)
-      // resolve(fakeData3)
-      resolve(fakeData4)
-    }, 1000)
-  })
-}
-
-const fetchReportOutline = async(body) => {
-  const data = await fetch('/api/report_outline', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  }).then(res => res.json())
-  return data
-}
-
-const fakeFetchOutline = async() => {
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(outline)
-    }, 1000)
-  })
-}
-
-const fetchRewriteReportOutline = async(body) => {
-  const data = await fetch('/api/rewrite_report_outline', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  }).then(res => res.json())
-  return data
-}
-
-const fakeFetchRewriteOutline = async() => {
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      const a = structuredClone(rewriteOutline)
-      a['问题'] = a['问题'] + Math.random()
-      resolve(a)
-    }, 1000)
-  })
+const fetchRewriteReportOutline = async(data) => {
+  return await request.post('/api/rewrite_report_outline', { data })
 }
 
 const fetchDrawChart = async(body) => {
   return new Promise((resolve, reject) => {
-    fetch('/api/draw_chart', {
-      method: 'post',
-      headers: headers,
-      body: JSON.stringify(body)
-    }).then(res => res.json()).then((data) => {
-      resolve(data)
-    }).catch((err) => {
+    request.post('/api/draw_chart', { data: body }).then(res => {
+      resolve(res)
+    }).catch(err => {
       reject(err)
     })
   })
 }
-const fakeFetchDrawChart = async() => {
-  const n = Math.random()
-  return await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      console.log('%c' + '随机数' + n, 'color: orange; font-size: 14px;')
-      if (n < 0.01) {
-        reject({ error: '模拟错误' })
-      }
-      const data = structuredClone(drawData)
-      // data.draw_data = n > 0.5 ? drawData.draw_data : drawData.draw_data_2 // 这里藏着一个大坑，不能直接赋值，否则会改变原始数据
-      data.draw_data = n > 0.5 ? data.draw_data_3 : data.draw_data_2
-      delete data.draw_data_2
-      delete data.draw_data_3
-      if (n > 0.95) data.draw_data = ''
-      if (data.draw_data) {
-        Object.keys(data.draw_data.y).forEach((key, index) => {
-          data.draw_data.y[key] = data.draw_data.y[key].map(item => Math.random().toFixed(4))
-        })
-      }
-      resolve(data)
-    }, 1000 * n)
-  })
-}
 
 const fetchDescrip = async(body) => {
-  const data = await fetch('/api/chart_description', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  }).then(res => res.json())
-  return data.replace(/\n/g, '<br>')
+  const res = await request.post('/api/chart_description', { data: body })
+  return res.replace(/\n/g, '<br>')
 }
 
-const fakeFetchDescp = async() => {
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(desciption.replace(/\n/g, '<br>') + generateID(6))
-    }, Math.random() * 1000)
-  })
+const fetchFile = async(data) => {
+  return await request.post('/api/write_to_word', { data })
 }
 
-const fetchFile = async(body) => {
-  const data = await fetch('/api/write_to_word', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  }).then(res => res.json())
-  return data
-}
-
-const fakeFetchHistory = async(body) => {
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(historyTree2)
-    }, 50)
-  })
-}
-
-const fetchHistory = async(body) => {
-  const data = await fetch('/api/get_history_report_outline', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  }).then(res => res.json())
-  return data
-}
-const fateFetchBusiTree = async() => {
-  // return await fetch('https://hizzgdev.github.io/jsmind/example/data_example.json').then(res => res.json())
-  // return await fetch('/api/check_bussiness_tree', {
-  //   method: 'post'
-  // }).then(res => res.json())
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      // resolve(outline3)
-      // setOrder(outline4)
-      setOrder(outline5)
-      resolve(outline5)
-    }, 2000)
-  })
+const fetchHistory = async(data) => {
+  return await request.post('/api/get_history_report_outline', { data })
 }
 
 const selectBusiTree = async() => {
-  return await fetch('/api/check_bussiness_tree', {
-    method: 'post'
-  }).then(res => res.json())
-    .then(data => {
-      setOrder(data)
-      return data
-    })
+  const res = await request.post('/api/check_bussiness_tree', { data: {}})
+  setOrder(res)
+  return res
 }
-const checkTable = async(body) => {
-  const response = await fetch('/api/check_table', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  })
-  const json = await response.json()
-  return json
+const checkTable = async(data) => {
+  return await request.post('/api/check_table', { data })
 }
 
-const checkInputRewrite = async(body) => {
-  const response = await fetch('/api/check_input_rewrite', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(body)
-  })
-  const json = await response.json()
-  return json
+const checkInputRewrite = async(data) => {
+  return await request.post('/api/check_input_rewrite', { data })
 }
-const login1 = async(body) => {
-  const response = await fetch('/api/login', {
-    method: 'post',
+
+const login = async(data) => {
+  return await request.post('/api/login', {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-    body: `username=${body.username}&password=${body.password}`
-  })
-  const json = await response.json()
-  return json
-}
-const login2 = async(body) => {
-  const rs = await request.post('/api/login', {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    // 没有transformRequest这个函数，axios有的
     // transformRequest: [data => {
     //   // 将数据转换为查询字符串
     //   return new URLSearchParams(data).toString()
-    // }], // 没有transformRequest这个函数，axios有的
-    data: new URLSearchParams(body).toString()
+    // }],
+    data: new URLSearchParams(data).toString()
   })
-  const token = Cookies.get('token')
-  console.log(token, 'js-cookie')
-  const userStore = useUserStore()
-  userStore.setToken(token)
-  return rs
 }
-const logout1 = async(body) => {
-  const rs = await request.post('/api/logout', {})
-  return rs
+const logout = async() => {
+  return await request.post('/api/logout', {})
 }
-// const getUserinfo = async(body) => {
-//   const response = await fetch('/api/getUserinfo', {
-//     method: 'post',
-//     headers: Object.assign(headers, { 'Authorization': 'Bearer random-token' }),
-//     body: JSON.stringify(body)
-//   })
-//   const json = await response.json()
-//   return json
-// }
 
 const getUserinfo = async() => {
-  return await request('/api/getUserinfo')
+  if (import.meta.env.MODE === 'production') {
+    return {
+      username: 'liuze',
+      role: 'admin'
+    }
+  }
+  return await request.get('/api/getUserinfo')
 }
-let [fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData,
-  fetchChartDescription, fetchBusiTree, fetchTable, fetchHistoryOutline, fetchCheckInputRewrite,
-  login, fetchUserinfo, logout] =
-  [null, null, null, null, null, null, null, null, null, null, null, null]
-fetchTables = selectTables
-fetchTable = checkTable
-fetchBusiTree = selectBusiTree
-fetchOutline = fetchReportOutline
-fetchHistoryOutline = fetchHistory
-fetchRewriteOutline = fetchRewriteReportOutline
-fetchDrawData = fetchDrawChart
-fetchChartDescription = fetchDescrip
-fetchCheckInputRewrite = checkInputRewrite
-login = login2
-fetchUserinfo = getUserinfo
-logout = logout1
+
 if (import.meta.env.VITE_USE_MOCK === 'true') {
-  // fetchTables = fakeSelectTables
-  // fetchOutline = fakeFetchOutline
-  // fetchRewriteOutline = fakeFetchRewriteOutline
-  // fetchDrawData = fakeFetchDrawChart
-  // fetchChartDescription = fakeFetchDescp
-  // fetchBusiTree = fateFetchBusiTree
-  // fetchTable = checkTable
-  // fetchHistoryOutline = fakeFetchHistory
+  console.log('vite-plugin-mock-dev-server')
 }
-export { login, fetchUserinfo, logout, fetchTables, fetchOutline, fetchRewriteOutline, fetchDrawData, fetchChartDescription, fetchFile, fetchHistoryOutline, fetchBusiTree, fetchTable, fetchCheckInputRewrite }
+export {
+  login,
+  getUserinfo as fetchUserinfo,
+  logout,
+  selectTables as fetchTables,
+  fetchReportOutline as fetchOutline,
+  fetchRewriteReportOutline as fetchRewriteOutline,
+  fetchDrawChart as fetchDrawData,
+  fetchDescrip as fetchChartDescription,
+  fetchFile,
+  fetchHistory as fetchHistoryOutline,
+  selectBusiTree as fetchBusiTree,
+  checkTable as fetchTable,
+  checkInputRewrite as fetchCheckInputRewrite
+}

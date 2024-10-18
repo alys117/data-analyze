@@ -19,4 +19,4 @@ export const useStepStore = defineStore('step', () => {
     outline.value = val
   }
   return { step1, setStep1, aiConversation, setAiConversation, treeCache, setTreeCache, outline, setOutline }
-}, { persist: true })
+}, { persist: { storage: sessionStorage }})

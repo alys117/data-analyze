@@ -50,7 +50,7 @@ const handleLogin = () => {
         await router.push('/')
         ElMessage.success('登录成功')
       } else {
-        ElMessage.error(res.msg)
+        // ElMessage.error(res.message)
       }
     } else {
       ElMessage.error('请填写完整的表单')

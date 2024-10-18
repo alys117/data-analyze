@@ -57,14 +57,23 @@ export const routes = [
     enabled: true,
     response(req, res) {
       const token = generateID(8)
-      map.set(token, { username: req.body.username, role: 'admin' })
-      res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly`)
-      res.setHeader('Content-Type', 'application/json; charset=utf-8')
-      res.end(JSON.stringify({
-        status: 200,
-        msg: '登录成功',
-        token
-      }))
+      if (req.body.username === 'liuze' && req.body.password === '123456') {
+        map.set(token, { username: req.body.username, role: 'admin' })
+        res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly`)
+        res.setHeader('Content-Type', 'application/json; charset=utf-8')
+        res.end(JSON.stringify({
+          status: 200,
+          msg: '登录成功',
+          token
+        }))
+      } else {
+        res.statusCode = 400
+        res.statusMessage = 'Unauthorized'
+        res.end(JSON.stringify({
+          status: 400,
+          message: '用户名密码错误！'
+        }))
+      }
     }
   },
   {
@@ -72,6 +81,7 @@ export const routes = [
     enabled: true,
     response(req, res) {
       map.delete(req.getCookie('token'))
+      console.log(map)
       res.setHeader('Content-Type', 'application/json; charset=utf-8')
       res.end(JSON.stringify({
         status: 200,
@@ -122,6 +132,7 @@ export const routes = [
   {
     url: '/api/select_tables',
     enabled, // 是否启用
+    delay: 3000,
     body(req) {
       const n = Math.random()
       if (n > 0.9) return { 'desc': '数据库中库表无法满足主题需求，请对报告主题进行补充或修改。' }

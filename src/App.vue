@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.js'
+import { useStepStore } from '@/stores/step.js'
 import HandleButton from '@/components/handle-button.vue'
 import Login from '@/views/login.vue'
 import request from '@/utils/http.js'
@@ -16,8 +17,13 @@ const logout1 = async() => {
   const res = await logout()
   console.log(res, 'logout')
   const userStore = useUserStore()
-  await userStore.resetUserinfo()
-  await userStore.resetToken()
+  userStore.resetUserinfo()
+  userStore.resetToken()
+  const stepStore = useStepStore()
+  stepStore.setStep1(null)
+  stepStore.setOutline(null)
+  stepStore.setAiConversation(null)
+  stepStore.setTreeCache(null)
   await router.push('/403')
   drawer.value = false
 }

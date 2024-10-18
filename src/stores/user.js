@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', () => {
 
   async function getUserinfo() {
     if (userinfo.value && userinfo.value.username) {
-      console.log(userinfo.value, 'userinfo11')
+      console.log(userinfo.value, '存在userinfo')
       return userinfo
     }
     const res = await fetchUserinfo()
