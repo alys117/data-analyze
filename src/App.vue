@@ -40,6 +40,10 @@ const test3 = async() => {
   const res = await request('/api/test3')
   console.log(res)
 }
+const remove = async() => {
+  const res = await request('/api/remove/token')
+  console.log(res)
+}
 const getUserinfo = async() => {
   const res = await fetchUserinfo()
   console.log(res)
@@ -48,14 +52,36 @@ const getCookie = () => {
   Cookies.remove('token')
   console.log(document.cookie)
 }
+const storeComponents = reactive(new Map())
+// 原组件包里面
+function formatComponent(component, route) {
+  let afterComponent
+  if (component) {
+    const path = route.path
+    if (storeComponents.has(path)) {
+      afterComponent = storeComponents.get(path)
+    } else {
+      afterComponent = {
+        name: path,
+        render() {
+          return h(component)
+        }
+      }
+      // cacheRoutes.push(path) //进行缓存
+      storeComponents.set(path, afterComponent)
+    }
+    console.log([...storeComponents.keys()], 'afterComponent')
+    return h(afterComponent)
+  }
+}
 </script>
 
 <template>
   <main class="app-container">
-    <router-view v-slot="{ Component }">
+    <router-view v-slot="{ Component, route }">
       <transition :name="'el-fade-in'" :mode="'out-in'">
-        <keep-alive>
-          <component :is="Component" />
+        <keep-alive :include="[...storeComponents.keys()]">
+          <component :is="formatComponent(Component, route)" />
         </keep-alive>
       </transition>
     </router-view>
@@ -69,11 +95,17 @@ const getCookie = () => {
       title="Basic Info">
       <div>
         <el-button type="danger" @click="logout1">登出</el-button>
+        <el-button type="danger" @click="remove">remove</el-button>
         <el-button type="success" @click="getCookie">cookie</el-button>
         <el-button type="primary" @click="api">api</el-button>
         <el-divider/>
-        <el-button type="primary" @click="test3">test3</el-button>
-        <el-button type="primary" @click="getUserinfo">getUserinfo</el-button>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <el-button type="primary" @click="test3">test3</el-button>
+          <el-button type="primary" @click="getUserinfo">getUserinfo</el-button>
+          <el-button type="primary" @click="router.push('/test/1')">push test1</el-button>
+          <el-button type="primary" @click="router.push('/test/2')">push test2</el-button>
+          <el-button type="primary" @click="router.push('/')">push /</el-button>
+        </div>
         <Login v-if="!useUserStore().token"/>
       </div>
     </el-drawer>

@@ -40,7 +40,7 @@ const errorHandler = async error => {
       ElMessageBox.alert('登录信息已过期，请重新登录!', { type: 'error' }).then(r => {
         console.log(r)
       })
-      console.log(router)
+      useUserStore().resetToken()
       router.push('/403').then(r => {})
     } else if (status === 500) {
       ElMessageBox.alert('服务器内部错误！', { type: 'error' }).then(r => {

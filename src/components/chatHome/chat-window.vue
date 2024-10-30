@@ -1003,22 +1003,19 @@ export default {
 
 }
 
-::v-deep {
-  .el-textarea__inner {
-    background-color: rgb(66, 70, 86);
-    border-radius: 15px;
-    border: 2px solid rgb(34, 135, 225);
-    /* padding: 10px; */
-    box-sizing: border-box;
-    transition: 0.2s;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 100;
-    /* margin: 0 20px; */
-    width: 98%;
-    height: 70px !important;
-
-  }
+:deep(.el-textarea__inner){
+  background-color: rgb(66, 70, 86);
+  border-radius: 15px;
+  border: 2px solid rgb(34, 135, 225);
+  /* padding: 10px; */
+  box-sizing: border-box;
+  transition: 0.2s;
+  font-size: 20px;
+  color: #fff;
+  font-weight: 100;
+  /* margin: 0 20px; */
+  width: 98%;
+  height: 70px !important;
 }
 
 pre {

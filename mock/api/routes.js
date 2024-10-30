@@ -20,14 +20,15 @@ export const routes = [
       return msg
     }
   },
-  { url: '/api/test4',
-    delay: 3000,
+  { url: '/api/remove/token',
     headers: {
       'Content-Type': 'text/plain'
     },
     body(req) {
-      console.log(req.headers, 'req')
-      return 'this is a plain text'
+      console.log(req.getCookie('token'), map)
+      if (!map.has(req.getCookie('token'))) return 'token not found'
+      map.delete(req.getCookie('token'))
+      return 'remove token success'
     }
   },
   {
@@ -59,7 +60,7 @@ export const routes = [
       const token = generateID(8)
       if (req.body.username === 'liuze' && req.body.password === '123456') {
         map.set(token, { username: req.body.username, role: 'admin' })
-        res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly`)
+        res.setHeader('Set-Cookie', `token=${token}; Path=/; HttpOnly; expires=Session;`)
         res.setHeader('Content-Type', 'application/json; charset=utf-8')
         res.end(JSON.stringify({
           status: 200,
@@ -80,33 +81,31 @@ export const routes = [
     url: '/api/logout',
     enabled: true,
     response(req, res) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      if (!map.get(req.getCookie('token'))) {
+        res.statusCode = 403
+        res.statusMessage = 'Unauthorized'
+        res.end(JSON.stringify({
+          status: 403,
+          msg: '未登录'
+        }))
+        return
+      }
       map.delete(req.getCookie('token'))
       console.log(map)
-      res.setHeader('Content-Type', 'application/json; charset=utf-8')
       res.end(JSON.stringify({
         status: 200,
         msg: '登出成功'
       }))
     }
   },
-  // {
-  //   url: '/api/getUserinfo',
-  //   enabled: true,
-  //   status: 401,
-  //   body(req) {
-  //     return {
-  //       status: 401,
-  //       msg: '未登录'
-  //     }
-  //   }
-  // },
   {
     url: '/api/getUserinfo',
     response(req, res) {
       const cookie = req.getCookie('token')
-      console.log(cookie, 'cookie', map)
+      console.log(cookie, '--cookie--', map)
       const token = req.headers['authorization']
-      console.log(token, 'token')
+      console.log(token, 'getUserinfo')
       if (map.has(cookie)) {
         res.setHeader('Content-Type', 'application/json; charset=utf-8')
         res.end(JSON.stringify(map.get(cookie)))
@@ -132,7 +131,7 @@ export const routes = [
   {
     url: '/api/select_tables',
     enabled, // 是否启用
-    delay: 3000,
+    delay: 1000,
     body(req) {
       const n = Math.random()
       if (n > 0.9) return { 'desc': '数据库中库表无法满足主题需求，请对报告主题进行补充或修改。' }
@@ -149,9 +148,21 @@ export const routes = [
   {
     url: '/api/check_bussiness_tree',
     enabled: true,
-    body: (req) => {
-      setOrder(busitree)
-      return busitree
+    response: (req, res) => {
+      const cookie = req.getCookie('token')
+      console.log(cookie, '--cookie--', map)
+      if (map.has(cookie)) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8')
+        setOrder(busitree)
+        res.end(JSON.stringify(busitree))
+      } else {
+        res.statusCode = 401
+        res.statusMessage = 'Unauthorized'
+        res.end(JSON.stringify({
+          status: 401,
+          msg: '未登录'
+        }))
+      }
     }
   },
   {

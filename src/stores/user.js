@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', () => {
   }
   function resetToken() {
     token.value = ''
+    resetUserinfo()
   }
   function setToken(value) {
     token.value = value
@@ -32,4 +33,4 @@ export const useUserStore = defineStore('user', () => {
     userinfo.value = null
   }
   return { userinfo, token, setUserinfo, resetUserinfo, getUserinfo, resetToken, setToken, getToken }
-}, { persist: { storage: sessionStorage }})
+}, { persist: false })

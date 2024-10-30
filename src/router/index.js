@@ -11,6 +11,7 @@ import Demo3 from '../views/demo-3.vue'
 
 import AiConversation from '../views/ai-conversation.vue'
 import BaseDemo from '@/views/base-demo.vue'
+import Commonfile from '@/views/common-file.vue'
 const routes = [
   { path: '/talk', component: AiConversation },
   { path: '/', redirect: '/talk' },
@@ -23,7 +24,8 @@ const routes = [
   { path: '/base', name: 'BaseDemo', component: BaseDemo },
   { path: '/demo1', name: 'Demo1', component: Demo1 },
   { path: '/demo2', name: 'Demo2', component: Demo2 },
-  { path: '/demo3', name: 'Demo3', component: Demo3 }
+  { path: '/demo3', name: 'Demo3', component: Demo3 },
+  { path: '/test/:id', name: 'test', component: Commonfile }
 ]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
