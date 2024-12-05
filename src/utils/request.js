@@ -3,9 +3,8 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend } from 'umi-request'
-import { ElMessageBox } from 'element-plus'
-import router from '@/router'
 import { useUserStore } from '@/stores/user'
+import emitter from '@/utils/mitt.js'
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -31,28 +30,19 @@ const errorHandler = async error => {
   const { response } = error
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText
+    console.log(errorText, 'errorText')
     const { status, url } = response
     if (status === 400) {
-      ElMessageBox.alert('用户名密码错误！', { type: 'error' }).then(r => {
-        console.log(r, errorText)
-      })
+      emitter.emit('API:INVALID', '用户名密码错误！')
     } else if (status === 401 || status === 403) {
-      ElMessageBox.alert('登录信息已过期，请重新登录!', { type: 'error' }).then(r => {
-        console.log(r)
-      })
-      useUserStore().resetToken()
-      router.push('/403').then(r => {})
+      emitter.emit('API:UN_AUTH', '登录信息已过期，请重新登录!')
     } else if (status === 500) {
-      ElMessageBox.alert('服务器内部错误！', { type: 'error' }).then(r => {
-        console.log(r, errorText)
-      })
+      emitter.emit('API:INTERNAL_ERROR', '服务器内部错误！')
     } else {
-      ElMessageBox.alert(`请求错误 ${status}: ${url}`, { type: 'error' }).then(r => {
-        console.log(errorText, r)
-      })
+      emitter.emit('API:UNKNOWN', `请求错误 ${status}: ${url}`)
     }
   } else if (!response) {
-    ElMessageBox.alert('您的网络发生异常，无法连接服务器，网络异常', { type: 'error' }).then(r => {})
+    emitter.emit('API:NETWORK_ERROR', '网络异常')
   }
   return response.clone().json()
 }
@@ -60,13 +50,13 @@ const errorHandler = async error => {
 /**
  * 配置request请求时的默认参数
  */
-const http = extend({
+const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include' // 默认请求是否带上cookie
 })
 
 // request拦截器, 改变url 或 options.
-http.interceptors.request.use((url, options) => {
+request.interceptors.request.use((url, options) => {
   const token = `Bearer ${useUserStore().getToken().value}`
   const headers = {
     Authorization: token
@@ -92,4 +82,4 @@ http.interceptors.request.use((url, options) => {
 //   // return data
 // })
 
-export default http
+export default request

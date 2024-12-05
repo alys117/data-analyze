@@ -2,7 +2,7 @@ import { fakeData2, fakeData3, fakeData4, outline, rewriteOutline,
   drawData, desciption, historyTree2, outline3, outline4, outline5 } from '@/api/fakeData.js'
 import { generateID } from '@/utils/util.js'
 import { setOrder } from '@/utils/util.js'
-import request from '@/utils/http.js'
+import request from '@/utils/request.js'
 
 const fakeSelectTables = async() => {
   return await new Promise((resolve) => {

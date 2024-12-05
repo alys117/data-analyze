@@ -5,9 +5,28 @@ import { useUserStore } from '@/stores/user.js'
 import { useStepStore } from '@/stores/step.js'
 import HandleButton from '@/components/handle-button.vue'
 import Login from '@/views/login.vue'
-import request from '@/utils/http.js'
+import request from '@/utils/request.js'
 import { logout, fetchUserinfo } from '@/api/request.js'
 import Cookies from 'js-cookie'
+import emitter from '@/utils/mitt.js'
+import { ElMessageBox } from 'element-plus'
+emitter.on('API:UN_AUTH', (data) => {
+  ElMessageBox.alert('登录信息已过期，请重新登录!', { type: 'error' }).then(r => { console.log(r) })
+  useUserStore().resetToken()
+})
+emitter.on('API:INVALID', (data) => {
+  ElMessageBox.alert('用户名密码错误！', { type: 'error' }).then(r => { console.log(r, data) })
+})
+emitter.on('API:INTERNAL_ERROR', (data) => {
+  ElMessageBox.alert('服务器内部错误！', { type: 'error' }).then(r => { console.log(r, data) })
+})
+emitter.on('API:UNKNOWN', (data) => {
+  ElMessageBox.alert(data, { type: 'error' }).then(r => { console.log(data, r) })
+})
+emitter.on('API:NETWORK_ERROR', (data) => {
+  ElMessageBox.alert('您的网络发生异常，无法连接服务器，网络异常', { type: 'error' }).then(r => {})
+})
+
 const router = useRouter()
 const drawer = ref(false)
 const toggleDrawer = () => {
@@ -74,6 +93,7 @@ function formatComponent(component, route) {
     return h(afterComponent)
   }
 }
+
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 import { setOrder } from '@/utils/util.js'
-import request from '@/utils/http'
+import request from '@/utils/request.js'
 
 const selectTables = async(data) => {
   return await request.post('/api/select_tables', { data })

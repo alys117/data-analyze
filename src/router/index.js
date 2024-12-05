@@ -12,6 +12,7 @@ import Demo3 from '../views/demo-3.vue'
 import AiConversation from '../views/ai-conversation.vue'
 import BaseDemo from '@/views/base-demo.vue'
 import Commonfile from '@/views/common-file.vue'
+import emitter from '@/utils/mitt.js'
 const routes = [
   { path: '/talk', component: AiConversation },
   { path: '/', redirect: '/talk' },
@@ -30,6 +31,10 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes
+})
+
+emitter.on('API:UN_AUTH', (msg) => {
+  router.push('/403').then(r => {})
 })
 
 export default router
